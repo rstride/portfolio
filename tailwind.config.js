@@ -3,11 +3,15 @@ module.exports = {
   content: ['./app/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      backgroundImage: {
-        'hero-pattern': "url('/images/hero-bg.jpg')",
+      colors: {
+        'custom-green': '#32CD32',
+        'custom-gray': '#1A1A1A',
       },
-      animation: {
-        bounce: 'bounce 2s infinite',
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'],
+      },
+      backgroundImage: {
+        'hero-pattern': "url('/images/projects/hero-bg.jpg')",
       },
     },
   },

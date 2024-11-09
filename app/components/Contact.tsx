@@ -1,10 +1,6 @@
-// app/contact/page.tsx
+// app/components/Contact.tsx
 'use client';
 import { useState } from 'react';
-
-export const metadata = {
-  title: 'Contact Me - rstride Portfolio',
-};
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
@@ -43,7 +39,7 @@ export default function Contact() {
           <input
             type="text"
             placeholder="Name"
-            className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-custom-green"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             required
@@ -51,26 +47,26 @@ export default function Contact() {
           <input
             type="email"
             placeholder="Email"
-            className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-custom-green"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             required
           />
           <textarea
             placeholder="Message"
-            className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-green-500 h-32"
+            className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-custom-green h-32"
             value={form.message}
             onChange={(e) => setForm({ ...form, message: e.target.value })}
             required
           />
           <button
             type="submit"
-            className="w-full py-3 bg-green-600 rounded hover:bg-green-500 transition-colors duration-300"
+            className="w-full py-3 bg-custom-green rounded hover:bg-green-500 transition-colors duration-300"
           >
             Send Message
           </button>
+          {status && <p className="mt-5 text-center text-custom-green">{status}</p>}
         </form>
-        {status && <p className="mt-5 text-center text-green-500">{status}</p>}
       </div>
     </section>
   );
