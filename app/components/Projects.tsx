@@ -26,9 +26,13 @@ export default function Projects() {
           throw new Error(data.error || 'Failed to fetch projects.');
         }
         setProjects(data);
-      } catch (err: any) {
+      } catch (err: unknown) { // Changed from 'any' to 'unknown'
         console.error('Error fetching projects:', err);
-        setError(err.message || 'An unexpected error occurred.');
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('An unexpected error occurred.');
+        }
       } finally {
         setLoading(false);
       }

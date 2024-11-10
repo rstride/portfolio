@@ -12,6 +12,7 @@ module.exports = {
       },
       backgroundImage: {
         'hero-pattern': "url('/images/projects/hero-bg.jpg')",
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
     },
   },
