@@ -1,57 +1,19 @@
-# rstride Portfolio
+# Romain Stride — Portfolio
 
-This is the source code for my cybersecurity portfolio website built with Next.js.
+- Next.js 15 App Router + Tailwind v4 + TypeScript
+- Dark mode default, light toggle via `localStorage`
+- Animations: Framer Motion
 
-## Technologies Used
+Useful:
+- Health check: `/health` → 200 ok
+- Contact endpoint: `POST /contact` (logs payload server-side)
+- Sitemap/robots generated from `NEXT_PUBLIC_SITE_URL`
 
-- Next.js with TypeScript
-- Tailwind CSS
-- PostgreSQL with Prisma ORM
-- Redis for caching
-- Nginx for reverse proxy and SSL termination
-- Hosted on an OVH VPS
+Run locally:
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 22
-- PostgreSQL
-- Redis
-
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/rstride/portfolio.git
-   cd portfolio
-    ```
-
-2. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-3. Create a `.env.local` file in the root directory and add the following environment variables:
-
-   ```bash
-    DATABASE_URL="postgresql://user:password@localhost:5432/database"
-    REDIS_URL="redis://localhost:6379"
-    ```
-
-4. Run the development server:
-
-   ```bash
-   npm run dev
-   ```
+```bash
+npm ci
+npm run dev
 ```
-5. Deploy the website:
 
-   ```bash
-   npm run build
-   npm run start
-   ```
-
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+Docker (multi-stage) is available via `Dockerfile`.
