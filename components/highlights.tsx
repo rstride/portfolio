@@ -14,7 +14,7 @@ export function Highlights() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.4, delay: idx * 0.05 }}
-            className="rounded-2xl border border-border/50 bg-background/40 backdrop-blur p-4"
+            className="rounded-2xl glass p-4"
           >
             <div className="text-2xl font-bold">{p.kpi}</div>
             <p className="mt-2 text-sm text-muted-foreground">{p.title}</p>

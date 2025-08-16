@@ -20,7 +20,7 @@ export const site = {
   name: "Romain Stride",
   role: "Consultant en cybersécurité & pentester",
   tagline:
-    "J’aide les entreprises à réduire leur surface d’attaque grâce à des audits pointus, des tests d’intrusion rigoureux et des outils de sécurité sur mesure.",
+    "Je sécurise vos applications et votre infrastructure par des tests d’intrusion concrets et des audits pragmatiques.",
   company: {
     name: "PrismaSec",
     tagline: "Gestion Continue de l’Exposition aux Menaces, propulsée par l’IA",
@@ -31,10 +31,10 @@ export const site = {
     { href: "/blog", label: "Blog" },
   ],
   hero: {
-    headlineA: "Casser. Mesurer. Sécuriser.",
-    headlineB: "L’exposition continue aux menaces, opérationnalisée.",
+    headlineA: "Je teste. Je prouve. Je sécurise.",
+    headlineB: "Pentest et audits pragmatiques pour vos produits.",
     subtext:
-      "J’aide les entreprises à réduire leur surface d’attaque grâce à des audits pointus, des tests d’intrusion rigoureux et des outils de sécurité sur mesure.",
+      "Freelance, j’identifie les failles qui comptent, j’en démontre l’impact et je vous aide à les corriger rapidement.",
     ctaPrimary: {
       label: "Contact",
       href: "/contact",
@@ -44,11 +44,11 @@ export const site = {
       href: "/services",
     },
     specialties: [
-      "Pentest Web & API",
-      "Pentest Infra & Cloud",
-      "Bug Bounty",
-      "CTEM Advisory",
-      "Threat Modeling",
+      "Tests d’intrusion Web & API",
+      "Tests d’intrusion Infra & Cloud",
+      "Bug bounty",
+      "Conseil CTEM",
+      "Modélisation des menaces",
       "DevSecOps",
     ],
   },
