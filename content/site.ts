@@ -18,9 +18,9 @@ export type KPI = {
 
 export const site = {
   name: "Romain Stride",
-  role: "Consultant en cybersécurité & pentester",
+  role: "Hacker éthique & pentester",
   tagline:
-    "Je sécurise vos applications et votre infrastructure par des tests d’intrusion concrets et des audits pragmatiques.",
+    "Je trouve des failles, j’en prouve l’impact et j’aide à les corriger — dans un cadre de divulgation responsable.",
   company: {
     name: "PrismaSec",
     tagline: "Gestion Continue de l’Exposition aux Menaces, propulsée par l’IA",
@@ -28,13 +28,14 @@ export const site = {
   nav: [
     { href: "/", label: "Accueil" },
     { href: "/services", label: "Services" },
-    { href: "/blog", label: "Blog" },
+    { href: "/blog", label: "Write-ups" },
+    { href: "/legal/disclosure", label: "Divulgation" },
   ],
   hero: {
-    headlineA: "Je teste. Je prouve. Je sécurise.",
-    headlineB: "Pentest et audits pragmatiques pour vos produits.",
+    headlineA: "Je hacke pour défendre.",
+    headlineB: "Pentests réalistes et divulgation responsable.",
     subtext:
-      "Freelance, j’identifie les failles qui comptent, j’en démontre l’impact et je vous aide à les corriger rapidement.",
+      "Freelance, je mène des tests d’intrusion réalistes, je fournis des preuves exploitables et je collabore avec vos équipes pour une remédiation rapide.",
     ctaPrimary: {
       label: "Contact",
       href: "/contact",
@@ -44,10 +45,10 @@ export const site = {
       href: "/services",
     },
     specialties: [
-      "Tests d’intrusion Web & API",
-      "Tests d’intrusion Infra & Cloud",
-      "Bug bounty",
-      "Conseil CTEM",
+      "Pentest Web, API & Auth",
+      "Pentest Infra & Cloud",
+      "Bug bounty & Halls of Fame",
+      "Divulgation responsable",
       "Modélisation des menaces",
       "DevSecOps",
     ],
@@ -60,8 +61,8 @@ export const site = {
   ] as SocialLink[],
   kpis: [
     { label: "CVEs publiés", value: "12+" },
-    { label: "Critiques triés", value: "80+" },
-    { label: "Programmes attaqués", value: "50+" },
+    { label: "Critiques validés (bounty)", value: "80+" },
+    { label: "Halls of Fame", value: "10+" },
     { label: "Années d’expérience", value: "8" },
   ] as KPI[],
   services: [
@@ -69,7 +70,7 @@ export const site = {
       slug: "formation-ia",
       title: "Formation aux fondamentaux de l’IA",
       description:
-        "Je forme vos équipes aux bases de l’IA (LLM, prompts, risques, sécurité) pour un usage maîtrisé et productif.",
+        "Formation pratique aux bases de l’IA (LLM, prompts, risques, sécurité) pour des usages maîtrisés côté produit/sécurité.",
       deliverables: [
         "Ateliers interactifs (2h à 1 journée)",
         "Supports et templates de prompts",
@@ -81,7 +82,7 @@ export const site = {
       slug: "sensibilisation",
       title: "Sensibilisation à la cybersécurité",
       description:
-        "Je conçois et j’anime des sessions de sensibilisation (phishing, mots de passe, Shadow IT) adaptées à vos métiers.",
+        "Sessions concrètes de sensibilisation (phishing, secrets, Shadow IT) adaptées à vos métiers, axées sur les bons réflexes.",
       deliverables: ["Sessions live ou en ligne", "Scénarios de phishing", "Guides pratiques"],
       benefits: ["Réduction du risque humain", "Culture sécurité renforcée", "Mesure de l’efficacité"],
     },
@@ -89,7 +90,7 @@ export const site = {
       slug: "ctf",
       title: "Organisation de CTF",
       description:
-        "J’organise des CTF pédagogiques (débutant à avancé) pour former, challenger et fédérer vos équipes.",
+        "Organisation de CTF pédagogiques (débutant à avancé) pour former, challenger et fédérer vos équipes autour de la sécurité offensive.",
       deliverables: ["Challenges sur mesure", "Plateforme & scoring", "Briefing et debriefing"],
       benefits: ["Apprentissage ludique", "Esprit d’équipe", "Détection de talents"],
     },
@@ -97,7 +98,7 @@ export const site = {
       slug: "audit-securite",
       title: "Audit de sécurité",
       description:
-        "J’évalue votre posture (politiques, configuration, conformité) et fournis une feuille de route claire.",
+        "Évaluation de votre posture (politiques, configuration, conformité) avec une feuille de route priorisée et actionnable.",
       deliverables: ["Analyse des politiques", "Vérification de configuration", "Feuille de route"],
       benefits: ["Visibilité et priorités", "Conformité renforcée", "Décisions éclairées"],
     },
@@ -105,7 +106,7 @@ export const site = {
       slug: "pentest-web",
       title: "Audit de pentest web",
       description:
-        "J’identifie et j’exploite de façon contrôlée les vulnérabilités applicatives (OWASP, logique métier).",
+        "Tests d’intrusion applicatifs (OWASP, logique métier) avec preuves d’exploitation contrôlées et recommandations orientées remédiation.",
       deliverables: ["Rapport détaillé avec PoC", "Priorisation par impact", "Recommandations actionnables"],
       benefits: ["Failles critiques détectées", "Preuves exploitables", "Remédiation accélérée"],
     },
@@ -113,7 +114,7 @@ export const site = {
       slug: "pentest-infra",
       title: "Audit de pentest infra",
       description:
-        "J’évalue la sécurité réseau, systèmes et cloud (externe/interne) avec un regard attaquant.",
+        "Pentest réseau, systèmes et cloud (externe/interne) avec un regard attaquant et une restitution claire.",
       deliverables: ["Cartographie d’attaque", "Tests internes/externe", "Plan de mitigation"],
       benefits: ["Réduction du périmètre attaquable", "Visibilité complète", "Confiance opérationnelle"],
     },
@@ -126,10 +127,10 @@ export const site = {
       "J’étudie à l’école 42 Perpignan (spécialisation cybersécurité)",
     ],
     experience: [
-      "J’ai été président de l’association de cybersécurité de l’école (2022)",
-      "J’ai organisé et animé des CTF",
-      "Je participe régulièrement à des événements de hacking",
-      "Je suis bénévole à la Toulouse Hacking Convention",
+      "Président d’association cybersécurité (2022)",
+      "Organisation & animation de CTF",
+      "Participation régulière à des programmes bug bounty",
+      "Bénévole à la Toulouse Hacking Convention",
     ],
     entrepreneurship:
       "J’ai fondé PrismaSec (2025) — une startup qui vise à démocratiser l’accès à la cybersécurité pour les TPE/PME via une plateforme CTEM propulsée par l’IA.",
@@ -148,9 +149,9 @@ export const site = {
     email: "contact@romainstride.com",
   },
   logos: [
-    { alt: "PrismaSec", src: "/vercel.svg" },
-    { alt: "Next.js", src: "/next.svg" },
-    { alt: "Cloud", src: "/globe.svg" },
+    { alt: "HackerOne", src: "/next.svg" },
+    { alt: "YesWeHack", src: "/vercel.svg" },
+    { alt: "Open-Source", src: "/globe.svg" },
   ],
   privacy: {
     effectiveDate: "2025-01-01",
@@ -192,10 +193,10 @@ export const site = {
     transfersText: "Les données peuvent être traitées dans l’UE. Je ne vends pas de données personnelles.",
   },
   proofs: [
-    { title: "J’ai réduit la surface d’attaque de certains clients de plus de 40% en moins de 2 mois", kpi: "−40%" },
-    { title: "J’ai découvert et signalé des vulnérabilités critiques en bug bounty", kpi: "Critique" },
-    { title: "J’ai organisé des CTF rassemblant plus de 100 participants", kpi: "100+" },
-    { title: "J’ai développé des outils internes pour automatiser la veille CVE", kpi: "Outils" },
+    { title: "Critiques validées sur des programmes publics/privés (bounty)", kpi: "80+" },
+    { title: "Présence dans des Halls of Fame pour divulgations responsables", kpi: "10+" },
+    { title: "Réduction de surface d’attaque en < 2 mois", kpi: "−40%" },
+    { title: "Outils internes pour l’automatisation de tests & veille CVE", kpi: "Outils" },
   ],
   servicePages: {
     "formation-ia": {
@@ -262,5 +263,4 @@ export const site = {
 } as const;
 
 export type SiteContent = typeof site;
-
 

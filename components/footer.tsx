@@ -8,15 +8,11 @@ export function Footer() {
         <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} {site.name}. {site.strings.footerRightsSuffix}</p>
         <div className="flex items-center gap-4 text-sm">
           <Link href="/legal/privacy" className="text-muted-foreground hover:text-foreground">{site.strings.footerPrivacyLabel}</Link>
-          {site.socials.map((s) => (
-            <a key={s.label} href={s.href} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground">
-              {s.label}
-            </a>
-          ))}
+          <Link href="/legal/disclosure" className="text-muted-foreground hover:text-foreground">Divulgation</Link>
+          <a href={site.socials.find(s => s.label === 'PrismaSec')?.href} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground">PrismaSec</a>
         </div>
       </div>
     </footer>
   );
 }
-
 
