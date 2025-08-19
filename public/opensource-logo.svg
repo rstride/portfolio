@@ -1,0 +1,12 @@
+<svg width="110" height="28" viewBox="0 0 110 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="110" height="28" rx="6" fill="url(#gradient3)" opacity="0.1"/>
+  <text x="55" y="18" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="600" fill="currentColor">Open Source</text>
+  <circle cx="15" cy="14" r="4" fill="none" stroke="url(#gradient3)" stroke-width="2" opacity="0.3"/>
+  <circle cx="15" cy="14" r="2" fill="url(#gradient3)" opacity="0.3"/>
+  <defs>
+    <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+  </defs>
+</svg>

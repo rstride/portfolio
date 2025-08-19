@@ -1,24 +1,53 @@
 "use client";
-import { site } from "@/content/site";
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { 
   Mail, 
   MessageSquare, 
   Send, 
+  Lock, 
   CheckCircle, 
-  Lock,
-  Shield,
-  Globe,
-  Calendar,
-  ExternalLink,
-  User,
-  AtSign
+  Github, 
+  Linkedin, 
+  Twitter,
+  Globe
 } from "lucide-react";
 
-export default function ContactPage() {
+const socialLinks = [
+  {
+    name: "GitHub",
+    href: "https://github.com/rstride",
+    icon: Github,
+    color: "from-gray-600 to-gray-800",
+    description: "Outils & recherche sécurité"
+  },
+  {
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/in/romainstride",
+    icon: Linkedin,
+    color: "from-blue-600 to-blue-800",
+    description: "Réseau professionnel"
+  },
+  {
+    name: "Twitter",
+    href: "https://x.com/romainstride",
+    icon: Twitter,
+    color: "from-blue-400 to-blue-600",
+    description: "Analyses de sécurité"
+  },
+  {
+    name: "PrismaSec",
+    href: "https://prismasec.fr",
+    icon: Globe,
+    color: "from-green-500 to-green-700",
+    description: "Site de l'entreprise"
+  }
+];
+
+
+export function ContactSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.1 });
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
@@ -39,127 +68,59 @@ export default function ContactPage() {
     }, 3000);
   };
 
-  const contactMethods = [
-    {
-      icon: Mail,
-      title: "Email Direct",
-      description: "Réponse sous 24h",
-      value: site.about.email,
-      href: `mailto:${site.about.email}`,
-      color: "from-green-500 to-emerald-500"
-    },
-    {
-      icon: Calendar,
-      title: "Programmer un call",
-      description: "Discussion de 15-30 min",
-      value: "Calendly",
-      href: site.about.scheduleHref,
-      color: "from-blue-500 to-cyan-500"
-    },
-    {
-      icon: Globe,
-      title: "Réseaux sociaux",
-      description: "LinkedIn & Twitter",
-      value: "Suivez-moi",
-      href: "https://www.linkedin.com/in/romainstride",
-      color: "from-purple-500 to-pink-500"
-    }
-  ];
-
   return (
-    <div ref={ref} className="relative min-h-screen overflow-hidden">
-      {/* Cybersecurity Background Effects */}
-      <div className="absolute inset-0 -z-10">
-        {/* Matrix-style background grid */}
+    <section ref={ref} className="py-24 relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0">
+        {/* Matrix-style rain effect */}
         <motion.div
-          className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"
+          className="absolute inset-0 opacity-10"
+          style={{
+            background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(34, 197, 94, 0.1) 2px, rgba(34, 197, 94, 0.1) 4px)",
+            backgroundSize: "100% 20px"
+          }}
           animate={{ 
-            backgroundPosition: ["0px 0px", "50px 50px", "0px 0px"],
-            opacity: [0.5, 0.8, 0.5]
+            backgroundPosition: ["0% 0%", "0% 100%", "0% 0%"] 
           }}
           transition={{ 
-            duration: 20, 
+            duration: 10, 
             repeat: Infinity, 
             ease: "linear" 
           }}
         />
-
-        {/* Animated gradient orbs */}
-        <motion.div 
-          className="absolute -top-40 -left-40 h-80 w-80 rounded-full blur-3xl opacity-20 bg-gradient-to-r from-green-500 via-blue-500 to-purple-600"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360]
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div 
-          className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full blur-3xl opacity-15 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600"
-          animate={{
-            x: [0, -30, 0],
-            y: [0, -40, 0],
-            scale: [1, 1.1, 1],
-            rotate: [360, 180, 0]
-          }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-        />
-
+        
+        {/* Cyber grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.02)_1px,transparent_1px)] bg-[size:50px_50px] animate-pulse" />
+        
         {/* Floating icons */}
         {[Mail, MessageSquare, Globe].map((Icon, index) => (
           <motion.div
             key={index}
             className="absolute"
             style={{
-              left: `${20 + (index * 30)}%`,
-              top: `${15 + (index % 3) * 25}%`
+              left: `${20 + index * 30}%`,
+              top: `${10 + index * 25}%`
             }}
             animate={{
-              opacity: [0.1, 0.3, 0.1],
-              scale: [0.8, 1.2, 0.8],
-              y: [0, -30, 0],
-              x: [0, 20, 0],
-              rotate: [0, 360, 720]
+              y: [0, -20, 0],
+              x: [0, 10, 0],
+              rotate: [0, 180, 360],
+              opacity: [0.1, 0.3, 0.1]
             }}
             transition={{
-              duration: 8 + (index * 1.5),
+              duration: 8 + index * 2,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: index * 0.8
+              delay: index * 2
             }}
           >
-            <Icon className="w-5 h-5 text-green-400/20" />
+            <Icon className="w-6 h-6 text-primary/20" />
           </motion.div>
         ))}
-
-        {/* Data stream effect */}
-        <motion.div
-          className="absolute right-10 top-20 w-1 h-32 bg-gradient-to-b from-transparent via-green-400/50 to-transparent"
-          animate={{
-            y: [0, 300, 600],
-            opacity: [0, 1, 0]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
-          }}
-        />
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-        {/* Header Section */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
@@ -174,31 +135,16 @@ export default function ContactPage() {
           >
             <Mail className="w-8 h-8 text-green-400" />
           </motion.div>
-          <h1 className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 mb-4">
-            {site.sections.contactTitle}
-          </h1>
+          <h2 className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 mb-4">
+            Contact
+          </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Vous préférez échanger de vive voix ?{" "}
-            <motion.a 
-              href={site.about.scheduleHref} 
-              className="text-green-400 hover:text-green-300 transition-colors underline underline-offset-4"
-              whileHover={{ scale: 1.05 }}
-            >
-              Réserver un call
-            </motion.a>
-            {" "}ou par email :{" "}
-            <motion.a 
-              href={`mailto:${site.about.email}`} 
-              className="text-blue-400 hover:text-blue-300 transition-colors underline underline-offset-4"
-              whileHover={{ scale: 1.05 }}
-            >
-              {site.about.email}
-            </motion.a>
+            Prêt à discuter d'évaluations de sécurité, de recherche de vulnérabilités ou d'opportunités de collaboration ? Contactez-moi.
           </p>
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-12">
-          {/* Contact Form */}
+          {/* Contact form */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
@@ -213,7 +159,7 @@ export default function ContactPage() {
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center">
                   <MessageSquare className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground">Me contacter</h3>
+                <h3 className="text-xl font-semibold text-foreground">Envoyer un message</h3>
               </motion.div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -222,10 +168,7 @@ export default function ContactPage() {
                     whileHover={{ scale: 1.02 }}
                     whileFocus={{ scale: 1.02 }}
                   >
-                    <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                      <User className="w-4 h-4 text-green-400" />
-                      Nom
-                    </label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Nom</label>
                     <input
                       type="text"
                       value={formData.name}
@@ -235,15 +178,11 @@ export default function ContactPage() {
                       required
                     />
                   </motion.div>
-                  
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     whileFocus={{ scale: 1.02 }}
                   >
-                    <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                      <AtSign className="w-4 h-4 text-blue-400" />
-                      Email
-                    </label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Email</label>
                     <input
                       type="email"
                       value={formData.email}
@@ -259,10 +198,7 @@ export default function ContactPage() {
                   whileHover={{ scale: 1.01 }}
                   whileFocus={{ scale: 1.01 }}
                 >
-                  <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4 text-purple-400" />
-                    Message
-                  </label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Message</label>
                   <textarea
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -307,80 +243,66 @@ export default function ContactPage() {
                       </>
                     )}
                   </motion.span>
-                  {/* Scanning line effect */}
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                    className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600"
                     initial={{ x: "-100%" }}
-                    whileHover={{ x: "100%" }}
-                    transition={{ duration: 0.6 }}
+                    whileHover={{ x: "0%" }}
+                    transition={{ duration: 0.3 }}
                   />
                 </motion.button>
-
-                <p className="text-xs text-muted-foreground">
-                  En envoyant ce formulaire, vous acceptez notre{" "}
-                  <motion.a 
-                    className="text-green-400 hover:text-green-300 transition-colors underline underline-offset-4" 
-                    href="/legal/privacy"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    politique de confidentialité
-                  </motion.a>.
-                </p>
               </form>
+
             </div>
           </motion.div>
 
-          {/* Contact Methods Sidebar */}
+          {/* Sidebar */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             className="space-y-8"
           >
-            {/* Contact Methods */}
+
+            {/* Social links */}
             <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-6">Moyens de contact</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-6">Réseaux sociaux</h3>
               <div className="space-y-4">
-                {contactMethods.map((method, index) => {
-                  const IconComponent = method.icon;
+                {socialLinks.map((link, index) => {
+                  const IconComponent = link.icon;
                   return (
                     <motion.a
-                      key={method.title}
-                      href={method.href}
+                      key={link.name}
+                      href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                      transition={{ duration: 0.5, delay: 0.6 + (index * 0.1) }}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+                      transition={{ duration: 0.5, delay: 0.8 + (index * 0.1) }}
                       whileHover={{ scale: 1.02, x: 5 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-start gap-4 p-4 rounded-xl bg-muted/30 border border-border/50 hover:border-green-500/50 transition-colors group"
+                      className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/50 hover:border-green-500/50 transition-colors group"
                     >
                       <motion.div
-                        className={`w-12 h-12 rounded-xl bg-gradient-to-r ${method.color} flex items-center justify-center group-hover:scale-110 transition-transform`}
-                        whileHover={{ rotate: 15 }}
+                        className={`w-8 h-8 rounded-lg bg-gradient-to-r ${link.color} flex items-center justify-center group-hover:scale-110 transition-transform`}
+                        whileHover={{ rotate: 10 }}
                       >
-                        <IconComponent className="w-6 h-6 text-white" />
+                        <IconComponent className="w-4 h-4 text-white" />
                       </motion.div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-foreground group-hover:text-green-400 transition-colors">
-                          {method.title}
-                        </h4>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {method.description}
-                        </p>
-                        <p className="text-sm text-blue-400 mt-2">
-                          {method.value}
-                        </p>
+                      <div>
+                        <div className="font-medium text-foreground group-hover:text-green-400 transition-colors">
+                          {link.name}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {link.description}
+                        </div>
                       </div>
-                      <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-green-400 transition-colors opacity-0 group-hover:opacity-100" />
                     </motion.a>
                   );
                 })}
               </div>
             </div>
 
-            {/* Response Time Info */}
+            {/* Contact info */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -398,24 +320,23 @@ export default function ContactPage() {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-blue-500 mb-4"
               >
-                <Shield className="w-6 h-6 text-white" />
+                <Lock className="w-6 h-6 text-white" />
               </motion.div>
-              <h3 className="font-semibold text-foreground mb-2">Temps de réponse</h3>
+              <h3 className="font-semibold text-foreground mb-2">Contact Direct</h3>
               <p className="text-sm text-muted-foreground mb-3">
-                Réponse garantie sous 24h pour toute demande professionnelle
+                Pour toute demande ou discussion professionnelle
               </p>
-              <div className="flex justify-center gap-2 text-xs">
-                <span className="px-2 py-1 bg-green-500/10 text-green-400 rounded-full">
-                  ✓ Rapide
-                </span>
-                <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-full">
-                  ✓ Professionnel
-                </span>
-              </div>
+              <motion.a
+                href="mailto:contact@rstride.fr"
+                className="text-sm font-medium text-green-400 hover:text-green-300 transition-colors"
+                whileHover={{ scale: 1.05 }}
+              >
+                contact@rstride.fr
+              </motion.a>
             </motion.div>
           </motion.div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

@@ -24,7 +24,7 @@ export function Header() {
       <ScrollProgress />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link href="/" className="font-semibold tracking-tight">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-fuchsia-500">{site.name}</span>
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-blue-500 to-purple-600">{site.name}</span>
           <span className="sr-only">Home</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm">

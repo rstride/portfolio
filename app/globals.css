@@ -132,22 +132,293 @@
 }
 
 @layer utilities {
-  .glass { @apply bg-background/50 backdrop-blur-md border border-border/60 shadow-[0_0_60px_-25px_var(--ring)]; }
+  .glass { 
+    @apply bg-background/50 backdrop-blur-md border border-border/60 shadow-[0_0_60px_-25px_var(--ring)];
+    box-shadow: 
+      0 0 60px -25px var(--ring),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+  
   .chip {
     @apply inline-flex items-center rounded-sm border px-2 py-0.5 text-xs text-foreground/80 border-border bg-transparent;
   }
-  .btn-primary { @apply inline-flex items-center justify-center rounded-full text-sm font-medium transition bg-primary text-primary-foreground px-5 py-3 hover:opacity-90 shadow-sm; }
-  .btn-outline { @apply inline-flex items-center justify-center rounded-full text-sm font-medium transition border border-border/60 px-5 py-3 hover:bg-muted/50; }
+  
+  .btn-primary { 
+    @apply inline-flex items-center justify-center rounded-full text-sm font-medium transition bg-primary text-primary-foreground px-5 py-3 hover:opacity-90 shadow-sm;
+    box-shadow: 
+      0 0 20px rgba(34, 197, 94, 0.3),
+      0 0 40px rgba(34, 197, 94, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .btn-primary:hover {
+    box-shadow: 
+      0 0 25px rgba(34, 197, 94, 0.4),
+      0 0 50px rgba(34, 197, 94, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  .btn-outline { 
+    @apply inline-flex items-center justify-center rounded-full text-sm font-medium transition border border-border/60 px-5 py-3 hover:bg-muted/50;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .btn-outline:hover {
+    border-color: rgba(34, 197, 94, 0.5);
+    box-shadow: 
+      0 0 20px rgba(34, 197, 94, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
   .card { @apply rounded-lg border border-border bg-background; }
-  .shine { background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.18) 12%, transparent 22%), var(--bg, transparent); background-size: 200% 100%; animation: shine 3.5s ease-in-out infinite; }
-  @keyframes shine { 0%{background-position: -120% 0} 100%{background-position: 150% 0} }
+  
+  .shine { 
+    background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.18) 12%, transparent 22%), var(--bg, transparent); 
+    background-size: 200% 100%; 
+    animation: shine 3.5s ease-in-out infinite; 
+  }
+  
+  .glow-green {
+    box-shadow: 
+      0 0 20px rgba(34, 197, 94, 0.3),
+      0 0 40px rgba(34, 197, 94, 0.1),
+      0 0 60px rgba(34, 197, 94, 0.05);
+  }
+  
+  .glow-blue {
+    box-shadow: 
+      0 0 20px rgba(59, 130, 246, 0.3),
+      0 0 40px rgba(59, 130, 246, 0.1),
+      0 0 60px rgba(59, 130, 246, 0.05);
+  }
+  
+  .glow-purple {
+    box-shadow: 
+      0 0 20px rgba(147, 51, 234, 0.3),
+      0 0 40px rgba(147, 51, 234, 0.1),
+      0 0 60px rgba(147, 51, 234, 0.05);
+  }
+  
+  .cyber-border {
+    position: relative;
+  }
+  
+  .cyber-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    background: conic-gradient(from 0deg, transparent, rgba(34, 197, 94, 0.8), transparent);
+    border-radius: inherit;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    animation: rotate 4s linear infinite;
+  }
+  
+  .matrix-bg {
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(34, 197, 94, 0.1) 0%, transparent 25%),
+      radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.1) 0%, transparent 25%),
+      radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.05) 0%, transparent 25%);
+    background-size: 100px 100px, 80px 80px, 120px 120px;
+    animation: matrix-float 20s ease-in-out infinite;
+  }
+  
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+  
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .slide-in-left {
+    animation: slide-in-left 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  .slide-in-right {
+    animation: slide-in-right 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  .fade-in-up {
+    animation: fade-in-up 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  .typing-effect {
+    overflow: hidden;
+    border-right: 2px solid rgba(34, 197, 94, 0.7);
+    white-space: nowrap;
+    animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+  }
+  
+  /* Enhanced scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(34, 197, 94, 0.8), rgba(59, 130, 246, 0.8));
+    border-radius: 4px;
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(34, 197, 94, 1), rgba(59, 130, 246, 1));
+  }
+  
+  /* Smooth focus styles */
+  *:focus-visible {
+    outline: 2px solid rgba(34, 197, 94, 0.6);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  
+  /* Selection styles */
+  ::selection {
+    background: rgba(34, 197, 94, 0.3);
+    color: inherit;
+  }
+  
+  ::-moz-selection {
+    background: rgba(34, 197, 94, 0.3);
+    color: inherit;
+  }
+  
+  @keyframes shine { 
+    0% { background-position: -120% 0; } 
+    100% { background-position: 150% 0; } 
+  }
+  
+  @keyframes rotate {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes matrix-float {
+    0%, 100% {
+      background-position: 0% 0%, 0% 0%, 0% 0%;
+    }
+    25% {
+      background-position: 50% 25%, 25% 50%, 75% 25%;
+    }
+    50% {
+      background-position: 100% 50%, 50% 100%, 50% 50%;
+    }
+    75% {
+      background-position: 50% 75%, 75% 50%, 25% 75%;
+    }
+  }
+  
+  @keyframes pulse-glow {
+    0% {
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    }
+    100% {
+      box-shadow: 0 0 40px rgba(34, 197, 94, 0.6);
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes typing {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+  
+  @keyframes blink-caret {
+    from, to {
+      border-color: transparent;
+    }
+    50% {
+      border-color: rgba(34, 197, 94, 0.7);
+    }
+  }
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
   body {
     @apply bg-background text-foreground;
+    /* Enhanced background with subtle patterns */
+    background-attachment: fixed;
+  }
+  
+  /* Improved dark mode body background */
+  .dark body {
+    background:
+      radial-gradient(1200px 600px at 70% -20%, oklch(0.26 0.06 265) 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% -10%, oklch(0.22 0.06 305) 0%, transparent 60%),
+      radial-gradient(600px 400px at 90% 80%, oklch(0.18 0.04 285) 0%, transparent 60%),
+      linear-gradient(180deg, oklch(0.15 0.02 285) 0%, oklch(0.13 0.02 285) 100%);
+  }
+  
+  /* Enhanced light mode body background */
+  body {
+    background:
+      radial-gradient(1200px 600px at 80% -20%, oklch(0.95 0.02 265) 0%, transparent 60%),
+      radial-gradient(900px 500px at 0% -10%, oklch(0.95 0.02 295) 0%, transparent 60%),
+      radial-gradient(600px 400px at 100% 80%, oklch(0.92 0.01 285) 0%, transparent 60%),
+      linear-gradient(180deg, oklch(1 0 0) 0%, oklch(0.97 0 0) 100%);
   }
 }

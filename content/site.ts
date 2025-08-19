@@ -149,9 +149,9 @@ export const site = {
     email: "contact@romainstride.com",
   },
   logos: [
-    { alt: "HackerOne", src: "/next.svg" },
-    { alt: "YesWeHack", src: "/vercel.svg" },
-    { alt: "Open-Source", src: "/globe.svg" },
+    { alt: "HackerOne", src: "/hackerone-logo.svg" },
+    { alt: "YesWeHack", src: "/yeswehack-logo.svg" },
+    { alt: "Open-Source", src: "/opensource-logo.svg" },
   ],
   privacy: {
     effectiveDate: "2025-01-01",
