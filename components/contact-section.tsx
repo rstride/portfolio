@@ -12,37 +12,16 @@ import {
   Twitter,
   Globe
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { site } from "@/content/site";
 
-const socialLinks = [
-  {
-    name: "GitHub",
-    href: "https://github.com/rstride",
-    icon: Github,
-    color: "from-gray-600 to-gray-800",
-    description: "Outils & recherche sécurité"
-  },
-  {
-    name: "LinkedIn",
-    href: "https://www.linkedin.com/in/romainstride",
-    icon: Linkedin,
-    color: "from-blue-600 to-blue-800",
-    description: "Réseau professionnel"
-  },
-  {
-    name: "Twitter",
-    href: "https://x.com/romainstride",
-    icon: Twitter,
-    color: "from-blue-400 to-blue-600",
-    description: "Analyses de sécurité"
-  },
-  {
-    name: "PrismaSec",
-    href: "https://prismasec.fr",
-    icon: Globe,
-    color: "from-green-500 to-green-700",
-    description: "Site de l'entreprise"
-  }
-];
+const iconMap: Record<string, LucideIcon> = {
+  github: Github,
+  linkedin: Linkedin,
+  x: Twitter,
+  website: Globe,
+  yeswehack: Globe,
+};
 
 
 export function ContactSection() {
@@ -139,7 +118,7 @@ export function ContactSection() {
             Contact
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Prêt à discuter d'évaluations de sécurité, de recherche de vulnérabilités ou d'opportunités de collaboration ? Contactez-moi.
+            Besoin d’un test d’intrusion, d’un audit ou d’un échange sur votre posture de sécurité ? Parlons-en.
           </p>
         </motion.div>
 
@@ -267,11 +246,18 @@ export function ContactSection() {
             <div className="glass rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-foreground mb-6">Réseaux sociaux</h3>
               <div className="space-y-4">
-                {socialLinks.map((link, index) => {
-                  const IconComponent = link.icon;
+                {site.socials.map((link, index) => {
+                  const key = link.label.toLowerCase();
+                  const IconComponent = iconMap[key] || Globe;
+                  const color =
+                    key === "github" ? "from-gray-600 to-gray-800" :
+                    key === "linkedin" ? "from-blue-600 to-blue-800" :
+                    key === "x" ? "from-blue-400 to-blue-600" :
+                    key === "yeswehack" ? "from-emerald-600 to-emerald-800" :
+                    "from-green-500 to-green-700";
                   return (
                     <motion.a
-                      key={link.name}
+                      key={link.label}
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -283,17 +269,17 @@ export function ContactSection() {
                       className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/50 hover:border-green-500/50 transition-colors group"
                     >
                       <motion.div
-                        className={`w-8 h-8 rounded-lg bg-gradient-to-r ${link.color} flex items-center justify-center group-hover:scale-110 transition-transform`}
+                        className={`w-8 h-8 rounded-lg bg-gradient-to-r ${color} flex items-center justify-center group-hover:scale-110 transition-transform`}
                         whileHover={{ rotate: 10 }}
                       >
                         <IconComponent className="w-4 h-4 text-white" />
                       </motion.div>
                       <div>
                         <div className="font-medium text-foreground group-hover:text-green-400 transition-colors">
-                          {link.name}
+                          {link.label}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {link.description}
+                          {link.label === "GitHub" ? "Outils & recherche sécurité" : link.label}
                         </div>
                       </div>
                     </motion.a>
@@ -327,11 +313,11 @@ export function ContactSection() {
                 Pour toute demande ou discussion professionnelle
               </p>
               <motion.a
-                href="mailto:contact@rstride.fr"
+                href={`mailto:${site.about.email}`}
                 className="text-sm font-medium text-green-400 hover:text-green-300 transition-colors"
                 whileHover={{ scale: 1.05 }}
               >
-                contact@rstride.fr
+                {site.about.email}
               </motion.a>
             </motion.div>
           </motion.div>

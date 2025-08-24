@@ -1,124 +1,116 @@
 "use client";
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { 
-  ExternalLink, 
-  Github, 
-  Shield, 
-  Bug, 
-  Target, 
-  Zap, 
-  Lock, 
-  AlertCircle,
-  TrendingUp,
-  Award,
-  Eye,
-  Code
+import {
+  ExternalLink,
+  Shield,
+  Bug,
+  Users,
+  GraduationCap,
+  Code,
+  Target
 } from "lucide-react";
 
 const projects = [
   {
     id: 1,
-    title: "Découverte CVE-2024-XXXX",
-    category: "Recherche de Vulnérabilités",
-    description: "Contournement d'authentification critique dans un logiciel d'entreprise populaire affectant 50K+ installations",
-    impact: "Critical",
-    status: "Divulgué",
-    tags: ["CVE", "Authentication", "0-day", "Enterprise"],
+    title: "PrismaSec — Plateforme CTEM (MVP)",
+    category: "Entrepreneuriat / Produit",
+    description:
+      "Fondateur de PrismaSec. Conception et prototypage d’une plateforme CTEM (découverte, priorisation, reporting).",
+    impact: "Focus client",
+    status: "MVP",
+    tags: ["CTEM", "Produit", "Sécurité"],
     metrics: {
-      severity: "9.8 CVSS",
-      affected: "50K+ installs",
-      timeline: "90 jours"
-    },
-    icon: Bug,
-    color: "from-red-500 to-orange-500",
-    bgPattern: "bg-[radial-gradient(circle_at_50%_50%,rgba(239,68,68,0.1),transparent)]"
-  },
-  {
-    id: 2,
-    title: "Exercice Red Team Fortune 500",
-    category: "Tests de Pénétration",
-    description: "Mission red team complète simulant un acteur de menace persistante avancée",
-    impact: "High",
-    status: "Terminé",
-    tags: ["Red Team", "APT", "AD", "Lateral Movement"],
-    metrics: {
-      duration: "4 semaines",
-      findings: "23 critiques",
-      coverage: "100% périmètre"
-    },
-    icon: Target,
-    color: "from-purple-500 to-pink-500",
-    bgPattern: "bg-[radial-gradient(circle_at_50%_50%,rgba(147,51,234,0.1),transparent)]"
-  },
-  {
-    id: 3,
-    title: "Bug Bounty Hall of Fame",
-    category: "Bug Bounty",
-    description: "Multiples découvertes critiques sur les plateformes et services de grandes entreprises tech",
-    impact: "High",
-    status: "En cours",
-    tags: ["Bug Bounty", "Web App", "Logic Flaws", "RCE"],
-    metrics: {
-      platforms: "15+",
-      bounties: "$25K+",
-      rank: "Top 1%"
-    },
-    icon: Award,
-    color: "from-yellow-500 to-orange-500",
-    bgPattern: "bg-[radial-gradient(circle_at_50%_50%,rgba(245,158,11,0.1),transparent)]"
-  },
-  {
-    id: 4,
-    title: "Cloud Security Automation",
-    category: "Security Tools",
-    description: "Outil open-source pour la surveillance continue et l'alerte de la posture de sécurité cloud",
-    impact: "Medium",
-    status: "Actif",
-    tags: ["Cloud", "Automation", "Python", "AWS"],
-    metrics: {
-      stars: "500+",
-      users: "2K+",
-      coverage: "3 clouds"
+      statut: "MVP",
+      approche: "Itérative",
+      domaine: "TPE/PME",
     },
     icon: Shield,
     color: "from-blue-500 to-cyan-500",
-    bgPattern: "bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent)]"
+    bgPattern:
+      "bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent)]",
+    href: "https://prismasec.com",
+  },
+  {
+    id: 2,
+    title: "Offensive tooling (éthique)",
+    category: "R&D Offensive",
+    description:
+      "Développement d’outils à but pédagogique (malware research, évasion, OPSEC) publiés sur GitHub dans un cadre responsable.",
+    impact: "Apprentissage",
+    status: "Actif",
+    tags: ["Offensif", "OPSEC", "EDR", "PoC"],
+    metrics: {
+      repos: "GitHub",
+      cadre: "Éthique",
+      objectif: "Détection",
+    },
+    icon: Code,
+    color: "from-emerald-500 to-teal-500",
+    bgPattern:
+      "bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.1),transparent)]",
+    href: "https://github.com/rstride",
+  },
+  {
+    id: 3,
+    title: "École 42 — Parcours sécurité",
+    category: "Formation",
+    description:
+      "Alumni de l’école 42. Projets système & réseau, algorithmie et modules sécurité applicative.",
+    impact: "Fondamentaux",
+    status: "Alumni",
+    tags: ["42", "Système", "Réseau", "Sécurité"],
+    metrics: {
+      campus: "42 Perpignan",
+      focus: "Cybersécurité",
+      format: "Peer-learning",
+    },
+    icon: GraduationCap,
+    color: "from-indigo-500 to-purple-500",
+    bgPattern:
+      "bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.1),transparent)]",
+    href: "https://42.fr/",
+  },
+  {
+    id: 4,
+    title: "Lost in the Shell — CTF",
+    category: "Communauté / Organisation",
+    description:
+      "Président d’une asso qui organise des CTF pédagogiques (conception d’épreuves, plateforme, animation).",
+    impact: "Communauté",
+    status: "Actif",
+    tags: ["CTF", "Organisation", "Pédagogie"],
+    metrics: {
+      rôle: "Président",
+      format: "Jeopardy",
+      public: "Étudiants/Tech",
+    },
+    icon: Users,
+    color: "from-yellow-500 to-orange-500",
+    bgPattern:
+      "bg-[radial-gradient(circle_at_50%_50%,rgba(245,158,11,0.1),transparent)]",
   },
   {
     id: 5,
-    title: "API Security Framework",
-    category: "Recherche Sécurité",
-    description: "Méthodologie complète de test pour les évaluations de sécurité d'API GraphQL et REST",
-    impact: "Medium",
-    status: "Publié",
-    tags: ["API", "GraphQL", "Methodology", "Framework"],
+    title: "Bug bounty (YesWeHack)",
+    category: "Bug Bounty",
+    description:
+      "Chasse aux bugs sur mon temps libre, principalement sur YesWeHack (focus Web/API).",
+    impact: "Amélioration continue",
+    status: "En cours",
+    tags: ["YesWeHack", "Web", "API", "Logique métier"],
     metrics: {
-      downloads: "10K+",
-      citations: "50+",
-      adoption: "Industry"
+      rythme: "Temps libre",
+      plateforme: "YesWeHack",
+      approche: "Responsible disclosure",
     },
-    icon: Code,
-    color: "from-green-500 to-teal-500",
-    bgPattern: "bg-[radial-gradient(circle_at_50%_50%,rgba(34,197,94,0.1),transparent)]"
+    icon: Bug,
+    color: "from-sky-500 to-cyan-500",
+    bgPattern:
+      "bg-[radial-gradient(circle_at_50%_50%,rgba(14,165,233,0.1),transparent)]",
+    href: "https://www.yeswehack.com/",
   },
-  {
-    id: 6,
-    title: "Recherche d'Attaques Supply Chain",
-    category: "Threat Intelligence",
-    description: "Analyse d'attaques supply chain sophistiquées et développement de mécanismes de détection",
-    impact: "High",
-    status: "Recherche",
-    tags: ["Supply Chain", "APT", "Detection", "IoCs"],
-    metrics: {
-      threats: "50+",
-      accuracy: "95%",
-      coverage: "Global"
-    },
-    icon: AlertCircle,
-    color: "from-indigo-500 to-purple-500",
-    bgPattern: "bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.1),transparent)]"
-  }
 ];
 
 export function ProjectsShowcase() {
@@ -182,10 +174,10 @@ export function ProjectsShowcase() {
             <Target className="w-8 h-8 text-purple-400" />
           </motion.div>
           <h2 className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-4">
-            Projets & Recherches en Sécurité
+            Projets & Parcours en Sécurité
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Présentation de recherches en vulnérabilités, missions de tests d'intrusion et développement d'outils de sécurité avec impact concret.
+            Présentation de recherches en vulnérabilités, missions de tests d’intrusion et développement d’outils de sécurité avec impact concret.
           </p>
         </motion.div>
 
@@ -202,7 +194,8 @@ export function ProjectsShowcase() {
                 onHoverEnd={() => setHoveredProject(null)}
                 className="group relative"
               >
-                {/* Project card */}\n                <motion.div
+                {/* Project card */}
+                <motion.div
                   className={`relative glass rounded-2xl p-6 h-full cursor-pointer overflow-hidden ${project.bgPattern}`}
                   whileHover={{ 
                     scale: 1.02, 
@@ -317,26 +310,25 @@ export function ProjectsShowcase() {
                   </div>
 
                   {/* Action buttons (appear on hover) */}
-                  <motion.div
-                    className="absolute bottom-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    initial={{ y: 20, opacity: 0 }}
-                    whileHover={{ y: 0, opacity: 1 }}
-                  >
-                    <motion.button
-                      className="w-8 h-8 rounded-full bg-foreground/10 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-green-400 hover:border-green-500/50 transition-colors"
-                      whileHover={{ scale: 1.1, rotate: 15 }}
-                      whileTap={{ scale: 0.95 }}
+                  {"href" in project && project.href && (
+                    <motion.div
+                      className="absolute bottom-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      initial={{ y: 20, opacity: 0 }}
+                      whileHover={{ y: 0, opacity: 1 }}
                     >
-                      <Eye className="w-4 h-4" />
-                    </motion.button>
-                    <motion.button
-                      className="w-8 h-8 rounded-full bg-foreground/10 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-blue-400 hover:border-blue-500/50 transition-colors"
-                      whileHover={{ scale: 1.1, rotate: 15 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </motion.button>
-                  </motion.div>
+                      <motion.a
+                        href={project.href as string}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-8 h-8 rounded-full bg-foreground/10 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-blue-400 hover:border-blue-500/50 transition-colors"
+                        whileHover={{ scale: 1.1, rotate: 15 }}
+                        whileTap={{ scale: 0.95 }}
+                        aria-label="Ouvrir le lien du projet"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </motion.a>
+                    </motion.div>
+                  )}
                 </motion.div>
 
                 {/* Glow effect on hover */}
@@ -350,38 +342,6 @@ export function ProjectsShowcase() {
           })}
         </div>
 
-        {/* Call to action */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="text-center mt-16"
-        >
-          <motion.button
-            className="btn-primary shine group relative overflow-hidden"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <motion.span
-              className="relative z-10 flex items-center gap-2"
-              whileHover={{ x: 2 }}
-            >
-              Voir tous les projets
-              <motion.div
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                <ExternalLink className="w-4 h-4" />
-              </motion.div>
-            </motion.span>
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600"
-              initial={{ x: "-100%" }}
-              whileHover={{ x: "0%" }}
-              transition={{ duration: 0.3 }}
-            />
-          </motion.button>
-        </motion.div>
       </div>
     </section>
   );

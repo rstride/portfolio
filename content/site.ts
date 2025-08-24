@@ -23,19 +23,19 @@ export const site = {
     "Je trouve des failles, j’en prouve l’impact et j’aide à les corriger — dans un cadre de divulgation responsable.",
   company: {
     name: "PrismaSec",
-    tagline: "Gestion Continue de l’Exposition aux Menaces, propulsée par l’IA",
+    tagline: "Gestion continue de l’exposition aux menaces (CTEM)",
   },
   nav: [
     { href: "/", label: "Accueil" },
     { href: "/services", label: "Services" },
-    { href: "/blog", label: "Write-ups" },
+    { href: "/contact", label: "Contact" },
     { href: "/legal/disclosure", label: "Divulgation" },
   ],
   hero: {
-    headlineA: "Je hacke pour défendre.",
-    headlineB: "Pentests réalistes et divulgation responsable.",
+    headlineA: "Je hacke pour mieux protéger.",
+    headlineB: "Tests d’intrusion et divulgation responsable.",
     subtext:
-      "Freelance, je mène des tests d’intrusion réalistes, je fournis des preuves exploitables et je collabore avec vos équipes pour une remédiation rapide.",
+      "Freelance, je réalise des tests d’intrusion (web, API, infra), je démontre l’impact des failles et j’accompagne vos équipes avec des recommandations priorisées et des retests.",
     ctaPrimary: {
       label: "Contact",
       href: "/contact",
@@ -48,6 +48,7 @@ export const site = {
       "Pentest Web, API & Auth",
       "Pentest Infra & Cloud",
       "Bug bounty & Halls of Fame",
+      "Recherche malware (éthique)",
       "Divulgation responsable",
       "Modélisation des menaces",
       "DevSecOps",
@@ -57,27 +58,16 @@ export const site = {
     { label: "GitHub", href: "https://github.com/rstride" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/romainstride" },
     { label: "X", href: "https://x.com/romainstride" },
-    { label: "PrismaSec", href: "https://prismasec.com" },
+    { label: "YesWeHack", href: "https://www.yeswehack.com/" },
+    { label: "PrismaSec", href: "https://prismasec.fr" },
   ] as SocialLink[],
   kpis: [
-    { label: "CVEs publiés", value: "12+" },
-    { label: "Critiques validés (bounty)", value: "80+" },
-    { label: "Halls of Fame", value: "10+" },
-    { label: "Années d’expérience", value: "8" },
+    { label: "Bug bounty (YesWeHack)", value: "Actif" },
+    { label: "CTF (orga/part)", value: "Actif" },
+    { label: "Outils open-source", value: "En cours" },
+    { label: "École 42", value: "Alumni" },
   ] as KPI[],
   services: [
-    {
-      slug: "formation-ia",
-      title: "Formation aux fondamentaux de l’IA",
-      description:
-        "Formation pratique aux bases de l’IA (LLM, prompts, risques, sécurité) pour des usages maîtrisés côté produit/sécurité.",
-      deliverables: [
-        "Ateliers interactifs (2h à 1 journée)",
-        "Supports et templates de prompts",
-        "Checklist de bonnes pratiques et risques",
-      ],
-      benefits: ["Montée en compétences rapide", "Usage responsable de l’IA", "Gain de productivité"],
-    },
     {
       slug: "sensibilisation",
       title: "Sensibilisation à la cybersécurité",
@@ -98,42 +88,53 @@ export const site = {
       slug: "audit-securite",
       title: "Audit de sécurité",
       description:
-        "Évaluation de votre posture (politiques, configuration, conformité) avec une feuille de route priorisée et actionnable.",
+        "Évaluation de la posture (politiques, configurations, conformité) avec feuille de route priorisée et actionnable.",
       deliverables: ["Analyse des politiques", "Vérification de configuration", "Feuille de route"],
       benefits: ["Visibilité et priorités", "Conformité renforcée", "Décisions éclairées"],
     },
     {
       slug: "pentest-web",
-      title: "Audit de pentest web",
+      title: "Test d’intrusion web",
       description:
-        "Tests d’intrusion applicatifs (OWASP, logique métier) avec preuves d’exploitation contrôlées et recommandations orientées remédiation.",
-      deliverables: ["Rapport détaillé avec PoC", "Priorisation par impact", "Recommandations actionnables"],
-      benefits: ["Failles critiques détectées", "Preuves exploitables", "Remédiation accélérée"],
+        "Tests applicatifs (OWASP, logique métier) avec preuves d’impact, priorisation et recommandations claires.",
+      deliverables: ["Rapport détaillé (preuves d’impact)", "Priorisation par risque", "Recommandations concrètes"],
+      benefits: ["Détection des risques majeurs", "Clarté des corrections", "Retests inclus"],
     },
     {
       slug: "pentest-infra",
-      title: "Audit de pentest infra",
+      title: "Test d’intrusion infra",
       description:
-        "Pentest réseau, systèmes et cloud (externe/interne) avec un regard attaquant et une restitution claire.",
+        "Pentest réseau, systèmes et cloud (externe/interne) avec restitution claire et actions de mitigation.",
       deliverables: ["Cartographie d’attaque", "Tests internes/externe", "Plan de mitigation"],
       benefits: ["Réduction du périmètre attaquable", "Visibilité complète", "Confiance opérationnelle"],
+    },
+    {
+      slug: "formation-ia",
+      title: "Fondamentaux de l’IA pour la sécu",
+      description:
+        "Bases LLM, prompts, risques et usages maîtrisés côté produit/sécurité (optionnel).",
+      deliverables: [
+        "Ateliers interactifs",
+        "Supports de référence",
+        "Checklist de bonnes pratiques",
+      ],
+      benefits: ["Acculturation rapide", "Usage responsable", "Montée en autonomie"],
     },
   ] as Service[],
   about: {
     bio:
-      "Je suis consultant en cybersécurité freelance et fondateur de PrismaSec. J’allie expertise offensive et conseil stratégique pour aider les entreprises à réduire leur surface d’attaque.",
+      "Consultant cybersécurité freelance et fondateur de PrismaSec. J’allie sécurité offensive (pentest, bug bounty, recherche d’outils offensifs à visée pédagogique) et conseil pour réduire la surface d’attaque.",
     education: [
-      "J’ai un Master en droit privé — Université Toulouse 1 Capitole",
-      "J’étudie à l’école 42 Perpignan (spécialisation cybersécurité)",
+      "Alumni — École 42 (spécialisation cybersécurité)",
     ],
     experience: [
-      "Président d’association cybersécurité (2022)",
+      "Fondateur — PrismaSec (plateforme CTEM, 2025)",
+      "Président — Lost in the Shell (organisation de CTF)",
+      "Bug bounty — principalement YesWeHack",
       "Organisation & animation de CTF",
-      "Participation régulière à des programmes bug bounty",
-      "Bénévole à la Toulouse Hacking Convention",
     ],
     entrepreneurship:
-      "J’ai fondé PrismaSec (2025) — une startup qui vise à démocratiser l’accès à la cybersécurité pour les TPE/PME via une plateforme CTEM propulsée par l’IA.",
+      "Fondateur de PrismaSec (2025) — plateforme CTEM pour aider les TPE/PME à piloter leur exposition aux menaces.",
     community: [
       "Je participe activement à des compétitions CTF",
       "Je contribue à des projets open source sur GitHub",
@@ -161,7 +162,7 @@ export const site = {
     featuredServicesLabel: "Services mis en avant",
     servicesTitle: "Services",
     servicesIntro:
-      "Audits de sécurité, tests d’intrusion, stratégie CTEM et conseil bug bounty — adaptés à votre risque et à votre vitesse.",
+      "J’interviens en tests d’intrusion, audits, CTEM et conseil bug bounty — livrables clairs, priorisés par le risque.",
     aboutTitle: "À propos",
     contactTitle: "Contact",
     contactLeadPrefix: "Vous préférez échanger ? Prenez rendez-vous sur",
@@ -193,10 +194,10 @@ export const site = {
     transfersText: "Les données peuvent être traitées dans l’UE. Je ne vends pas de données personnelles.",
   },
   proofs: [
-    { title: "Critiques validées sur des programmes publics/privés (bounty)", kpi: "80+" },
-    { title: "Présence dans des Halls of Fame pour divulgations responsables", kpi: "10+" },
-    { title: "Réduction de surface d’attaque en < 2 mois", kpi: "−40%" },
-    { title: "Outils internes pour l’automatisation de tests & veille CVE", kpi: "Outils" },
+    { title: "Participation bug bounty (YesWeHack)", kpi: "Actif" },
+    { title: "Organisation & participation CTF", kpi: "Régulier" },
+    { title: "Outils offensifs à visée pédagogique", kpi: "Open-source" },
+    { title: "Accompagnement à la remédiation", kpi: "Retests" },
   ],
   servicePages: {
     "formation-ia": {
@@ -263,4 +264,3 @@ export const site = {
 } as const;
 
 export type SiteContent = typeof site;
-

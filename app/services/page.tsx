@@ -245,12 +245,12 @@ export default function ServicesPage() {
                     whileTap={{ scale: 0.98 }}
                   >
                     <Link 
-                      href="/contact" 
+                      href={`/services/${service.slug === 'audit-securite' ? 'securite' : service.slug}`}
                       className="btn-primary w-full relative overflow-hidden group/btn"
                     >
                       <motion.span className="relative z-10 flex items-center justify-center gap-2">
                         <Target className="w-4 h-4" />
-                        Discuter de ce service
+                        Voir le détail
                         <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                       </motion.span>
                       {/* Scanning line effect */}
@@ -292,7 +292,7 @@ export default function ServicesPage() {
             >
               <motion.span className="relative z-10 flex items-center gap-2">
                 <ExternalLink className="w-4 h-4" />
-                Besoin d'un service personnalisé ? Contactez-moi
+                Besoin d’un service personnalisé ? Contactez-moi
               </motion.span>
               {/* Matrix rain effect on hover */}
               <motion.div

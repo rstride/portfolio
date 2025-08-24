@@ -19,62 +19,42 @@ import {
 const achievements = [
   {
     id: 1,
-    title: "CVEs Published",
-    value: 12,
+    title: "Bug bounty (YesWeHack)",
+    value: 1,
     suffix: "+",
     icon: Bug,
-    description: "Critical vulnerabilities disclosed",
-    color: "from-red-500 to-orange-500",
-    highlight: true
-  },
-  {
-    id: 2,
-    title: "Bug Bounty Rewards",
-    value: 80,
-    suffix: "+",
-    icon: Trophy,
-    description: "Critical findings validated",
+    description: "Participation sur temps libre",
     color: "from-yellow-500 to-orange-500",
     highlight: true
   },
   {
-    id: 3,
-    title: "Hall of Fame",
-    value: 10,
+    id: 2,
+    title: "CTF organisés/participés",
+    value: 1,
     suffix: "+",
-    icon: Star,
-    description: "Major platforms recognition",
+    icon: Trophy,
+    description: "Lost in the Shell & events",
     color: "from-blue-500 to-purple-500",
     highlight: false
   },
   {
-    id: 4,
-    title: "Years Experience",
-    value: 8,
-    suffix: "",
-    icon: Calendar,
-    description: "Professional cybersecurity",
-    color: "from-green-500 to-teal-500",
-    highlight: false
-  },
-  {
-    id: 5,
-    title: "Pentest Projects",
-    value: 50,
-    suffix: "+",
-    icon: Target,
-    description: "Successful engagements",
-    color: "from-purple-500 to-pink-500",
-    highlight: false
-  },
-  {
-    id: 6,
-    title: "Security Tools",
-    value: 15,
+    id: 3,
+    title: "Outils open-source",
+    value: 1,
     suffix: "+",
     icon: Shield,
-    description: "Open-source contributions",
+    description: "Offensive tooling (éthique)",
     color: "from-cyan-500 to-blue-500",
+    highlight: false
+  },
+  {
+    id: 4,
+    title: "Parcours 42",
+    value: 1,
+    suffix: "",
+    icon: Calendar,
+    description: "Alumni — focus cybersécurité",
+    color: "from-green-500 to-teal-500",
     highlight: false
   }
 ];

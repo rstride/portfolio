@@ -191,7 +191,7 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              Romain Stride
+              {site.name}
               {/* Glitch overlay effect */}
               <motion.span
                 className="absolute inset-0 bg-clip-text text-transparent bg-gradient-to-r from-red-400 via-yellow-400 to-green-400"
@@ -206,7 +206,7 @@ export function Hero() {
                   ease: "easeInOut"
                 }}
               >
-                Romain Stride
+                {site.name}
               </motion.span>
             </motion.span>
           </motion.h1>
@@ -217,7 +217,7 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            Je suis un consultant indépendant issu de l'école 42 et fondateur de PrismaSec.
+            Consultant indépendant, alumni 42 et fondateur de PrismaSec.
           </motion.p>
 
           <motion.p 
@@ -375,7 +375,7 @@ export function Hero() {
             <div className="w-full h-full rounded-3xl overflow-hidden border border-green-500/20 bg-card shadow-2xl relative">
               <Image 
                 src="/romain.png" 
-                alt="Portrait de Romain Stride" 
+                alt={`Portrait de ${site.name}`} 
                 fill 
                 className="object-cover" 
                 priority 
@@ -425,4 +425,3 @@ export function Hero() {
     </section>
   );
 }
-

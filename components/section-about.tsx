@@ -28,7 +28,7 @@ export function AboutSection() {
           À propos
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Parcours, expertise et engagement dans la communauté cybersécurité
+          Parcours, expertise (pentest, bug bounty, recherche offensive) et engagement communauté
         </p>
       </motion.div>
       
@@ -190,4 +190,3 @@ export function AboutSection() {
     </section>
   );
 }
-

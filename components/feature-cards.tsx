@@ -4,8 +4,8 @@ import { TiltCard } from "./tilt-card";
 
 export function FeatureCards() {
   const items = [
-    { icon: Shield, title: "Pentests réalistes", text: "Tests d’intrusion axés impact avec preuves exploitables." },
-    { icon: Bug, title: "Bug bounty", text: "Recherche proactive de failles et divulgation responsable." },
+    { icon: Shield, title: "Pentests", text: "Tests d’intrusion axés impact avec preuves d’impact et priorisation." },
+    { icon: Bug, title: "Bug bounty", text: "Recherche de failles sur programmes autorisés et divulgation responsable." },
     { icon: Cpu, title: "Automations", text: "Outils internes pour accélérer tests et analyses." },
   ];
   return (
@@ -28,4 +28,3 @@ export function FeatureCards() {
     </section>
   );
 }
-
