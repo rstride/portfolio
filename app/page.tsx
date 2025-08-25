@@ -29,7 +29,7 @@ export default function Home() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 2 }}
       >
-        {['hero', 'projects', 'services', 'about', 'contact'].map((section, index) => (
+        {['hero', 'projects', 'services', 'about', 'contact'].map((section) => (
           <motion.button
             key={section}
             className="w-3 h-3 rounded-full bg-muted-foreground/30 hover:bg-green-400 transition-colors border-2 border-transparent hover:border-green-400/50"
@@ -139,4 +139,3 @@ export default function Home() {
     </div>
   );
 }
-

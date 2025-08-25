@@ -3,13 +3,10 @@ import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
 import { useRef, useEffect } from "react";
 import { 
   Trophy, 
-  Target, 
   Shield, 
   Award, 
   TrendingUp, 
-  Users, 
   Calendar,
-  Star,
   Zap,
   Bug,
   Lock,

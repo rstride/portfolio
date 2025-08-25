@@ -11,7 +11,11 @@ export default function ServiceDetail({ params }: Props) {
   const contentSlug = slug === "securite" ? "audit-securite" : slug;
 
   const service = site.services.find((s) => s.slug === contentSlug);
-  type Detail = { intro: string; audience: string[]; process: string[] };
+  type Detail = {
+    intro: string;
+    audience: ReadonlyArray<string>;
+    process: ReadonlyArray<string>;
+  };
   const details = (site.servicePages as Record<string, Detail>)[contentSlug];
 
   if (!service) {

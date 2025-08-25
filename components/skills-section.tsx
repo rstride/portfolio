@@ -6,12 +6,7 @@ import {
   Terminal, 
   Globe, 
   Bug, 
-  Lock, 
-  Search, 
-  Code, 
   Network,
-  Eye,
-  Zap,
   AlertTriangle,
   CheckCircle
 } from "lucide-react";

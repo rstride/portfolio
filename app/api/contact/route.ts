@@ -8,8 +8,8 @@ export async function POST(req: Request) {
     });
     console.log("Contact submission", data);
     return NextResponse.json({ ok: true });
-  } catch (e) {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json({ ok: false }, { status: 400 });
   }
 }
-
