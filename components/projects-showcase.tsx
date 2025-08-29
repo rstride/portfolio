@@ -1,5 +1,5 @@
 "use client";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 import {
   ExternalLink,
@@ -10,6 +10,10 @@ import {
   Code,
   Target
 } from "lucide-react";
+import { useLazyAnimation } from "@/hooks/useLazyAnimation";
+import { useAnimationConfig } from "@/lib/animation-config";
+import { BackgroundEffects } from "@/components/background-effects";
+import { usePerformanceMode } from "@/hooks/usePerformanceMode";
 
 const projects = [
   {
@@ -114,8 +118,9 @@ const projects = [
 ];
 
 export function ProjectsShowcase() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.1 });
+  const { ref, isInView } = useLazyAnimation(0.1);
+  const performanceMode = usePerformanceMode();
+  const animationConfig = useAnimationConfig(performanceMode);
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
 
   const getImpactColor = (impact: string) => {
@@ -140,55 +145,48 @@ export function ProjectsShowcase() {
   };
 
   return (
-    <section ref={ref} className="py-24 relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0">
-        <motion.div
-          className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.02)_2px,transparent_2px),linear-gradient(90deg,rgba(34,197,94,0.02)_2px,transparent_2px)] bg-[size:60px_60px]"
-          animate={{ 
-            backgroundPosition: ["0px 0px", "60px 60px"],
-            opacity: [0.5, 1, 0.5]
-          }}
-          transition={{ 
-            duration: 15, 
-            repeat: Infinity, 
-            ease: "linear",
-            staggerChildren: 0.1
-          }}
-        />
-      </div>
+    <div ref={ref} className="relative overflow-hidden">
+      {/* Harmonious Background Effects */}
+      <BackgroundEffects
+        variant="section"
+        intensity={performanceMode === 'low' ? 'low' : performanceMode === 'high' ? 'high' : 'medium'}
+      />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          initial={{ opacity: 1, y: 0 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
             animate={isInView ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -180 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 mb-6"
+            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 mb-8"
           >
-            <Target className="w-8 h-8 text-purple-400" />
+            <Target className="w-10 h-10 text-purple-400" />
           </motion.div>
-          <h2 className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-4">
-            Projets & Parcours en Sécurité
+          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-6 leading-tight">
+            Projets & Parcours
+            <br />
+            <span className="text-3xl sm:text-4xl lg:text-5xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-400">
+              en Sécurité
+            </span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Présentation de recherches en vulnérabilités, missions de tests d’intrusion et développement d’outils de sécurité avec impact concret.
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+            Présentation de recherches en vulnérabilités, missions de tests d'intrusion et développement d'outils de sécurité avec impact concret.
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-10 lg:gap-12">
           {projects.map((project, index) => {
             const IconComponent = project.icon;
             return (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.9 }}
+                initial={{ opacity: 1, y: 0, scale: 1 }}
+                animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
                 onHoverStart={() => setHoveredProject(project.id)}
                 onHoverEnd={() => setHoveredProject(null)}
@@ -343,6 +341,6 @@ export function ProjectsShowcase() {
         </div>
 
       </div>
-    </section>
+    </div>
   );
 }

@@ -57,8 +57,6 @@ export const site = {
   socials: [
     { label: "GitHub", href: "https://github.com/rstride" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/romainstride" },
-    { label: "X", href: "https://x.com/romainstride" },
-    { label: "YesWeHack", href: "https://www.yeswehack.com/" },
     { label: "PrismaSec", href: "https://prismasec.fr" },
   ] as SocialLink[],
   kpis: [

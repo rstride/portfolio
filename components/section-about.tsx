@@ -3,13 +3,24 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { site } from "@/content/site";
 import { GraduationCap, Briefcase, Users, Code, Terminal } from "lucide-react";
+import { useAnimationConfig } from "@/lib/animation-config";
+import { BackgroundEffects } from "@/components/background-effects";
+import { usePerformanceMode } from "@/hooks/usePerformanceMode";
 
 export function AboutSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const performanceMode = usePerformanceMode();
+  const animationConfig = useAnimationConfig(performanceMode);
 
   return (
-    <section ref={ref} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
+    <div className="relative overflow-hidden">
+      {/* Harmonious Background Effects */}
+      <BackgroundEffects
+        variant="section"
+        intensity={performanceMode === 'low' ? 'low' : performanceMode === 'high' ? 'high' : 'medium'}
+      />
+      <section ref={ref} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 relative z-10">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
@@ -187,6 +198,7 @@ export function AboutSection() {
           </div>
         </motion.div>
       </div>
-    </section>
+      </section>
+    </div>
   );
 }

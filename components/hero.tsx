@@ -5,13 +5,22 @@ import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { site } from "@/content/site";
 import { TrustBar } from "@/components/trust-bar";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { usePerformanceMode } from "@/hooks/usePerformanceMode";
+import { useAnimationConfig } from "@/lib/animation-config";
+import { BackgroundEffects } from "@/components/background-effects";
 import { useEffect, useState, useRef } from "react";
 import { Shield, Lock, Zap, Terminal, Code, Bug, Target, AlertCircle } from "lucide-react";
 
 export function Hero() {
   const { queue, track } = useAnalytics();
+  const prefersReducedMotion = useReducedMotion();
+  const performanceMode = usePerformanceMode();
+  const animationConfig = useAnimationConfig(performanceMode);
   const [mounted, setMounted] = useState(false);
   const ref = useRef(null);
+
+  // Always call hooks in the same order - never conditionally
   const isInView = useInView(ref, { once: true });
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
@@ -20,28 +29,51 @@ export function Hero() {
     setMounted(true);
   }, []);
 
-  const floatingIcons = [Shield, Lock, Zap, Terminal, Code, Bug, Target, AlertCircle];
+  // Show loading state during SSR to prevent hydration mismatches
+  if (!mounted) {
+    return (
+      <section className="relative min-h-screen overflow-hidden flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-green-500 to-blue-500 animate-pulse mx-auto mb-8" />
+          <div className="space-y-4">
+            <div className="h-8 bg-muted rounded w-64 mx-auto animate-pulse" />
+            <div className="h-4 bg-muted rounded w-48 mx-auto animate-pulse" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Reduce floating icons on lower performance devices
+  const floatingIcons = performanceMode === 'low'
+    ? [Shield, Lock, Terminal, Code]
+    : performanceMode === 'medium'
+    ? [Shield, Lock, Zap, Terminal, Code, Bug]
+    : [Shield, Lock, Zap, Terminal, Code, Bug, Target, AlertCircle];
 
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 1 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        duration: 0.6,
-        ease: "easeOut"
+        staggerChildren: prefersReducedMotion ? 0 : performanceMode === 'low' ? 0.05 : 0.1,
+        duration: animationConfig.duration.medium,
+        ease: animationConfig.easing.smooth,
       }
     }
   };
 
   const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
+    hidden: {
+      y: prefersReducedMotion ? 0 : performanceMode === 'low' ? 15 : 30,
+      opacity: 1
+    },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.8,
-        ease: "easeOut"
+        duration: animationConfig.duration.slow,
+        ease: animationConfig.easing.smooth
       }
     }
   };
@@ -50,127 +82,12 @@ export function Hero() {
   if (!mounted) return null;
 
   return (
-    <section ref={ref} className="relative min-h-screen overflow-hidden flex items-center">
-      {/* Enhanced Cybersecurity Background */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        {/* Matrix-style background grid */}
-        <motion.div
-          className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"
-          animate={{ 
-            backgroundPosition: ["0px 0px", "50px 50px", "0px 0px"],
-            opacity: [0.5, 0.8, 0.5]
-          }}
-          transition={{ 
-            duration: 20, 
-            repeat: Infinity, 
-            ease: "linear" 
-          }}
-        />
-
-        {/* Animated gradient orbs with cyber theme */}
-        <motion.div 
-          className="absolute -top-40 -left-40 h-80 w-80 rounded-full blur-3xl opacity-20 bg-gradient-to-r from-green-500 via-blue-500 to-purple-600"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360]
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div 
-          className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full blur-3xl opacity-15 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600"
-          animate={{
-            x: [0, -30, 0],
-            y: [0, -40, 0],
-            scale: [1, 1.1, 1],
-            rotate: [360, 180, 0]
-          }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-        />
-
-        {/* Floating security icons */}
-        {floatingIcons.map((Icon, index) => (
-          <motion.div
-            key={index}
-            className="absolute"
-            style={{
-              left: `${10 + (index * 12)}%`,
-              top: `${15 + (index % 3) * 25}%`
-            }}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={isInView ? {
-              opacity: [0.1, 0.3, 0.1],
-              scale: [0.8, 1.2, 0.8],
-              y: [0, -30, 0],
-              x: [0, 20, 0],
-              rotate: [0, 360, 720]
-            } : { opacity: 0 }}
-            transition={{
-              duration: 8 + (index * 1.5),
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: index * 0.8
-            }}
-          >
-            <Icon className="w-5 h-5 text-green-400/20" />
-          </motion.div>
-        ))}
-
-        {/* Scanning lines effect */}
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            background: "repeating-linear-gradient(90deg, transparent, transparent 98px, rgba(34, 197, 94, 0.1) 100px)",
-          }}
-          animate={{
-            backgroundPosition: ["0px 0px", "100px 0px"],
-            opacity: [0.3, 0.6, 0.3]
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-
-        {/* Data stream effect */}
-        <motion.div
-          className="absolute right-10 top-20 w-1 h-32 bg-gradient-to-b from-transparent via-green-400/50 to-transparent"
-          animate={{
-            y: [0, 300, 600],
-            opacity: [0, 1, 0]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
-          }}
-        />
-        <motion.div
-          className="absolute left-20 bottom-32 w-1 h-24 bg-gradient-to-b from-transparent via-blue-400/50 to-transparent"
-          animate={{
-            y: [0, -200, -400],
-            opacity: [0, 1, 0]
-          }}
-          transition={{
-            duration: 3.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-        />
-      </div>
+    <section ref={ref} className="relative min-h-screen overflow-hidden flex items-center justify-center">
+      {/* Harmonious Background Effects */}
+      <BackgroundEffects
+        variant="hero"
+        intensity={performanceMode === 'low' ? 'low' : performanceMode === 'high' ? 'high' : 'medium'}
+      />
 
       <motion.div 
         className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 md:py-16 grid gap-16 lg:grid-cols-2 items-center relative z-10"
@@ -185,26 +102,19 @@ export function Hero() {
             className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-tight relative"
             variants={itemVariants}
           >
-            <motion.span 
-              className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 relative"
+            <motion.span
+              className="inline-block text-blue-600 dark:text-blue-400 relative"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
               {site.name}
-              {/* Glitch overlay effect */}
+              {/* Subtle shadow effect */}
               <motion.span
-                className="absolute inset-0 bg-clip-text text-transparent bg-gradient-to-r from-red-400 via-yellow-400 to-green-400"
-                animate={{
-                  x: [0, 2, -2, 0],
-                  opacity: [0, 0.3, 0]
-                }}
-                transition={{
-                  duration: 0.2,
-                  repeat: Infinity,
-                  repeatDelay: 3,
-                  ease: "easeInOut"
-                }}
+                className="absolute inset-0 text-blue-900/20 dark:text-blue-300/20 -translate-x-0.5 translate-y-0.5"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.3 }}
+                transition={{ duration: 1, delay: 0.5 }}
               >
                 {site.name}
               </motion.span>
@@ -229,8 +139,8 @@ export function Hero() {
             {site.hero.subtext}
           </motion.p>
 
-          <motion.div 
-            className="mt-10 flex flex-wrap items-center gap-6"
+          <motion.div
+            className="mt-10 flex flex-col sm:flex-row items-center gap-4 sm:gap-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
@@ -242,7 +152,7 @@ export function Hero() {
             >
               <Link 
                 href={site.hero.ctaPrimary.href} 
-                className="btn-primary relative overflow-hidden group"
+                className="relative overflow-hidden group inline-flex items-center justify-center rounded-full text-sm font-medium px-5 py-3 bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-sm"
                 onClick={() => (queue ? queue("cta_primary_click", { location: "hero", href: site.hero.ctaPrimary.href }) : track("cta_primary_click", { location: "hero", href: site.hero.ctaPrimary.href }))}
               >
                 <motion.span className="relative z-10 flex items-center gap-2">
@@ -270,9 +180,9 @@ export function Hero() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Link 
-                href={site.hero.ctaSecondary.href} 
-                className="btn-outline relative overflow-hidden group border-green-500/30 hover:border-green-400 transition-colors"
+              <Link
+                href={site.hero.ctaSecondary.href}
+                className="btn-outline relative overflow-hidden group border-blue-500/30 hover:border-blue-400 transition-colors"
                 onClick={() => (queue ? queue("cta_secondary_click", { location: "hero", href: site.hero.ctaSecondary.href }) : track("cta_secondary_click", { location: "hero", href: site.hero.ctaSecondary.href }))}
               >
                 <motion.span className="relative z-10 flex items-center gap-2">
@@ -288,7 +198,7 @@ export function Hero() {
                   {[...Array(8)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="absolute w-0.5 h-4 bg-green-400/30"
+                      className="absolute w-0.5 h-4 bg-blue-400/30"
                       style={{ left: `${i * 12.5}%`, top: "-16px" }}
                       animate={{
                         y: [0, 80],
@@ -305,6 +215,8 @@ export function Hero() {
                 </motion.div>
               </Link>
             </motion.div>
+
+
           </motion.div>
 
           <motion.div 
@@ -328,22 +240,24 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             {/* Scanning lines overlay */}
-            <motion.div
-              className="absolute inset-0 z-20 pointer-events-none"
-              animate={{ opacity: [0, 0.3, 0] }}
-              transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-400/20 to-transparent" 
-                   style={{ 
-                     background: "repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(34, 197, 94, 0.1) 9px, rgba(34, 197, 94, 0.1) 10px)" 
-                   }} 
-              />
-            </motion.div>
+            {!prefersReducedMotion && (
+              <motion.div
+                className="absolute inset-0 z-20 pointer-events-none"
+                animate={{ opacity: [0, 0.3, 0] }}
+                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-400/20 to-transparent"
+                     style={{
+                       background: "repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(34, 197, 94, 0.1) 9px, rgba(34, 197, 94, 0.1) 10px)"
+                     }}
+                />
+              </motion.div>
+            )}
 
             {/* Holographic border effect */}
             <motion.div
               className="absolute inset-0 rounded-3xl border-2 border-green-400/30 z-10"
-              animate={{
+              animate={prefersReducedMotion ? {} : {
                 borderColor: ["rgba(34, 197, 94, 0.3)", "rgba(59, 130, 246, 0.5)", "rgba(147, 51, 234, 0.4)", "rgba(34, 197, 94, 0.3)"],
                 boxShadow: [
                   "0 0 20px rgba(34, 197, 94, 0.2)",
@@ -398,7 +312,7 @@ export function Hero() {
             </div>
 
             {/* Data visualization circles */}
-            {[...Array(3)].map((_, i) => (
+            {!prefersReducedMotion && [...Array(3)].map((_, i) => (
               <motion.div
                 key={i}
                 className={`absolute border border-green-400/30 rounded-full pointer-events-none`}

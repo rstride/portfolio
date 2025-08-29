@@ -132,49 +132,87 @@
 }
 
 @layer utilities {
-  .glass { 
+  .glass {
     @apply bg-background/50 backdrop-blur-md border border-border/60 shadow-[0_0_60px_-25px_var(--ring)];
-    box-shadow: 
+    box-shadow:
       0 0 60px -25px var(--ring),
       inset 0 1px 0 rgba(255, 255, 255, 0.1),
       0 0 0 1px rgba(255, 255, 255, 0.05);
+    /* Performance optimizations */
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
   
   .chip {
     @apply inline-flex items-center rounded-sm border px-2 py-0.5 text-xs text-foreground/80 border-border bg-transparent;
   }
   
-  .btn-primary { 
+  .btn-primary {
     @apply inline-flex items-center justify-center rounded-full text-sm font-medium transition bg-primary text-primary-foreground px-5 py-3 hover:opacity-90 shadow-sm;
-    box-shadow: 
+    box-shadow:
       0 0 20px rgba(34, 197, 94, 0.3),
       0 0 40px rgba(34, 197, 94, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Performance optimizations */
+    will-change: transform, box-shadow;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
-  
+
   .btn-primary:hover {
-    box-shadow: 
+    box-shadow:
       0 0 25px rgba(34, 197, 94, 0.4),
       0 0 50px rgba(34, 197, 94, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
+    transform: translateY(-2px) translateZ(0);
   }
-  
-  .btn-outline { 
+
+  .btn-outline {
     @apply inline-flex items-center justify-center rounded-full text-sm font-medium transition border border-border/60 px-5 py-3 hover:bg-muted/50;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Performance optimizations */
+    will-change: transform, box-shadow, border-color;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
-  
+
   .btn-outline:hover {
     border-color: rgba(34, 197, 94, 0.5);
-    box-shadow: 
+    box-shadow:
       0 0 20px rgba(34, 197, 94, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
+    transform: translateY(-1px) translateZ(0);
   }
   
-  .card { @apply rounded-lg border border-border bg-background; }
+  .card {
+    @apply rounded-lg border border-border bg-background;
+    /* Performance optimizations */
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+
+  /* Performance utility for animated elements */
+  .animate-optimized {
+    will-change: transform, opacity, scale;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    /* Enable hardware acceleration */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
   
   .shine { 
     background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.18) 12%, transparent 22%), var(--bg, transparent); 
