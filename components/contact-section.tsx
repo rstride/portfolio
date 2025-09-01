@@ -428,7 +428,7 @@ export function ContactSection() {
             initial={{ opacity: 1, x: 0 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="space-y-8 lg:self-center"
+            className="space-y-8 lg:self-center" 
           >
 
             {/* Social links */}
