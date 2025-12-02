@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   ExternalLink,
   Shield,
@@ -11,7 +11,7 @@ import {
   Target
 } from "lucide-react";
 import { useLazyAnimation } from "@/hooks/useLazyAnimation";
-import { useAnimationConfig } from "@/lib/animation-config";
+
 import { BackgroundEffects } from "@/components/background-effects";
 import { usePerformanceMode } from "@/hooks/usePerformanceMode";
 
@@ -120,7 +120,7 @@ const projects = [
 export function ProjectsShowcase() {
   const { ref, isInView } = useLazyAnimation(0.1);
   const performanceMode = usePerformanceMode();
-  const animationConfig = useAnimationConfig(performanceMode);
+
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
 
   const getImpactColor = (impact: string) => {
@@ -175,7 +175,7 @@ export function ProjectsShowcase() {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Présentation de recherches en vulnérabilités, missions de tests d'intrusion et développement d'outils de sécurité avec impact concret.
+            Présentation de recherches en vulnérabilités, missions de tests d&apos;intrusion et développement d&apos;outils de sécurité avec impact concret.
           </p>
         </motion.div>
 
@@ -195,8 +195,8 @@ export function ProjectsShowcase() {
                 {/* Project card */}
                 <motion.div
                   className={`relative glass rounded-2xl p-6 h-full cursor-pointer overflow-hidden ${project.bgPattern}`}
-                  whileHover={{ 
-                    scale: 1.02, 
+                  whileHover={{
+                    scale: 1.02,
                     y: -5,
                     boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4)"
                   }}
@@ -245,7 +245,7 @@ export function ProjectsShowcase() {
 
                   {/* Content */}
                   <div className="mb-6">
-                    <motion.h3 
+                    <motion.h3
                       className="text-xl font-semibold text-foreground mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-green-400 group-hover:to-blue-500 transition-all duration-300"
                       whileHover={{ x: 2 }}
                     >
@@ -254,7 +254,7 @@ export function ProjectsShowcase() {
                     <p className="text-sm text-muted-foreground mb-3">
                       {project.category}
                     </p>
-                    <motion.p 
+                    <motion.p
                       className="text-sm text-muted-foreground leading-relaxed"
                       initial={{ opacity: 0.8 }}
                       whileHover={{ opacity: 1 }}
@@ -292,8 +292,8 @@ export function ProjectsShowcase() {
                           animate={hoveredProject === project.id ? {
                             scale: [1, 1.1, 1]
                           } : { scale: 1 }}
-                          transition={{ 
-                            duration: 1, 
+                          transition={{
+                            duration: 1,
                             repeat: hoveredProject === project.id ? Infinity : 0,
                             delay: metricIndex * 0.2
                           }}

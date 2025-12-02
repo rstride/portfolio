@@ -28,8 +28,8 @@ export const site = {
   nav: [
     { href: "/", label: "Accueil" },
     { href: "/services", label: "Services" },
+    { href: "/blog", label: "Blog" },
     { href: "/contact", label: "Contact" },
-    { href: "/legal/disclosure", label: "Divulgation" },
   ],
   hero: {
     headlineA: "Je hacke pour mieux protéger.",

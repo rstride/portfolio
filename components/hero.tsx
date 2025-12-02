@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { site } from "@/content/site";
 import { TrustBar } from "@/components/trust-bar";
 import { useAnalytics } from "@/hooks/useAnalytics";
@@ -10,7 +10,7 @@ import { usePerformanceMode } from "@/hooks/usePerformanceMode";
 import { useAnimationConfig } from "@/lib/animation-config";
 import { BackgroundEffects } from "@/components/background-effects";
 import { useEffect, useState, useRef } from "react";
-import { Shield, Lock, Zap, Terminal, Code, Bug, Target, AlertCircle } from "lucide-react";
+import { Shield, Terminal } from "lucide-react";
 
 export function Hero() {
   const { queue, track } = useAnalytics();
@@ -21,10 +21,10 @@ export function Hero() {
   const ref = useRef(null);
 
   // Always call hooks in the same order - never conditionally
-  const isInView = useInView(ref, { once: true });
+
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -44,12 +44,7 @@ export function Hero() {
     );
   }
 
-  // Reduce floating icons on lower performance devices
-  const floatingIcons = performanceMode === 'low'
-    ? [Shield, Lock, Terminal, Code]
-    : performanceMode === 'medium'
-    ? [Shield, Lock, Zap, Terminal, Code, Bug]
-    : [Shield, Lock, Zap, Terminal, Code, Bug, Target, AlertCircle];
+
 
   const containerVariants = {
     hidden: { opacity: 1 },
@@ -89,7 +84,7 @@ export function Hero() {
         intensity={performanceMode === 'low' ? 'low' : performanceMode === 'high' ? 'high' : 'medium'}
       />
 
-      <motion.div 
+      <motion.div
         className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 md:py-16 grid gap-16 lg:grid-cols-2 items-center relative z-10"
         style={{ y }}
         variants={containerVariants}
@@ -98,7 +93,7 @@ export function Hero() {
       >
         <motion.div variants={itemVariants}>
           {/* Glitch effect for the name */}
-          <motion.h1 
+          <motion.h1
             className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-tight relative"
             variants={itemVariants}
           >
@@ -121,7 +116,7 @@ export function Hero() {
             </motion.span>
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             className="mt-6 text-xl sm:text-2xl text-muted-foreground leading-relaxed max-w-2xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -130,7 +125,7 @@ export function Hero() {
             Consultant indépendant, alumni 42 et fondateur de PrismaSec.
           </motion.p>
 
-          <motion.p 
+          <motion.p
             className="mt-4 text-lg text-muted-foreground leading-relaxed max-w-2xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -150,8 +145,8 @@ export function Hero() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Link 
-                href={site.hero.ctaPrimary.href} 
+              <Link
+                href={site.hero.ctaPrimary.href}
                 className="relative overflow-hidden group inline-flex items-center justify-center rounded-full text-sm font-medium px-5 py-3 bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-sm"
                 onClick={() => (queue ? queue("cta_primary_click", { location: "hero", href: site.hero.ctaPrimary.href }) : track("cta_primary_click", { location: "hero", href: site.hero.ctaPrimary.href }))}
               >
@@ -219,7 +214,7 @@ export function Hero() {
 
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="mt-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -229,7 +224,7 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="relative mx-auto"
           variants={itemVariants}
         >
@@ -247,9 +242,9 @@ export function Hero() {
                 transition={{ duration: 3, repeat: Infinity, delay: 1 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-400/20 to-transparent"
-                     style={{
-                       background: "repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(34, 197, 94, 0.1) 9px, rgba(34, 197, 94, 0.1) 10px)"
-                     }}
+                  style={{
+                    background: "repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(34, 197, 94, 0.1) 9px, rgba(34, 197, 94, 0.1) 10px)"
+                  }}
                 />
               </motion.div>
             )}
@@ -287,14 +282,14 @@ export function Hero() {
             ))}
 
             <div className="w-full h-full rounded-3xl overflow-hidden border border-green-500/20 bg-card shadow-2xl relative">
-              <Image 
-                src="/romain.png" 
-                alt={`Portrait de ${site.name}`} 
-                fill 
-                className="object-cover" 
-                priority 
+              <Image
+                src="/romain.png"
+                alt={`Portrait de ${site.name}`}
+                fill
+                className="object-cover"
+                priority
               />
-              
+
               {/* Digital noise overlay */}
               <motion.div
                 className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none"

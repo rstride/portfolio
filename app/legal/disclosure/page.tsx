@@ -65,7 +65,7 @@ export default function DisclosurePage() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Autorisation explicite et respect des conditions d'utilisation des programmes</span>
+                <span className="text-sm text-muted-foreground">Autorisation explicite et respect des conditions d&apos;utilisation des programmes</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0" />
@@ -77,7 +77,7 @@ export default function DisclosurePage() {
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Pas de publication d'exploits avant correction et accord des parties</span>
+                <span className="text-sm text-muted-foreground">Pas de publication d&apos;exploits avant correction et accord des parties</span>
               </li>
             </ul>
           </div>
@@ -85,8 +85,8 @@ export default function DisclosurePage() {
           <div className="glass rounded-2xl p-6">
             <h2 className="text-xl font-semibold mb-4 text-foreground">Recherche offensive & pédagogie</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Les travaux relatifs aux outils offensifs et à l'analyse de sécurité sont strictement orientés pédagogie,
-              détection et amélioration des défenses. Aucune assistance opérationnelle à un usage malveillant n'est fournie.
+              Les travaux relatifs aux outils offensifs et à l&apos;analyse de sécurité sont strictement orientés pédagogie,
+              détection et amélioration des défenses. Aucune assistance opérationnelle à un usage malveillant n&apos;est fournie.
               Mon objectif est de contribuer à renforcer la sécurité globale en partageant connaissances et méthodologies
               de manière responsable et constructive.
             </p>
@@ -99,7 +99,7 @@ export default function DisclosurePage() {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="mt-10 flex flex-wrap items-center gap-4"
         >
-          <Link href="/contact" className="btn-primary">Discuter d'un projet</Link>
+          <Link href="/contact" className="btn-primary">Discuter d&apos;un projet</Link>
           <Link href="/services" className="btn-outline">Voir mes services</Link>
         </motion.div>
       </div>

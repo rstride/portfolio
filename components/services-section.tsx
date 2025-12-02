@@ -3,14 +3,14 @@ import { motion } from "framer-motion";
 import { ServiceCard } from "@/components/service-card";
 import { site } from "@/content/site";
 import { useLazyAnimation } from "@/hooks/useLazyAnimation";
-import { useAnimationConfig } from "@/lib/animation-config";
+
 import { BackgroundEffects } from "@/components/background-effects";
 import { usePerformanceMode } from "@/hooks/usePerformanceMode";
 
 export function ServicesSection() {
   const { ref, isInView } = useLazyAnimation(0.1);
   const performanceMode = usePerformanceMode();
-  const animationConfig = useAnimationConfig(performanceMode);
+
 
   return (
     <div className="relative overflow-hidden">

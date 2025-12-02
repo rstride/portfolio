@@ -9,7 +9,6 @@ import {
   CheckCircle,
   Github,
   Linkedin,
-  Twitter,
   Globe,
   AlertCircle
 } from "lucide-react";
@@ -30,7 +29,7 @@ export function ContactSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
   const performanceMode = usePerformanceMode();
-  const animationConfig = useAnimationConfig(performanceMode);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -223,11 +222,10 @@ export function ContactSection() {
                       value={formData.name}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
-                      className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 ${
-                        errors.name && touched.name
+                      className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 ${errors.name && touched.name
                           ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
                           : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
-                      }`}
+                        }`}
                       placeholder="Votre nom"
                       required
                     />
@@ -254,11 +252,10 @@ export function ContactSection() {
                       value={formData.email}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
-                      className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 ${
-                        errors.email && touched.email
+                      className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 ${errors.email && touched.email
                           ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
                           : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
-                      }`}
+                        }`}
                       placeholder="contact@entreprise.com"
                       required
                     />
@@ -322,11 +319,10 @@ export function ContactSection() {
                     onChange={handleInputChange}
                     onBlur={handleBlur}
                     rows={6}
-                    className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 resize-none ${
-                      errors.message && touched.message
+                    className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 resize-none ${errors.message && touched.message
                         ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
                         : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
-                    }`}
+                      }`}
                     placeholder="Décrivez votre projet, vos défis de sécurité ou la vulnérabilité que vous souhaitez signaler..."
                     required
                   />
@@ -355,7 +351,7 @@ export function ContactSection() {
                   >
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     <p className="text-sm">
-                      Une erreur technique s'est produite. Veuillez réessayer ou me contacter directement à contact@romainstride.com.
+                      Une erreur technique s&apos;est produite. Veuillez réessayer ou me contacter directement à contact@romainstride.com.
                     </p>
                   </motion.div>
                 )}
@@ -376,9 +372,8 @@ export function ContactSection() {
                 <motion.button
                   type="submit"
                   disabled={isSubmitting || submitStatus === "success" || Object.keys(errors).length > 0}
-                  className={`w-full btn-primary shine group relative overflow-hidden transition-all duration-300 ${
-                    Object.keys(errors).length > 0 ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
+                  className={`w-full btn-primary shine group relative overflow-hidden transition-all duration-300 ${Object.keys(errors).length > 0 ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   whileHover={Object.keys(errors).length === 0 ? { scale: 1.02 } : {}}
                   whileTap={Object.keys(errors).length === 0 ? { scale: 0.98 } : {}}
                 >
@@ -428,7 +423,7 @@ export function ContactSection() {
             initial={{ opacity: 1, x: 0 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="space-y-8 lg:self-center" 
+            className="space-y-8 lg:self-center"
           >
 
             {/* Social links */}
@@ -440,9 +435,9 @@ export function ContactSection() {
                   const IconComponent = iconMap[key] || Globe;
                   const color =
                     key === "github" ? "from-gray-600 to-gray-800" :
-                    key === "linkedin" ? "from-blue-600 to-blue-800" :
-                    key === "prismasec" ? "from-green-600 to-green-800" :
-                    "from-green-500 to-green-700";
+                      key === "linkedin" ? "from-blue-600 to-blue-800" :
+                        key === "prismasec" ? "from-green-600 to-green-800" :
+                          "from-green-500 to-green-700";
                   return (
                     <motion.a
                       key={link.label}
@@ -476,9 +471,9 @@ export function ContactSection() {
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {link.label === "GitHub" ? "Code source & outils de sécurité" :
-                           link.label === "LinkedIn" ? "Profil professionnel" :
-                           link.label === "PrismaSec" ? "Entreprise de cybersécurité" :
-                           link.label}
+                            link.label === "LinkedIn" ? "Profil professionnel" :
+                              link.label === "PrismaSec" ? "Entreprise de cybersécurité" :
+                                link.label}
                         </div>
                       </div>
                     </motion.a>

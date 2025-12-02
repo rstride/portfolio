@@ -4,7 +4,7 @@ import { ProjectsShowcase } from "@/components/projects-showcase";
 import { ContactSection } from "@/components/contact-section";
 import { ServicesSection } from "@/components/services-section";
 import { FloatingContact } from "@/components/floating-contact";
-import { site } from "@/content/site";
+
 import { AboutSection } from "@/components/section-about";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
@@ -60,10 +60,10 @@ export default function Home() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       >
-        <motion.svg 
-          className="w-6 h-6" 
-          fill="none" 
-          stroke="currentColor" 
+        <motion.svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
           viewBox="0 0 24 24"
           animate={{ y: [0, -3, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
