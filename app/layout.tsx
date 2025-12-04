@@ -5,6 +5,7 @@ import { site } from "@/content/site";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { AnalyticsProvider } from "@/hooks/useAnalytics";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -20,13 +21,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className="light" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
-        <AnalyticsProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </AnalyticsProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AnalyticsProvider>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </AnalyticsProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -31,11 +31,11 @@ export function AboutSection() {
             initial={{ scale: 0, rotate: -180 }}
             animate={isInView ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -180 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 mb-6"
+            className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-green-500/20 to-blue-500/20 border border-green-500/30 mb-6"
           >
-            <Terminal className="w-8 h-8 text-indigo-400" />
+            <Terminal className="w-8 h-8 text-green-400" />
           </motion.div>
-          <h2 className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 mb-4">
+          <h2 className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 mb-4">
             À propos
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

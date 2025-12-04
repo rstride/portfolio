@@ -180,7 +180,7 @@ export function ContactSection() {
           >
             <Mail className="w-10 h-10 text-green-400" />
           </motion.div>
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 mb-6 leading-tight">
+          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 mb-6 leading-tight">
             Échangeons
           </h2>
           <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
@@ -223,8 +223,8 @@ export function ContactSection() {
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 ${errors.name && touched.name
-                          ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
-                          : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
+                        ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
+                        : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
                         }`}
                       placeholder="Votre nom"
                       required
@@ -253,8 +253,8 @@ export function ContactSection() {
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 ${errors.email && touched.email
-                          ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
-                          : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
+                        ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
+                        : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
                         }`}
                       placeholder="contact@entreprise.com"
                       required
@@ -320,8 +320,8 @@ export function ContactSection() {
                     onBlur={handleBlur}
                     rows={6}
                     className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 resize-none ${errors.message && touched.message
-                        ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
-                        : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
+                      ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
+                      : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
                       }`}
                     placeholder="Décrivez votre projet, vos défis de sécurité ou la vulnérabilité que vous souhaitez signaler..."
                     required
