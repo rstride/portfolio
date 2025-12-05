@@ -3,9 +3,8 @@ import { Hero } from "@/components/hero";
 import { ProjectsShowcase } from "@/components/projects-showcase";
 import { ContactSection } from "@/components/contact-section";
 import { ServicesSection } from "@/components/services-section";
-import { FloatingContact } from "@/components/floating-contact";
 
-import { AboutSection } from "@/components/section-about";
+
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 
@@ -29,24 +28,20 @@ export default function Home() {
         <Hero />
       </section>
 
-      <section id="projects" className="py-32 lg:py-40">
+      <section id="projects" className="py-24 lg:py-32 bg-section-alt">
         <ProjectsShowcase />
       </section>
 
-      <section id="services" className="py-32 lg:py-40 bg-muted/20">
+      <section id="services" className="py-24 lg:py-32">
         <ServicesSection />
       </section>
 
-      <section id="about" className="py-32 lg:py-40">
-        <AboutSection />
-      </section>
-
-      <section id="contact" className="py-32 lg:py-40 bg-muted/10">
+      <section id="contact" className="py-24 lg:py-32 bg-section-alt">
         <ContactSection />
       </section>
 
-      {/* Floating contact CTA */}
-      <FloatingContact />
+
+      {/* Back to top button */}
 
       {/* Back to top button */}
       <motion.button

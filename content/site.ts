@@ -32,16 +32,16 @@ export const site = {
     { href: "/contact", label: "Contact" },
   ],
   hero: {
-    headlineA: "Je hacke pour mieux protéger.",
-    headlineB: "Tests d’intrusion et divulgation responsable.",
+    headlineA: "Hacker Éthique",
+    headlineB: "& Pentester",
     subtext:
-      "Freelance, je réalise des tests d’intrusion (web, API, infra), je démontre l’impact des failles et j’accompagne vos équipes avec des recommandations priorisées et des retests.",
+      "Je trouve les failles avant les attaquants. Tests d'intrusion, bug bounty et conseil en sécurité offensive pour les entreprises qui veulent vraiment se protéger.",
     ctaPrimary: {
-      label: "Contact",
+      label: "Discuter de votre projet",
       href: "/contact",
     },
     ctaSecondary: {
-      label: "Voir les services",
+      label: "Découvrir mes prestations",
       href: "/services",
     },
     specialties: [
@@ -157,20 +157,23 @@ export const site = {
     address: "Paris, France",
   },
   sections: {
-    featuredServicesLabel: "Services mis en avant",
+    featuredServicesLabel: "Prestations",
     servicesTitle: "Services",
     servicesIntro:
-      "J’interviens en tests d’intrusion, audits, CTEM et conseil bug bounty — livrables clairs, priorisés par le risque.",
+      "Des prestations de sécurité offensive adaptées à votre contexte, avec livrables actionnables et accompagnement à la remédiation.",
+    projectsTitle: "Expertise & Réalisations",
+    projectsIntro: "Retour d'expérience terrain, projets concrets et contributions à la communauté cybersécurité.",
     aboutTitle: "À propos",
-    contactTitle: "Contact",
+    contactTitle: "Parlons Sécurité",
+    contactIntro: "Projet de pentest, audit de sécurité ou question technique ? Je réponds sous 24h ouvrées.",
     contactLeadPrefix: "Vous préférez échanger ? Prenez rendez-vous sur",
     highlightsTitle: "Points forts",
     methodologiesTitle: "Méthodologies",
     pressTitle: "Presse",
-    educationTitle: "Formation",
-    experienceTitle: "Expérience & engagements",
+    educationTitle: "Parcours académique",
+    experienceTitle: "Expérience",
     entrepreneurshipTitle: "Entrepreneuriat",
-    communityTitle: "Communauté",
+    communityTitle: "Engagement communautaire",
   },
   strings: {
     footerPrivacyLabel: "Politique de confidentialité",

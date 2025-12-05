@@ -9,6 +9,8 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import { HeroBackground } from "@/components/hero-background";
 import { useEffect, useState, useRef } from "react";
 import { Shield, Terminal, ArrowRight, Lock } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 export function Hero() {
   const { queue, track } = useAnalytics();
@@ -45,30 +47,17 @@ export function Hero() {
       >
         {/* Text Content */}
         <div className="text-left space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-sm"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            <span className="text-xs font-medium text-primary tracking-wide uppercase">
-              Disponible pour missions
-            </span>
-          </motion.div>
+
 
           <div className="space-y-4">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-5xl sm:text-7xl font-bold tracking-tight leading-[1.1]"
+              className="text-5xl sm:text-7xl font-bold tracking-tight leading-[1.1] pb-2"
             >
-              <span className="block text-foreground">Sécuriser</span>
-              <span className="block text-gradient-primary">l&apos;Innovation</span>
+              <span className="block text-foreground">{site.hero.headlineA}</span>
+              <span className="block text-gradient-primary">{site.hero.headlineB}</span>
             </motion.h1>
 
             <motion.p
@@ -77,7 +66,7 @@ export function Hero() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-xl text-muted-foreground max-w-lg leading-relaxed"
             >
-              Consultant indépendant et fondateur de PrismaSec. J&apos;aide les entreprises à renforcer leur posture de sécurité offensive et défensive.
+              {site.hero.subtext}
             </motion.p>
           </div>
 
@@ -89,7 +78,7 @@ export function Hero() {
           >
             <Link
               href={site.hero.ctaPrimary.href}
-              className="btn-primary group"
+              className={cn(buttonVariants({ variant: "default", size: "lg" }), "group")}
               onClick={() => (queue ? queue("cta_primary_click", { location: "hero", href: site.hero.ctaPrimary.href }) : track("cta_primary_click", { location: "hero", href: site.hero.ctaPrimary.href }))}
             >
               <Terminal className="w-4 h-4 mr-2" />
@@ -99,7 +88,7 @@ export function Hero() {
 
             <Link
               href={site.hero.ctaSecondary.href}
-              className="btn-outline group"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "group")}
               onClick={() => (queue ? queue("cta_secondary_click", { location: "hero", href: site.hero.ctaSecondary.href }) : track("cta_secondary_click", { location: "hero", href: site.hero.ctaSecondary.href }))}
             >
               <Shield className="w-4 h-4 mr-2" />
@@ -128,7 +117,7 @@ export function Hero() {
             {/* Rotating Rings */}
             <div className="absolute inset-0 rounded-full border border-primary/20 animate-[spin_10s_linear_infinite]" />
             <div className="absolute inset-4 rounded-full border border-blue-500/20 animate-[spin_15s_linear_infinite_reverse]" />
-            <div className="absolute inset-8 rounded-full border border-purple-500/20 animate-[spin_20s_linear_infinite]" />
+            <div className="absolute inset-8 rounded-full border border-cyan-500/20 animate-[spin_20s_linear_infinite]" />
 
             {/* Central Image Container */}
             <div className="absolute inset-12 rounded-full overflow-hidden border-2 border-primary/30 shadow-[0_0_50px_rgba(34,197,94,0.2)] bg-background/50 backdrop-blur-sm z-10">
@@ -151,8 +140,8 @@ export function Hero() {
               className="absolute top-0 right-0 glass p-4 rounded-xl z-20"
             >
               <Lock className="w-6 h-6 text-primary mb-2" />
-              <div className="text-xs font-mono text-muted-foreground">Security Status</div>
-              <div className="text-sm font-bold text-primary">SECURED</div>
+              <div className="text-xs font-mono text-muted-foreground">Statut Sécurité</div>
+              <div className="text-sm font-bold text-primary">VÉRIFIÉ</div>
             </motion.div>
 
             <motion.div
@@ -161,8 +150,8 @@ export function Hero() {
               className="absolute bottom-10 left-0 glass p-4 rounded-xl z-20"
             >
               <Terminal className="w-6 h-6 text-blue-400 mb-2" />
-              <div className="text-xs font-mono text-muted-foreground">System Check</div>
-              <div className="text-sm font-bold text-blue-400">OPTIMIZED</div>
+              <div className="text-xs font-mono text-muted-foreground">Analyse</div>
+              <div className="text-sm font-bold text-blue-400">EN COURS</div>
             </motion.div>
           </div>
         </motion.div>

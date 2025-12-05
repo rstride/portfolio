@@ -25,7 +25,7 @@ export function FloatingContact() {
 
   return (
     <motion.div
-      className="fixed bottom-6 right-6 z-50"
+      className="fixed bottom-24 right-6 z-50"
       style={{ opacity, scale }}
       initial={{ y: 100 }}
       animate={{ y: 0 }}
@@ -60,7 +60,7 @@ export function FloatingContact() {
                 contactSection?.scrollIntoView({ behavior: 'smooth' });
                 setIsExpanded(false);
               }}
-              className="flex items-center gap-3 px-4 py-3 bg-purple-500/90 backdrop-blur-sm border border-purple-400/30 rounded-xl text-white shadow-lg hover:bg-purple-500 transition-colors"
+              className="flex items-center gap-3 px-4 py-3 bg-blue-500/90 backdrop-blur-sm border border-blue-400/30 rounded-xl text-white shadow-lg hover:bg-blue-500 transition-colors"
               whileHover={{ scale: 1.05, x: -5 }}
               whileTap={{ scale: 0.95 }}
             >

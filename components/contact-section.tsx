@@ -1,4 +1,5 @@
 "use client";
+// Force refresh
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import {
@@ -17,6 +18,10 @@ import { site } from "@/content/site";
 import { useAnimationConfig } from "@/lib/animation-config";
 import { BackgroundEffects } from "@/components/background-effects";
 import { usePerformanceMode } from "@/hooks/usePerformanceMode";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const iconMap: Record<string, LucideIcon> = {
   github: Github,
@@ -160,7 +165,7 @@ export function ContactSection() {
     <div ref={ref} className="relative overflow-hidden">
       {/* Harmonious Background Effects */}
       <BackgroundEffects
-        variant="contact"
+        variant="section"
         intensity={performanceMode === 'low' ? 'low' : performanceMode === 'high' ? 'high' : 'medium'}
       />
 
@@ -172,19 +177,11 @@ export function ContactSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-20"
         >
-          <motion.div
-            initial={{ scale: 1, rotate: 0 }}
-            animate={isInView ? { scale: 1, rotate: 0 } : { scale: 1, rotate: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-green-500/20 to-blue-500/20 border border-green-500/30 mb-8"
-          >
-            <Mail className="w-10 h-10 text-green-400" />
-          </motion.div>
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 mb-6 leading-tight">
-            Échangeons
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gradient-primary mb-6 leading-tight pb-2">
+            {site.sections.contactTitle}
           </h2>
           <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Vous avez un projet de sécurité, une vulnérabilité à signaler ou souhaitez discuter de vos défis techniques ? Je suis à votre écoute.
+            {site.sections.contactIntro}
           </p>
         </motion.div>
 
@@ -216,16 +213,16 @@ export function ContactSection() {
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Nom <span className="text-red-400">*</span>
                     </label>
-                    <input
+                    <Input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
-                      className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 ${errors.name && touched.name
-                        ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
-                        : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
-                        }`}
+                      className={cn(
+                        "bg-white/50 dark:bg-black/20 border-black/5 dark:border-white/10",
+                        errors.name && touched.name ? "border-red-500/50 focus-visible:ring-red-500/20" : "focus-visible:ring-green-500/20"
+                      )}
                       placeholder="Votre nom"
                       required
                     />
@@ -246,16 +243,16 @@ export function ContactSection() {
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Email <span className="text-red-400">*</span>
                     </label>
-                    <input
+                    <Input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
-                      className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 ${errors.email && touched.email
-                        ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
-                        : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
-                        }`}
+                      className={cn(
+                        "bg-white/50 dark:bg-black/20 border-black/5 dark:border-white/10",
+                        errors.email && touched.email ? "border-red-500/50 focus-visible:ring-red-500/20" : "focus-visible:ring-green-500/20"
+                      )}
                       placeholder="contact@entreprise.com"
                       required
                     />
@@ -279,12 +276,12 @@ export function ContactSection() {
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Entreprise
                     </label>
-                    <input
+                    <Input
                       type="text"
                       name="company"
                       value={formData.company}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-muted/50 border border-border/60 text-foreground placeholder-muted-foreground focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
+                      className="bg-white/50 dark:bg-black/20 border-black/5 dark:border-white/10 focus-visible:ring-green-500/20"
                       placeholder="Nom de votre entreprise"
                     />
                   </motion.div>
@@ -295,12 +292,12 @@ export function ContactSection() {
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Téléphone
                     </label>
-                    <input
+                    <Input
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-muted/50 border border-border/60 text-foreground placeholder-muted-foreground focus:border-green-500/50 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
+                      className="bg-white/50 dark:bg-black/20 border-black/5 dark:border-white/10 focus-visible:ring-green-500/20"
                       placeholder="06 XX XX XX XX"
                     />
                   </motion.div>
@@ -313,16 +310,16 @@ export function ContactSection() {
                   <label className="block text-sm font-medium text-foreground mb-2">
                     Message <span className="text-red-400">*</span>
                   </label>
-                  <textarea
+                  <Textarea
                     name="message"
                     value={formData.message}
                     onChange={handleInputChange}
                     onBlur={handleBlur}
                     rows={6}
-                    className={`w-full px-4 py-3 rounded-xl bg-muted/50 border text-foreground placeholder-muted-foreground focus:ring-2 transition-all duration-300 resize-none ${errors.message && touched.message
-                      ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
-                      : 'border-border/60 focus:border-green-500/50 focus:ring-green-500/20'
-                      }`}
+                    className={cn(
+                      "bg-white/50 dark:bg-black/20 border-black/5 dark:border-white/10 resize-none",
+                      errors.message && touched.message ? "border-red-500/50 focus-visible:ring-red-500/20" : "focus-visible:ring-green-500/20"
+                    )}
                     placeholder="Décrivez votre projet, vos défis de sécurité ou la vulnérabilité que vous souhaitez signaler..."
                     required
                   />
@@ -369,13 +366,14 @@ export function ContactSection() {
                   </motion.div>
                 )}
 
-                <motion.button
+                <Button
                   type="submit"
                   disabled={isSubmitting || submitStatus === "success" || Object.keys(errors).length > 0}
-                  className={`w-full btn-primary shine group relative overflow-hidden transition-all duration-300 ${Object.keys(errors).length > 0 ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  whileHover={Object.keys(errors).length === 0 ? { scale: 1.02 } : {}}
-                  whileTap={Object.keys(errors).length === 0 ? { scale: 0.98 } : {}}
+                  className={cn(
+                    "w-full relative overflow-hidden transition-all duration-300",
+                    Object.keys(errors).length > 0 ? "opacity-50 cursor-not-allowed" : ""
+                  )}
+                  size="lg"
                 >
                   <motion.span
                     className="relative z-10 flex items-center justify-center gap-2"
@@ -412,7 +410,7 @@ export function ContactSection() {
                       transition={{ duration: 0.3 }}
                     />
                   )}
-                </motion.button>
+                </Button>
               </form>
 
             </div>
@@ -449,7 +447,7 @@ export function ContactSection() {
                       transition={{ duration: 0.5, delay: 0.8 + (index * 0.1) }}
                       whileHover={{ scale: 1.02, x: 5 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/50 hover:border-green-500/50 transition-colors group"
+                      className="flex items-center gap-3 p-3 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/10 hover:border-green-500/50 transition-colors group"
                     >
                       <motion.div
                         className={`w-8 h-8 rounded-lg bg-gradient-to-r ${color} flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden`}

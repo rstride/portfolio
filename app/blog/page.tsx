@@ -1,6 +1,6 @@
 import { getSortedPostsData } from "@/lib/posts";
 import { Metadata } from "next";
-import { BlogShowcase } from "@/components/blog-showcase";
+import { BlogShowcase } from "@/components/blog/blog-showcase";
 
 export const metadata: Metadata = {
     title: "Blog | Romain Stride",

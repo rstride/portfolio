@@ -12,6 +12,7 @@ export type PostData = {
     date: string;
     excerpt: string;
     coverImage?: string;
+    tags?: string[];
     contentHtml?: string;
 };
 
@@ -36,7 +37,8 @@ export function getSortedPostsData(): PostData[] {
         // Combine the data with the id
         return {
             slug,
-            ...(matterResult.data as { title: string; date: string; excerpt: string; coverImage?: string }),
+            tags: [],
+            ...(matterResult.data as { title: string; date: string; excerpt: string; coverImage?: string; tags?: string[] }),
         };
     });
 
@@ -87,6 +89,7 @@ export async function getPostData(slug: string): Promise<PostData | null> {
     return {
         slug,
         contentHtml,
-        ...(matterResult.data as { title: string; date: string; excerpt: string; coverImage?: string }),
+        tags: [],
+        ...(matterResult.data as { title: string; date: string; excerpt: string; coverImage?: string; tags?: string[] }),
     };
 }
