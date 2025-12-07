@@ -17,29 +17,16 @@ RUN npm run build
 
 
 # ───────────────────────────────────────────────────────────────────────────────
-# 2) PRODUCTION STAGE: only prod deps + TS + built output
+# 2) PRODUCTION STAGE: standalone output (minimal footprint)
 # ───────────────────────────────────────────────────────────────────────────────
 FROM node:24-alpine AS production
 
 WORKDIR /app
-RUN npm install -g npm@11.5.2
 
-# copy package manifests
-COPY --from=builder /app/package.json   /app/package-lock.json*   ./
-
-# install prod deps only
-RUN npm ci --omit=dev
-
-# ensure TS is present so Next.js won't auto-install on 'next start'
-RUN npm install typescript
-
-# copy built Next.js and public assets
-COPY --from=builder /app/.next         ./.next
-COPY --from=builder /app/public        ./public
-
-# copy your config files (if you really need .ts at runtime)
-COPY --from=builder /app/next.config.*  ./
-COPY --from=builder /app/tsconfig.json  ./
+# Copy standalone build (includes all dependencies)
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 
 # fix ownership so node user can read/write if needed
 RUN chown -R node:node /app
@@ -48,4 +35,8 @@ RUN chown -R node:node /app
 USER node
 
 EXPOSE 3000
-CMD ["npm", "start"]
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+CMD ["node", "server.js"]
+
