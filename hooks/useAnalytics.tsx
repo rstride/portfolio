@@ -2,13 +2,15 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 type Payload = Record<string, unknown> | undefined;
+type Gtag = (command: "event", event: string, payload: Record<string, unknown>) => void;
+type AnalyticsWindow = Window & {
+  gtag?: Gtag;
+  dataLayer?: Array<Record<string, unknown>>;
+};
 
 export function track(event: string, payload?: Payload) {
   try {
-    const w = window as unknown as {
-      gtag?: (...args: any[]) => void;
-      dataLayer?: any[];
-    };
+    const w = window as AnalyticsWindow;
     if (typeof w.gtag === "function") {
       w.gtag("event", event, payload ?? {});
     } else if (Array.isArray(w.dataLayer)) {
@@ -16,7 +18,6 @@ export function track(event: string, payload?: Payload) {
     }
   } catch {}
   if (process.env.NODE_ENV !== "production") {
-    // eslint-disable-next-line no-console
     console.info(`[analytics] ${event}`, payload || {});
   }
 }
@@ -68,4 +69,3 @@ export function useAnalytics() {
     track,
   } as const;
 }
-

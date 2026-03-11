@@ -7,14 +7,13 @@ import { site } from "@/content/site";
 import { TrustBar } from "@/components/trust-bar";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { HeroBackground } from "@/components/hero-background";
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import { Shield, Terminal, ArrowRight, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
 export function Hero() {
   const { queue, track } = useAnalytics();
-  const [mounted, setMounted] = useState(false);
   const ref = useRef(null);
 
   const { scrollYProgress } = useScroll({
@@ -24,18 +23,6 @@ export function Hero() {
 
   const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <section className="relative min-h-screen overflow-hidden flex items-center justify-center bg-background">
-        <div className="w-full h-full absolute inset-0 bg-background" />
-      </section>
-    );
-  }
 
   return (
     <section ref={ref} className="relative min-h-screen overflow-hidden flex items-center justify-center pt-20">

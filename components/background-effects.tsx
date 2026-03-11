@@ -1,6 +1,5 @@
 "use client";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 
 interface BackgroundEffectsProps {
   variant?: "hero" | "section" | "contact";
@@ -11,14 +10,6 @@ export function BackgroundEffects({
   variant = "section",
   intensity = "medium"
 }: BackgroundEffectsProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
   // Configuration harmonisée pour tous les effets
   const config = {
     duration: intensity === "low" ? 20 : intensity === "medium" ? 15 : 10,

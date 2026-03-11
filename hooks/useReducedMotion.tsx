@@ -1,28 +1,27 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 export function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  return useSyncExternalStore(
+    (onStoreChange) => {
+      if (typeof window === 'undefined') {
+        return () => undefined;
+      }
 
-  useEffect(() => {
-    setMounted(true);
+      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const handleChange = () => onStoreChange();
 
-    // Check if we're in a browser environment
-    if (typeof window === 'undefined') return;
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    },
+    () => {
+      if (typeof window === 'undefined') {
+        return false;
+      }
 
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches);
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
-
-  // Return false during SSR to prevent hydration mismatches
-  return mounted ? prefersReducedMotion : false;
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    },
+    () => false
+  );
 }

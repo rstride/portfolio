@@ -52,6 +52,8 @@
 
 :root {
   --radius: 0.625rem;
+  --font-geist-sans: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-geist-mono: "JetBrains Mono", "SFMono-Regular", monospace;
 
   /* Light Mode - Clean & Professional */
   --background: oklch(0.985 0.002 247.839);

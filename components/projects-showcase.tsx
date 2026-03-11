@@ -11,9 +11,6 @@ import {
   ArrowUpRight,
   Terminal,
   Briefcase,
-  Cpu,
-  Globe,
-  Database
 } from "lucide-react";
 import { site } from "@/content/site";
 import { useLazyAnimation } from "@/hooks/useLazyAnimation";

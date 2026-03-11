@@ -1,28 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { contactSchema } from '@/lib/contact-schema';
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, message, company, phone } = await request.json();
-
-    // Validation des données
-    if (!name || !email || !message) {
+    const parsedBody = contactSchema.safeParse(await request.json());
+    if (!parsedBody.success) {
       return NextResponse.json(
-        { error: 'Nom, email et message sont requis' },
+        { error: parsedBody.error.issues[0]?.message || 'Donnees invalides' },
         { status: 400 }
       );
     }
 
-    // Validation email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Format d\'email invalide' },
-        { status: 400 }
-      );
-    }
+    const { name, email, message, company, phone } = parsedBody.data;
 
-    // Vérification des variables d'environnement SMTP
     if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
       return NextResponse.json(
         { error: 'Configuration SMTP manquante. Veuillez configurer les variables d\'environnement.' },
@@ -30,7 +30,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Configuration du transporteur SMTP
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
@@ -41,7 +40,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Test de connexion SMTP (optionnel mais recommandé)
     try {
       await transporter.verify();
     } catch (smtpError) {
@@ -52,11 +50,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Configuration de l'email
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safeMessage = escapeHtml(message).replace(/\n/g, '<br>');
+    const safeCompany = company ? escapeHtml(company) : '';
+    const safePhone = phone ? escapeHtml(phone) : '';
+
     const mailOptions = {
-      from: `"${name}" <${email}>`,
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to: process.env.CONTACT_EMAIL || process.env.SMTP_USER,
       subject: `Nouveau message de contact - ${name}`,
+      text: [
+        `Nom: ${name}`,
+        `Email: ${email}`,
+        company ? `Entreprise: ${company}` : undefined,
+        phone ? `Telephone: ${phone}` : undefined,
+        '',
+        message,
+      ]
+        .filter(Boolean)
+        .join('\n'),
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
           <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
@@ -64,16 +77,16 @@ export async function POST(request: NextRequest) {
 
             <div style="margin-bottom: 20px;">
               <h3 style="color: #374151; margin-bottom: 8px;">Informations de l'expéditeur</h3>
-              <p style="margin: 5px 0;"><strong>Nom:</strong> ${name}</p>
-              <p style="margin: 5px 0;"><strong>Email:</strong> <a href="mailto:${email}" style="color: #22c55e;">${email}</a></p>
-              ${company ? `<p style="margin: 5px 0;"><strong>Entreprise:</strong> ${company}</p>` : ''}
-              ${phone ? `<p style="margin: 5px 0;"><strong>Téléphone:</strong> ${phone}</p>` : ''}
+              <p style="margin: 5px 0;"><strong>Nom:</strong> ${safeName}</p>
+              <p style="margin: 5px 0;"><strong>Email:</strong> <a href="mailto:${safeEmail}" style="color: #22c55e;">${safeEmail}</a></p>
+              ${safeCompany ? `<p style="margin: 5px 0;"><strong>Entreprise:</strong> ${safeCompany}</p>` : ''}
+              ${safePhone ? `<p style="margin: 5px 0;"><strong>Téléphone:</strong> ${safePhone}</p>` : ''}
             </div>
 
             <div style="margin-bottom: 20px;">
               <h3 style="color: #374151; margin-bottom: 8px;">Message</h3>
               <div style="background-color: #f3f4f6; padding: 15px; border-radius: 5px; border-left: 4px solid #22c55e;">
-                ${message.replace(/\n/g, '<br>')}
+                ${safeMessage}
               </div>
             </div>
 
@@ -84,10 +97,9 @@ export async function POST(request: NextRequest) {
           </div>
         </div>
       `,
-      replyTo: email,
+      replyTo: `"${safeName}" <${email}>`,
     };
 
-    // Envoi de l'email
     await transporter.sendMail(mailOptions);
 
     return NextResponse.json(
@@ -98,7 +110,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erreur lors de l\'envoi de l\'email:', error);
 
-    // Message d'erreur plus spécifique
     let errorMessage = 'Erreur lors de l\'envoi du message';
 
     if (error instanceof Error) {

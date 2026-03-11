@@ -1,9 +1,8 @@
 "use client";
-// Force refresh
+import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import {
-  Mail,
   MessageSquare,
   Send,
   Lock,
@@ -15,12 +14,12 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { site } from "@/content/site";
-import { useAnimationConfig } from "@/lib/animation-config";
 import { BackgroundEffects } from "@/components/background-effects";
 import { usePerformanceMode } from "@/hooks/usePerformanceMode";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { type ContactFormData, getContactFieldErrors } from "@/lib/contact-schema";
 import { cn } from "@/lib/utils";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -29,97 +28,60 @@ const iconMap: Record<string, LucideIcon> = {
   prismasec: Globe, // Sera remplacé par un logo personnalisé
 };
 
+const EMPTY_FORM_DATA: ContactFormData = {
+  name: "",
+  email: "",
+  message: "",
+  company: "",
+  phone: "",
+};
 
 export function ContactSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
   const performanceMode = usePerformanceMode();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-    company: "",
-    phone: ""
-  });
+  const [formData, setFormData] = useState<ContactFormData>(EMPTY_FORM_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-
-  const validateField = (name: string, value: string) => {
-    const newErrors = { ...errors };
-
-    switch (name) {
-      case 'name':
-        if (!value.trim()) {
-          newErrors.name = 'Le nom est requis';
-        } else if (value.trim().length < 2) {
-          newErrors.name = 'Le nom doit contenir au moins 2 caractères';
-        } else {
-          delete newErrors.name;
-        }
-        break;
-      case 'email':
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!value.trim()) {
-          newErrors.email = 'L\'email est requis';
-        } else if (!emailRegex.test(value)) {
-          newErrors.email = 'Veuillez entrer un email valide';
-        } else {
-          delete newErrors.email;
-        }
-        break;
-      case 'message':
-        if (!value.trim()) {
-          newErrors.message = 'Le message est requis';
-        } else if (value.trim().length < 10) {
-          newErrors.message = 'Le message doit contenir au moins 10 caractères';
-        } else {
-          delete newErrors.message;
-        }
-        break;
-    }
-
-    setErrors(newErrors);
-  };
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const nextFormData = { ...formData, [name]: value };
+    setFormData(nextFormData);
 
     if (touched[name]) {
-      validateField(name, value);
+      setErrors(getContactFieldErrors(nextFormData));
     }
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    const nextFormData = { ...formData, [name]: e.target.value };
+    setFormData(nextFormData);
     setTouched(prev => ({ ...prev, [name]: true }));
-    validateField(name, value);
+    setErrors(getContactFieldErrors(nextFormData));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Mark all fields as touched
     const allTouched = Object.keys(formData).reduce((acc, key) => ({ ...acc, [key]: true }), {});
     setTouched(allTouched);
+    setSubmitError(null);
 
-    // Validate all fields
-    Object.entries(formData).forEach(([name, value]) => {
-      validateField(name, value);
-    });
-
-    // Check if there are any errors
-    if (Object.keys(errors).length > 0) {
+    const validationErrors = getContactFieldErrors(formData);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) {
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Envoi réel du formulaire via l'API
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -135,10 +97,10 @@ export function ContactSection() {
       }
 
       setSubmitStatus("success");
+      setSubmitError(null);
 
-      // Reset form after success
       setTimeout(() => {
-        setFormData({ name: "", email: "", message: "", company: "", phone: "" });
+        setFormData(EMPTY_FORM_DATA);
         setSubmitStatus("idle");
         setErrors({});
         setTouched({});
@@ -147,18 +109,18 @@ export function ContactSection() {
     } catch (error) {
       console.error('Erreur lors de l\'envoi:', error);
       setSubmitStatus("error");
-
-      // Afficher un message d'erreur plus spécifique
       if (error instanceof Error) {
-        console.error('Message d\'erreur:', error.message);
+        setSubmitError(error.message);
+      } else {
+        setSubmitError("Une erreur technique s'est produite.");
       }
 
       setTimeout(() => {
         setSubmitStatus("idle");
       }, 5000);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   };
 
   return (
@@ -348,7 +310,7 @@ export function ContactSection() {
                   >
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     <p className="text-sm">
-                      Une erreur technique s&apos;est produite. Veuillez réessayer ou me contacter directement à contact@romainstride.com.
+                      {submitError || "Une erreur technique s'est produite. Veuillez reessayer ou me contacter directement a contact@romainstride.com."}
                     </p>
                   </motion.div>
                 )}
@@ -454,9 +416,11 @@ export function ContactSection() {
                         whileHover={{ rotate: 10 }}
                       >
                         {key === "prismasec" ? (
-                          <img
+                          <Image
                             src="/PrismaLogo.svg"
                             alt="PrismaSec Logo"
+                            width={20}
+                            height={20}
                             className="w-5 h-5 invert brightness-0"
                           />
                         ) : (

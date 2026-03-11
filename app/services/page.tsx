@@ -233,7 +233,7 @@ export default function ServicesPage() {
           <ServiceBentoCard color="from-green-500/20 to-blue-500/20" className="max-w-2xl mx-auto">
             <div className="p-8 text-center">
               <h3 className="text-2xl font-bold text-foreground mb-4">
-                Besoin d'un service personnalisé ?
+                Besoin d&apos;un service personnalise ?
               </h3>
               <p className="text-muted-foreground mb-6">
                 Chaque projet est unique. Contactez-moi pour discuter de vos besoins spécifiques.
@@ -252,4 +252,3 @@ export default function ServicesPage() {
     </div>
   );
 }
-

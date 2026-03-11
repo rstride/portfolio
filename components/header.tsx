@@ -18,7 +18,6 @@ export function Header() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
-  useEffect(() => { setOpen(false); }, [pathname]);
 
   return (
     <header className="sticky top-0 z-50 bg-background/70 backdrop-blur border-b border-border/40">
@@ -60,4 +59,3 @@ export function Header() {
     </header>
   );
 }
-

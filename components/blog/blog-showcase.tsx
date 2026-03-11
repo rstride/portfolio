@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Shield, Lock, Target, Bug } from "lucide-react";
 import { PostData } from "@/lib/posts";
 import { BlogCard } from "@/components/blog/blog-card";
 import { BlogSearch } from "@/components/blog/blog-search";
@@ -61,7 +60,7 @@ export function BlogShowcase({ posts }: { posts: PostData[] }) {
                             animate={{ opacity: 1 }}
                             className="col-span-full text-center py-12 text-muted-foreground"
                         >
-                            Aucun article trouvé pour "{searchQuery}".
+                            Aucun article trouve pour &quot;{searchQuery}&quot;.
                         </motion.div>
                     )}
                 </div>

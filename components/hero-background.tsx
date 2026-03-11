@@ -1,18 +1,41 @@
 "use client";
 
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
+
+type Particle = {
+    width: string;
+    height: string;
+    left: string;
+    top: string;
+    offsetY: number;
+    duration: number;
+    delay: number;
+};
+
+function createParticles(count: number): Particle[] {
+    return Array.from({ length: count }, () => ({
+        width: `${Math.random() * 4 + 1}px`,
+        height: `${Math.random() * 4 + 1}px`,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        offsetY: Math.random() * -100 - 50,
+        duration: Math.random() * 10 + 10,
+        delay: Math.random() * 10,
+    }));
+}
 
 export function HeroBackground() {
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const { scrollY } = useScroll();
     const y1 = useTransform(scrollY, [0, 500], [0, 200]);
     const y2 = useTransform(scrollY, [0, 500], [0, -150]);
+    const particles = useMemo(() => createParticles(20), []);
 
     // Smooth mouse movement
     const springConfig = { damping: 25, stiffness: 150 };
     const mouseX = useSpring(0, springConfig);
     const mouseY = useSpring(0, springConfig);
+    const mirroredMouseX = useTransform(mouseX, (val) => -val);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -21,7 +44,6 @@ export function HeroBackground() {
             const targetY = (clientY / window.innerHeight - 0.5) * 40;
             mouseX.set(targetX);
             mouseY.set(targetY);
-            setMousePosition({ x: clientX, y: clientY });
         };
 
         window.addEventListener("mousemove", handleMouseMove);
@@ -60,7 +82,7 @@ export function HeroBackground() {
 
             <motion.div
                 className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/20 blur-[100px]"
-                style={{ x: useTransform(mouseX, (val) => -val), y: y2 }}
+                style={{ x: mirroredMouseX, y: y2 }}
                 animate={{
                     scale: [1.2, 1, 1.2],
                     opacity: [0.3, 0.5, 0.3],
@@ -74,25 +96,25 @@ export function HeroBackground() {
 
             {/* Floating Particles */}
             <div className="absolute inset-0">
-                {[...Array(20)].map((_, i) => (
+                {particles.map((particle, i) => (
                     <motion.div
                         key={i}
                         className="absolute rounded-full bg-primary/40"
                         style={{
-                            width: Math.random() * 4 + 1 + "px",
-                            height: Math.random() * 4 + 1 + "px",
-                            left: Math.random() * 100 + "%",
-                            top: Math.random() * 100 + "%",
+                            width: particle.width,
+                            height: particle.height,
+                            left: particle.left,
+                            top: particle.top,
                         }}
                         animate={{
-                            y: [0, Math.random() * -100 - 50],
+                            y: [0, particle.offsetY],
                             opacity: [0, 1, 0],
                         }}
                         transition={{
-                            duration: Math.random() * 10 + 10,
+                            duration: particle.duration,
                             repeat: Infinity,
                             ease: "linear",
-                            delay: Math.random() * 10,
+                            delay: particle.delay,
                         }}
                     />
                 ))}

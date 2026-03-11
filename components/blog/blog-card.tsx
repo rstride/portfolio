@@ -6,7 +6,6 @@ import { Calendar, ArrowRight, Tag } from "lucide-react";
 import { PostData } from "@/lib/posts";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
 interface BlogCardProps {
     post: PostData;
@@ -67,7 +66,7 @@ export function BlogCard({ post, index }: BlogCardProps) {
                             </div>
 
                             <span className="inline-flex items-center text-sm font-medium text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                                Lire l'article
+                                Lire l&apos;article
                                 <ArrowRight className="w-4 h-4 ml-1" />
                             </span>
                         </div>
