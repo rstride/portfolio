@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { site } from "@/content/site";
-import { TrustBar } from "@/components/trust-bar";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { HeroBackground } from "@/components/hero-background";
 import { useRef } from "react";
@@ -81,15 +80,6 @@ export function Hero() {
               <Shield className="w-4 h-4 mr-2" />
               {site.hero.ctaSecondary.label}
             </Link>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className="pt-8 border-t border-border/50"
-          >
-            <TrustBar />
           </motion.div>
         </div>
 

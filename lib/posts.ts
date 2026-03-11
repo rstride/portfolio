@@ -6,6 +6,15 @@ import html from 'remark-html';
 
 const postsDirectory = path.join(process.cwd(), 'content/posts');
 
+type PostFrontmatter = {
+    title: string;
+    date: string;
+    excerpt: string;
+    coverImage?: string;
+    tags?: string[];
+    draft?: boolean;
+};
+
 export type PostData = {
     slug: string;
     title: string;
@@ -16,33 +25,50 @@ export type PostData = {
     contentHtml?: string;
 };
 
-export function getSortedPostsData(): PostData[] {
-    // Get file names under /posts
+function isPublishableFile(fileName: string) {
+    return fileName.endsWith('.md') && !fileName.includes(' copy');
+}
+
+function listPostFiles() {
     if (!fs.existsSync(postsDirectory)) {
         return [];
     }
 
-    const fileNames = fs.readdirSync(postsDirectory);
-    const allPostsData = fileNames.map((fileName) => {
-        // Remove ".md" from file name to get id
-        const slug = fileName.replace(/\.md$/, '');
+    return fs.readdirSync(postsDirectory).filter(isPublishableFile);
+}
 
-        // Read markdown file as string
+function isPublished(frontmatter: PostFrontmatter) {
+    if (frontmatter.draft) {
+        return false;
+    }
+
+    const publishedAt = new Date(frontmatter.date);
+    if (Number.isNaN(publishedAt.getTime())) {
+        return true;
+    }
+
+    return publishedAt <= new Date();
+}
+
+export function getSortedPostsData(): PostData[] {
+    const allPostsData = listPostFiles().flatMap((fileName) => {
+        const slug = fileName.replace(/\.md$/, '');
         const fullPath = path.join(postsDirectory, fileName);
         const fileContents = fs.readFileSync(fullPath, 'utf8');
-
-        // Use gray-matter to parse the post metadata section
         const matterResult = matter(fileContents);
+        const frontmatter = matterResult.data as PostFrontmatter;
 
-        // Combine the data with the id
-        return {
+        if (!isPublished(frontmatter)) {
+            return [];
+        }
+
+        return [{
             slug,
-            tags: [],
-            ...(matterResult.data as { title: string; date: string; excerpt: string; coverImage?: string; tags?: string[] }),
-        };
+            tags: frontmatter.tags || [],
+            ...frontmatter,
+        }];
     });
 
-    // Sort posts by date
     return allPostsData.sort((a, b) => {
         if (a.date < b.date) {
             return 1;
@@ -53,12 +79,15 @@ export function getSortedPostsData(): PostData[] {
 }
 
 export function getAllPostSlugs() {
-    if (!fs.existsSync(postsDirectory)) {
-        return [];
-    }
+    return listPostFiles().flatMap((fileName) => {
+        const fullPath = path.join(postsDirectory, fileName);
+        const fileContents = fs.readFileSync(fullPath, 'utf8');
+        const matterResult = matter(fileContents);
+        const frontmatter = matterResult.data as PostFrontmatter;
+        if (!isPublished(frontmatter)) {
+            return [];
+        }
 
-    const fileNames = fs.readdirSync(postsDirectory);
-    return fileNames.map((fileName) => {
         return {
             params: {
                 slug: fileName.replace(/\.md$/, ''),
@@ -76,20 +105,21 @@ export async function getPostData(slug: string): Promise<PostData | null> {
 
     const fileContents = fs.readFileSync(fullPath, 'utf8');
 
-    // Use gray-matter to parse the post metadata section
     const matterResult = matter(fileContents);
+    const frontmatter = matterResult.data as PostFrontmatter;
+    if (!isPublished(frontmatter)) {
+        return null;
+    }
 
-    // Use remark to convert markdown into HTML string
     const processedContent = await remark()
         .use(html)
         .process(matterResult.content);
     const contentHtml = processedContent.toString();
 
-    // Combine the data with the id and contentHtml
     return {
         slug,
         contentHtml,
-        tags: [],
-        ...(matterResult.data as { title: string; date: string; excerpt: string; coverImage?: string; tags?: string[] }),
+        tags: frontmatter.tags || [],
+        ...frontmatter,
     };
 }

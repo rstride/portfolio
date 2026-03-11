@@ -10,6 +10,7 @@ export const contactSchema = z.object({
     .max(5000, "Le message est trop long"),
   company: z.string().trim().max(120, "Le nom de l'entreprise est trop long").optional().or(z.literal("")),
   phone: z.string().trim().max(40, "Le numero de telephone est trop long").optional().or(z.literal("")),
+  website: z.string().trim().max(0, "Champ invalide").optional().or(z.literal("")),
 });
 
 export type ContactFormData = z.infer<typeof contactSchema>;

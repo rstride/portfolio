@@ -9,6 +9,7 @@ import { ArrowRight, Code, Shield, Users, Target, Zap, Search } from "lucide-rea
 import { BackgroundEffects } from "@/components/background-effects";
 import { usePerformanceMode } from "@/hooks/usePerformanceMode";
 import { Card } from "@/components/ui/card";
+import { getServiceHref } from "@/lib/service-details";
 import { cn } from "@/lib/utils";
 
 const serviceConfig: { [key: string]: { icon: React.ComponentType<{ className?: string }>, color: { text: string, bg: string, dot: string } } } = {
@@ -166,7 +167,7 @@ export function ServicesSection() {
 
                     {/* Link */}
                     <Link
-                      href={`/services#${service.slug}`}
+                      href={getServiceHref(service.slug)}
                       className={cn("inline-flex items-center gap-2 text-sm font-medium transition-colors mt-auto", colors.text)}
                     >
                       En savoir plus
@@ -182,4 +183,3 @@ export function ServicesSection() {
     </div>
   );
 }
-

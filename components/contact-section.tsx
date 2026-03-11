@@ -34,6 +34,7 @@ const EMPTY_FORM_DATA: ContactFormData = {
   message: "",
   company: "",
   phone: "",
+  website: "",
 };
 
 export function ContactSection() {
@@ -168,6 +169,16 @@ export function ContactSection() {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid sm:grid-cols-2 gap-6">
+                  <input
+                    type="text"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleInputChange}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="hidden"
+                  />
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     whileFocus={{ scale: 1.02 }}

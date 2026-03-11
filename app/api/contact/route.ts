@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { contactSchema } from '@/lib/contact-schema';
 
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX_REQUESTS = 5;
+const submissionTracker = new Map<string, number[]>();
+
 function escapeHtml(value: string) {
   return value
     .replaceAll('&', '&amp;')
@@ -9,6 +13,31 @@ function escapeHtml(value: string) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
+}
+
+function getClientIp(request: NextRequest) {
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0]?.trim() || 'unknown';
+  }
+
+  return request.headers.get('x-real-ip') || 'unknown';
+}
+
+function isRateLimited(clientKey: string) {
+  const now = Date.now();
+  const recentAttempts = (submissionTracker.get(clientKey) || []).filter(
+    (timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS
+  );
+
+  if (recentAttempts.length >= RATE_LIMIT_MAX_REQUESTS) {
+    submissionTracker.set(clientKey, recentAttempts);
+    return true;
+  }
+
+  recentAttempts.push(now);
+  submissionTracker.set(clientKey, recentAttempts);
+  return false;
 }
 
 export async function POST(request: NextRequest) {
@@ -21,7 +50,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, email, message, company, phone } = parsedBody.data;
+    const { name, email, message, company, phone, website } = parsedBody.data;
+    if (website) {
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+
+    const clientIp = getClientIp(request);
+    const clientKey = `${clientIp}:${email.toLowerCase()}`;
+    if (isRateLimited(clientKey)) {
+      return NextResponse.json(
+        { error: 'Trop de demandes ont ete envoyees. Veuillez patienter quelques minutes.' },
+        { status: 429 }
+      );
+    }
 
     if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
       return NextResponse.json(
@@ -39,16 +80,6 @@ export async function POST(request: NextRequest) {
         pass: process.env.SMTP_PASS,
       },
     });
-
-    try {
-      await transporter.verify();
-    } catch (smtpError) {
-      console.error('Erreur de connexion SMTP:', smtpError);
-      return NextResponse.json(
-        { error: 'Erreur de configuration SMTP. Vérifiez vos credentials.' },
-        { status: 500 }
-      );
-    }
 
     const safeName = escapeHtml(name);
     const safeEmail = escapeHtml(email);
