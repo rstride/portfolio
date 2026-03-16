@@ -6,6 +6,28 @@ const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
 const submissionTracker = new Map<string, number[]>();
 
+function getSmtpConfig() {
+  const host = process.env.SMTP_HOST || process.env.EMAIL_HOST;
+  const port = parseInt(process.env.SMTP_PORT || process.env.EMAIL_PORT || '587', 10);
+  const user =
+    process.env.SMTP_USER ||
+    process.env.EMAIL_USER ||
+    process.env.EMAIL_RSTRIDE;
+  const pass =
+    process.env.SMTP_PASS ||
+    process.env.EMAIL_PASS ||
+    process.env.EMAIL_RSTRIDE_PASS;
+  const secure = (process.env.SMTP_SECURE || 'false') === 'true';
+  const from = process.env.SMTP_FROM || process.env.EMAIL_FROM || user;
+  const to =
+    process.env.CONTACT_EMAIL ||
+    process.env.EMAIL_TO ||
+    process.env.EMAIL_RSTRIDE_TO ||
+    user;
+
+  return { host, port, user, pass, secure, from, to };
+}
+
 function escapeHtml(value: string) {
   return value
     .replaceAll('&', '&amp;')
@@ -50,7 +72,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, email, message, company, phone, website } = parsedBody.data;
+    const { name, email, service, scopeType, timeline, message, company, phone, website } = parsedBody.data;
     if (website) {
       return NextResponse.json({ success: true }, { status: 200 });
     }
@@ -64,7 +86,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    const smtp = getSmtpConfig();
+
+    if (!smtp.host || !smtp.user || !smtp.pass || !smtp.to) {
       return NextResponse.json(
         { error: 'Configuration SMTP manquante. Veuillez configurer les variables d\'environnement.' },
         { status: 500 }
@@ -72,12 +96,12 @@ export async function POST(request: NextRequest) {
     }
 
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
+      host: smtp.host,
+      port: smtp.port,
+      secure: smtp.secure,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: smtp.user,
+        pass: smtp.pass,
       },
     });
 
@@ -88,12 +112,15 @@ export async function POST(request: NextRequest) {
     const safePhone = phone ? escapeHtml(phone) : '';
 
     const mailOptions = {
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
-      to: process.env.CONTACT_EMAIL || process.env.SMTP_USER,
+      from: smtp.from,
+      to: smtp.to,
       subject: `Nouveau message de contact - ${name}`,
       text: [
         `Nom: ${name}`,
         `Email: ${email}`,
+        `Besoin: ${service}`,
+        `Périmètre: ${scopeType}`,
+        `Échéance: ${timeline}`,
         company ? `Entreprise: ${company}` : undefined,
         phone ? `Telephone: ${phone}` : undefined,
         '',
@@ -110,6 +137,9 @@ export async function POST(request: NextRequest) {
               <h3 style="color: #374151; margin-bottom: 8px;">Informations de l'expéditeur</h3>
               <p style="margin: 5px 0;"><strong>Nom:</strong> ${safeName}</p>
               <p style="margin: 5px 0;"><strong>Email:</strong> <a href="mailto:${safeEmail}" style="color: #22c55e;">${safeEmail}</a></p>
+              <p style="margin: 5px 0;"><strong>Besoin:</strong> ${escapeHtml(service)}</p>
+              <p style="margin: 5px 0;"><strong>Périmètre:</strong> ${escapeHtml(scopeType)}</p>
+              <p style="margin: 5px 0;"><strong>Échéance:</strong> ${escapeHtml(timeline)}</p>
               ${safeCompany ? `<p style="margin: 5px 0;"><strong>Entreprise:</strong> ${safeCompany}</p>` : ''}
               ${safePhone ? `<p style="margin: 5px 0;"><strong>Téléphone:</strong> ${safePhone}</p>` : ''}
             </div>

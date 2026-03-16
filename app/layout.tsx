@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           <AnalyticsProvider>
             <Header />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 pt-[var(--site-header-offset,0px)] md:pt-0">{children}</main>
             <Footer />
           </AnalyticsProvider>
         </ThemeProvider>

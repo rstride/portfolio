@@ -36,6 +36,9 @@ const iconMap: Record<string, LucideIcon> = {
 const EMPTY_FORM_DATA: ContactFormData = {
   name: "",
   email: "",
+  service: "",
+  scopeType: "",
+  timeline: "",
   message: "",
   company: "",
   phone: "",
@@ -53,7 +56,9 @@ export function ContactSection() {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     const nextFormData = { ...formData, [name]: value };
     setFormData(nextFormData);
@@ -63,7 +68,9 @@ export function ContactSection() {
     }
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name } = e.target;
     const nextFormData = { ...formData, [name]: e.target.value };
     setFormData(nextFormData);
@@ -130,7 +137,7 @@ export function ContactSection() {
   };
 
   return (
-    <div ref={ref} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div ref={ref} className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
       <SectionIntro
         eyebrow="Contact"
         title={site.sections.contactTitle}
@@ -140,7 +147,7 @@ export function ContactSection() {
       <motion.div
         {...landingReveal}
         transition={{ ...landingReveal.transition, delay: 0.08 }}
-        className="mx-auto mt-8 grid max-w-5xl gap-3 sm:grid-cols-3"
+        className="mx-auto mt-8 grid max-w-4xl gap-3 sm:grid-cols-3"
       >
         {site.sales.qualification.map((item) => (
           <div key={item} className={cn("rounded-xl px-4 py-3 text-sm text-muted-foreground", landingCardClass)}>
@@ -149,7 +156,7 @@ export function ContactSection() {
         ))}
       </motion.div>
 
-      <div className="mt-12 grid items-start gap-8 lg:grid-cols-[1.3fr_0.7fr]">
+      <div className="mx-auto mt-12 grid max-w-6xl items-start gap-8 xl:grid-cols-[minmax(0,1.15fr)_360px]">
         <motion.div {...landingReveal} transition={{ ...landingReveal.transition, delay: 0.12 }}>
           <Card className={cn(landingCardClass, "rounded-2xl")}>
             <div className="flex items-center gap-3">
@@ -250,6 +257,93 @@ export function ContactSection() {
                   </div>
                 </div>
 
+                <div className="grid gap-6 sm:grid-cols-3">
+                  <div>
+                    <Label className="mb-2 block">
+                      Besoin principal <span className="text-red-400">*</span>
+                    </Label>
+                    <select
+                      name="service"
+                      value={formData.service}
+                      onChange={handleInputChange}
+                      onBlur={handleBlur}
+                      className={cn(
+                        "flex h-10 w-full rounded-md border border-black/5 bg-white/50 px-3 py-2 text-sm dark:border-white/10 dark:bg-black/20",
+                        errors.service && touched.service
+                          ? "border-red-500/50 focus-visible:ring-red-500/20"
+                          : "focus-visible:ring-green-500/20"
+                      )}
+                      required
+                    >
+                      <option value="">Choisir</option>
+                      <option value="Pentest">Pentest</option>
+                      <option value="Audit sécurité">Audit sécurité</option>
+                      <option value="Formation / sensibilisation">Formation / sensibilisation</option>
+                      <option value="Autre">Autre</option>
+                    </select>
+                    {errors.service && touched.service ? (
+                      <p className="mt-1 text-xs text-red-400">{errors.service}</p>
+                    ) : null}
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">
+                      Périmètre <span className="text-red-400">*</span>
+                    </Label>
+                    <select
+                      name="scopeType"
+                      value={formData.scopeType}
+                      onChange={handleInputChange}
+                      onBlur={handleBlur}
+                      className={cn(
+                        "flex h-10 w-full rounded-md border border-black/5 bg-white/50 px-3 py-2 text-sm dark:border-white/10 dark:bg-black/20",
+                        errors.scopeType && touched.scopeType
+                          ? "border-red-500/50 focus-visible:ring-red-500/20"
+                          : "focus-visible:ring-green-500/20"
+                      )}
+                      required
+                    >
+                      <option value="">Choisir</option>
+                      <option value="Application web">Application web</option>
+                      <option value="API">API</option>
+                      <option value="Système d’information">Système d’information</option>
+                      <option value="Atelier / sensibilisation">Atelier / sensibilisation</option>
+                      <option value="À préciser">À préciser</option>
+                    </select>
+                    {errors.scopeType && touched.scopeType ? (
+                      <p className="mt-1 text-xs text-red-400">{errors.scopeType}</p>
+                    ) : null}
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">
+                      Échéance <span className="text-red-400">*</span>
+                    </Label>
+                    <select
+                      name="timeline"
+                      value={formData.timeline}
+                      onChange={handleInputChange}
+                      onBlur={handleBlur}
+                      className={cn(
+                        "flex h-10 w-full rounded-md border border-black/5 bg-white/50 px-3 py-2 text-sm dark:border-white/10 dark:bg-black/20",
+                        errors.timeline && touched.timeline
+                          ? "border-red-500/50 focus-visible:ring-red-500/20"
+                          : "focus-visible:ring-green-500/20"
+                      )}
+                      required
+                    >
+                      <option value="">Choisir</option>
+                      <option value="Immédiat">Immédiat</option>
+                      <option value="Sous 2 semaines">Sous 2 semaines</option>
+                      <option value="Sous 1 mois">Sous 1 mois</option>
+                      <option value="Plus tard / en préparation">Plus tard / en préparation</option>
+                    </select>
+                    {errors.timeline && touched.timeline ? (
+                      <p className="mt-1 text-xs text-red-400">{errors.timeline}</p>
+                    ) : null}
+                  </div>
+                </div>
+
                 <div>
                   <Label className="mb-2 block">
                     Message <span className="text-red-400">*</span>
@@ -290,7 +384,7 @@ export function ContactSection() {
                     <AlertCircle className="size-4" />
                     <AlertDescription>
                       {submitError ||
-                        "Une erreur technique s'est produite. Veuillez reessayer ou me contacter directement a contact@romainstride.com."}
+                        "Une erreur technique s'est produite. Veuillez reessayer ou me contacter directement a contact@rstride.fr."}
                     </AlertDescription>
                   </Alert>
                 ) : null}
@@ -299,7 +393,7 @@ export function ContactSection() {
                   <Alert className="border-green-500/20 bg-green-500/10 text-green-500 dark:text-green-400">
                     <CheckCircle className="size-4" />
                     <AlertDescription className="text-green-500 dark:text-green-400">
-                      Message envoyé avec succès ! Je vous répondrai dans les 24h ouvrées.
+                      Message envoyé avec succès !
                     </AlertDescription>
                   </Alert>
                 ) : null}
@@ -328,7 +422,7 @@ export function ContactSection() {
                   ) : (
                     <>
                       <Send className="size-4" />
-                      {Object.keys(errors).length > 0 ? "Corrigez les erreurs" : "Recevoir un cadrage"}
+                      {Object.keys(errors).length > 0 ? "Corrigez les erreurs" : "Recevoir une proposition"}
                     </>
                   )}
                 </Button>
@@ -342,41 +436,6 @@ export function ContactSection() {
           transition={{ ...landingReveal.transition, delay: 0.16 }}
           className="space-y-6 lg:self-start"
         >
-          <Card className={cn(landingCardClass, "rounded-2xl")}>
-            <CardHeader>
-              <CardTitle className="text-lg">Quand me contacter</CardTitle>
-              <CardDescription>
-                Les demandes qui avancent le plus vite ressemblent souvent à ça.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              {site.sales.contactReasons.map((reason) => (
-                <div key={reason} className="rounded-xl border border-border/60 bg-background/60 p-4">
-                  <p className="text-sm text-muted-foreground">{reason}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card className={cn(landingCardClass, "rounded-2xl")}>
-            <CardHeader>
-              <CardTitle className="text-lg">Comment ça se passe</CardTitle>
-              <CardDescription>
-                Un processus simple pour cadrer vite et éviter les allers-retours inutiles.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              {site.sales.process.map((step, index) => (
-                <div key={step} className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/60 p-4">
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-                    {index + 1}
-                  </div>
-                  <p className="text-sm text-muted-foreground">{step}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
           <Card className={cn(landingCardClass, "rounded-2xl")}>
             <CardHeader>
               <CardTitle className="text-lg">Réseaux sociaux</CardTitle>

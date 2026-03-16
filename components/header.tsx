@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronRight, Menu } from "lucide-react";
 
@@ -9,6 +9,12 @@ import { site } from "@/content/site";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "@/components/mode-toggle";
 import { ScrollProgress } from "./scroll-progress";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -59,6 +65,7 @@ const serviceCardClass = (active: boolean) =>
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
   const desktopNav = site.nav;
   const mobilePrimaryNav = site.nav.filter(
     (item) => item.href !== "/services" && item.href !== "/contact"
@@ -66,8 +73,34 @@ export function Header() {
   const servicesActive =
     pathname === "/services" || site.serviceNavigation.some((item) => pathname === item.href);
 
+  useEffect(() => {
+    const syncHeaderOffset = () => {
+      const headerHeight = headerRef.current?.getBoundingClientRect().height ?? 0;
+      const isMobile = window.innerWidth < 768;
+      document.documentElement.style.setProperty(
+        "--site-header-offset",
+        isMobile ? `${headerHeight}px` : "0px"
+      );
+    };
+
+    syncHeaderOffset();
+
+    const resizeObserver = new ResizeObserver(syncHeaderOffset);
+    if (headerRef.current) {
+      resizeObserver.observe(headerRef.current);
+    }
+
+    window.addEventListener("resize", syncHeaderOffset);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", syncHeaderOffset);
+      document.documentElement.style.setProperty("--site-header-offset", "0px");
+    };
+  }, []);
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-3 sm:px-6 lg:px-8">
+    <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 px-4 pt-3 sm:px-6 lg:px-8">
       <ScrollProgress />
       <div className="mx-auto max-w-7xl">
         <div className={cn("flex h-16 items-center gap-3", navShellClass)}>
@@ -183,42 +216,56 @@ export function Header() {
                           >
                             <span>{item.label}</span>
                             <ChevronRight className="size-4 opacity-60" />
-                          </Link>
-                        </SheetClose>
-                      ))}
+                        </Link>
+                      </SheetClose>
+                    ))}
                     </div>
 
-                    <div className="mt-4 rounded-2xl border border-border/60 bg-background/70 p-3">
-                      <div className="mb-3 px-1">
-                        <p className="text-xs uppercase tracking-[0.22em] text-primary">Services</p>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          Trois offres claires selon votre besoin.
-                        </p>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        {site.serviceNavigation.map((service) => {
-                          const active = pathname === service.href;
-                          return (
-                            <SheetClose asChild key={service.href}>
-                              <Link
-                                href={service.href}
-                                className={cn(
-                                  "rounded-xl px-4 py-3 transition-colors",
-                                  active
-                                    ? "bg-foreground text-background"
-                                    : "text-foreground hover:bg-accent/50"
-                                )}
-                              >
-                                <div className="text-sm font-semibold">{service.label}</div>
-                                <div className={cn("mt-1 text-sm leading-relaxed", active ? "text-background/75" : "text-muted-foreground")}>
-                                  {service.description}
-                                </div>
-                              </Link>
-                            </SheetClose>
-                          );
-                        })}
-                      </div>
-                    </div>
+                    <Accordion type="single" collapsible className="mt-4">
+                      <AccordionItem
+                        value="services"
+                        className="overflow-hidden rounded-2xl border border-border/60 bg-background/70 last:border-b"
+                      >
+                        <AccordionTrigger className="px-4 py-3 text-sm font-medium text-foreground hover:no-underline">
+                          <div className="flex flex-col items-start gap-1 text-left">
+                            <span>Services</span>
+                            <span className="text-sm font-normal text-muted-foreground">
+                              Trois offres claires selon votre besoin.
+                            </span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-3 pb-3">
+                          <div className={cn("flex flex-col gap-1 p-2", submenuSurfaceClass)}>
+                            {site.serviceNavigation.map((service) => {
+                              const active = pathname === service.href;
+                              return (
+                                <SheetClose asChild key={service.href}>
+                                  <Link
+                                    href={service.href}
+                                    className={cn(
+                                      "rounded-xl px-4 py-3 transition-colors",
+                                      active
+                                        ? "bg-foreground text-background"
+                                        : "text-foreground hover:bg-accent/50"
+                                    )}
+                                  >
+                                    <div className="text-sm font-semibold">{service.label}</div>
+                                    <div
+                                      className={cn(
+                                        "mt-1 text-sm leading-relaxed",
+                                        active ? "text-background/75" : "text-muted-foreground"
+                                      )}
+                                    >
+                                      {service.description}
+                                    </div>
+                                  </Link>
+                                </SheetClose>
+                              );
+                            })}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
 
                     <div className="mt-4 grid gap-2">
                       <SheetClose asChild>

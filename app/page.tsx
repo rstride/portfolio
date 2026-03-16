@@ -1,6 +1,5 @@
 import { Hero } from "@/components/hero";
 import { ProjectsShowcase } from "@/components/projects-showcase";
-import { ContactSection } from "@/components/contact-section";
 import { ServicesSection } from "@/components/services-section";
 import { BackToTopButton } from "@/components/back-to-top-button";
 
@@ -18,11 +17,6 @@ export default function Home() {
       <section id="services" className="bg-section-alt/40 py-20 lg:py-24">
         <ServicesSection />
       </section>
-
-      <section id="contact" className="py-20 lg:py-24">
-        <ContactSection />
-      </section>
-
       <BackToTopButton />
     </div>
   );

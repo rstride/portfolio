@@ -3,6 +3,9 @@ import { z } from "zod";
 export const contactSchema = z.object({
   name: z.string().trim().min(2, "Le nom doit contenir au moins 2 caracteres"),
   email: z.email("Veuillez entrer un email valide"),
+  service: z.string().trim().min(1, "Veuillez choisir le type de besoin"),
+  scopeType: z.string().trim().min(1, "Veuillez preciser le perimetre principal"),
+  timeline: z.string().trim().min(1, "Veuillez indiquer l'echeance"),
   message: z
     .string()
     .trim()

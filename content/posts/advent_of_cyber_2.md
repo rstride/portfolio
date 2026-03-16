@@ -1,6 +1,6 @@
 ---
-title: "TryHackMe Advent Of Cyber : Side quest 1"
-date: "2025-12-01"
+title: "TryHackMe Advent Of Cyber : Side quest 2"
+date: "2025-12-08"
 excerpt: "Write-up complet pour retrouver la Side Quest de l'Advent of Cyber: passphrase, decryption GPG, Git history et restauration du site."
 coverImage: "/blog/sq1.png"
 tags: ["CTF", "TryHackMe", "Writeup"]

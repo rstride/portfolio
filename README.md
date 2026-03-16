@@ -16,31 +16,29 @@ cp .env.example .env
 
 ```env
 # Configuration SMTP (obligatoire pour le formulaire de contact)
-SMTP_HOST=smtp.gmail.com
+SMTP_HOST=ssl0.ovh.net
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=votre-email@gmail.com
-SMTP_PASS=votre-mot-de-passe-application
+SMTP_USER=contact@rstride.fr
+SMTP_PASS=votre-mot-de-passe-ovh
 
 # Email de destination pour les messages de contact
-CONTACT_EMAIL=votre-email@domaine.com
+CONTACT_EMAIL=contact@rstride.fr
 ```
+
+Le formulaire peut aussi utiliser les variables `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS` et `EMAIL_TO`. Si vous utilisez le fichier `Websites/.env` partage entre les deux sites, il accepte aussi `EMAIL_RSTRIDE`, `EMAIL_RSTRIDE_PASS` et `EMAIL_RSTRIDE_TO`.
 
 ### 3. Configuration pour différents fournisseurs
 
-#### Gmail
+#### OVH
 ```env
-SMTP_HOST=smtp.gmail.com
+SMTP_HOST=ssl0.ovh.net
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=votre-email@gmail.com
-SMTP_PASS=votre-mot-de-passe-application
+SMTP_USER=contact@rstride.fr
+SMTP_PASS=votre-mot-de-passe-ovh
+CONTACT_EMAIL=contact@rstride.fr
 ```
-
-**Important :** Pour Gmail, vous devez utiliser un "mot de passe d'application" au lieu de votre mot de passe normal.
-1. Allez dans les paramètres de sécurité de votre compte Google
-2. Activez la "Vérification en deux étapes"
-3. Générez un "mot de passe d'application" dans la section "Mots de passe d'application"
 
 #### Outlook/Hotmail
 ```env
