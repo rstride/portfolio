@@ -4,36 +4,25 @@ import { site } from "@/content/site";
 import { motion, useMotionTemplate, useMotionValue, useInView } from "framer-motion";
 import { type MouseEvent, useRef } from "react";
 import Link from "next/link";
-import { Shield, Code, Target, Users, Zap, Search, CheckCircle, ArrowRight } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Shield, Target, Search, GraduationCap, CheckCircle, ArrowRight, Goal } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { BackgroundEffects } from "@/components/background-effects";
-import { getServiceHref } from "@/lib/service-details";
 
 const serviceConfig: { [key: string]: { icon: React.ComponentType<{ className?: string }>, color: { text: string, bg: string, dot: string } } } = {
-  "formation-ia": {
-    icon: Code,
+  pentest: {
+    icon: Shield,
     color: { text: "text-blue-600 dark:text-blue-400", bg: "from-blue-500/20 to-cyan-500/20", dot: "bg-blue-500" }
   },
-  sensibilisation: {
-    icon: Users,
-    color: { text: "text-green-600 dark:text-green-400", bg: "from-green-500/20 to-emerald-500/20", dot: "bg-green-500" }
-  },
-  ctf: {
-    icon: Target,
-    color: { text: "text-cyan-600 dark:text-cyan-400", bg: "from-cyan-500/20 to-blue-500/20", dot: "bg-cyan-500" }
-  },
-  "audit-securite": {
+  audit: {
     icon: Search,
     color: { text: "text-emerald-600 dark:text-emerald-400", bg: "from-emerald-500/20 to-green-500/20", dot: "bg-emerald-500" }
   },
-  "pentest-web": {
-    icon: Zap,
-    color: { text: "text-blue-600 dark:text-blue-400", bg: "from-blue-500/20 to-indigo-500/20", dot: "bg-blue-500" }
-  },
-  "pentest-infra": {
-    icon: Shield,
-    color: { text: "text-teal-600 dark:text-teal-400", bg: "from-teal-500/20 to-cyan-500/20", dot: "bg-teal-500" }
+  training: {
+    icon: GraduationCap,
+    color: { text: "text-cyan-600 dark:text-cyan-400", bg: "from-cyan-500/20 to-blue-500/20", dot: "bg-cyan-500" }
   },
 };
 
@@ -118,7 +107,7 @@ export function ServicesPageContent() {
           </p>
         </motion.div>
 
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid gap-8 lg:grid-cols-3">
           {site.services.map((service, index) => {
             const config = serviceConfig[service.slug] || {
               icon: Shield,
@@ -129,33 +118,58 @@ export function ServicesPageContent() {
 
             return (
               <ServiceBentoCard key={service.slug} color={colors.bg} delay={index * 0.1}>
-                <div className="relative flex h-full flex-col overflow-hidden p-8">
+                <div className="relative flex h-full flex-col overflow-hidden">
                   <div className="absolute right-0 top-0 p-4 opacity-10 transition-opacity duration-500 group-hover:opacity-20">
                     <IconComponent className="h-40 w-40 rotate-12" />
                   </div>
 
                   <div className="relative z-10 flex h-full flex-col">
-                    <div className="mb-6 flex items-center gap-4">
+                    <CardHeader className="gap-4">
+                      <div className="flex items-center gap-4">
                       <div className={cn("flex h-14 w-14 items-center justify-center rounded-xl border border-black/10 bg-gradient-to-br dark:border-white/10", colors.bg)}>
                         <IconComponent className={cn("h-7 w-7", colors.text)} />
                       </div>
                       <div>
-                        <div className={cn("mb-1 text-xs font-mono uppercase tracking-wider", colors.text)}>Service</div>
-                        <h2 className="text-2xl font-bold text-foreground">{service.title}</h2>
+                        <Badge variant="outline" className={cn("mb-2 border-current/20", colors.text)}>Offre</Badge>
+                        <CardTitle className="text-2xl">{service.title}</CardTitle>
+                      </div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="flex flex-1 flex-col">
+                    <CardDescription className="mb-8 text-lg leading-relaxed">
+                      {service.description}
+                    </CardDescription>
+
+                    <div className="mb-6 grid gap-3">
+                      <div className="rounded-xl border border-border/60 bg-background/50 p-3">
+                        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                          <CheckCircle className="size-3" />
+                          Livrable clé
+                        </div>
+                        <div className="mt-2 text-sm font-semibold text-foreground">{service.deliverables[0]}</div>
+                      </div>
+                      <div className="rounded-xl border border-border/60 bg-background/50 p-3">
+                        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                          <Goal className="size-3" />
+                          Résultat
+                        </div>
+                        <div className="mt-2 text-sm font-semibold text-foreground">{service.outcome}</div>
                       </div>
                     </div>
 
-                    <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
-                      {service.description}
-                    </p>
+                    <div className="mb-6 rounded-xl border border-border/60 bg-background/50 p-4">
+                        <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Idéal pour</div>
+                        <div className="mt-2 text-sm font-semibold text-foreground">{service.bestFor}</div>
+                    </div>
 
-                    <div className="mb-8 grid gap-6 sm:grid-cols-2">
+                    <div className="mb-8 grid gap-6">
                       <div>
                         <div className="mb-4 flex items-center gap-2">
                           <CheckCircle className={cn("h-5 w-5", colors.text)} />
                           <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">Livrables</h3>
                         </div>
-                        <ul className="space-y-2">
+                        <ul className="flex flex-col gap-2">
                           {service.deliverables.map((deliverable) => (
                             <li key={deliverable} className="flex items-start gap-3 text-sm text-muted-foreground">
                               <div className={cn("mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full", colors.dot)} />
@@ -167,11 +181,11 @@ export function ServicesPageContent() {
 
                       <div>
                         <div className="mb-4 flex items-center gap-2">
-                          <Zap className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
-                          <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">Benefices</h3>
+                          <Target className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                          <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">Résultat attendu</h3>
                         </div>
-                        <ul className="space-y-2">
-                          {service.benefits.map((benefit) => (
+                        <ul className="flex flex-col gap-2">
+                          {[service.outcome, ...service.benefits.slice(0, 2)].map((benefit) => (
                             <li key={benefit} className="flex items-start gap-3 text-sm text-muted-foreground">
                               <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-yellow-500" />
                               <span>{benefit}</span>
@@ -181,11 +195,17 @@ export function ServicesPageContent() {
                       </div>
                     </div>
 
-                    <Link href={getServiceHref(service.slug)} className={cn("mt-auto inline-flex items-center gap-2 text-sm font-medium transition-colors", colors.text)}>
+                    <div className="mb-8 rounded-xl border border-destructive/15 bg-destructive/5 p-4">
+                      <div className="text-xs uppercase tracking-[0.2em] text-destructive">Pas idéal si</div>
+                      <p className="mt-2 text-sm text-muted-foreground">{service.notFor}</p>
+                    </div>
+
+                    <Link href="/contact" className={cn(buttonVariants({ variant: "ghost" }), "mt-auto justify-start px-0 hover:bg-transparent", colors.text)}>
                       <Target className="h-4 w-4" />
-                      Voir le detail
+                      Me contacter
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Link>
+                    </CardContent>
                   </div>
                 </div>
               </ServiceBentoCard>
@@ -201,13 +221,13 @@ export function ServicesPageContent() {
         >
           <ServiceBentoCard color="from-green-500/20 to-blue-500/20" className="mx-auto max-w-2xl">
             <div className="p-8 text-center">
-              <h3 className="mb-4 text-2xl font-bold text-foreground">Besoin d&apos;un service personnalise ?</h3>
+              <h3 className="mb-4 text-2xl font-bold text-foreground">Besoin d&apos;un cadrage rapide ?</h3>
               <p className="mb-6 text-muted-foreground">
-                Chaque projet est unique. Contactez-moi pour discuter de vos besoins specifiques.
+                Décrivez votre contexte, votre périmètre et votre besoin. Je vous réponds avec le bon format d&apos;intervention.
               </p>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-blue-500 px-6 py-3 font-medium text-white transition-opacity hover:opacity-90"
+                className={buttonVariants({ size: "lg" })}
               >
                 Me contacter
                 <ArrowRight className="h-4 w-4" />

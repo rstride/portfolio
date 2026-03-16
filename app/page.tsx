@@ -6,20 +6,20 @@ import { BackToTopButton } from "@/components/back-to-top-button";
 
 export default function Home() {
   return (
-    <div className="relative">
+    <div className="relative overflow-x-hidden">
       <section id="hero" className="min-h-screen">
         <Hero />
       </section>
 
-      <section id="projects" className="py-24 lg:py-32 bg-section-alt">
+      <section id="projects" className="py-20 lg:py-24">
         <ProjectsShowcase />
       </section>
 
-      <section id="services" className="py-24 lg:py-32">
+      <section id="services" className="bg-section-alt/40 py-20 lg:py-24">
         <ServicesSection />
       </section>
 
-      <section id="contact" className="py-24 lg:py-32 bg-section-alt">
+      <section id="contact" className="py-20 lg:py-24">
         <ContactSection />
       </section>
 

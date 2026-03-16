@@ -1,31 +1,36 @@
 "use client";
+
 import Image from "next/image";
-import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
+
+import { motion, useInView } from "framer-motion";
 import {
-  MessageSquare,
-  Send,
-  Lock,
+  AlertCircle,
   CheckCircle,
   Github,
-  Linkedin,
   Globe,
-  AlertCircle
+  Linkedin,
+  Lock,
+  MessageSquare,
+  Send,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+
+import { landingCardClass, landingReveal, SectionIntro } from "@/components/landing/shared";
 import { site } from "@/content/site";
-import { BackgroundEffects } from "@/components/background-effects";
-import { usePerformanceMode } from "@/hooks/usePerformanceMode";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { type ContactFormData, getContactFieldErrors } from "@/lib/contact-schema";
 import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const iconMap: Record<string, LucideIcon> = {
   github: Github,
   linkedin: Linkedin,
-  prismasec: Globe, // Sera remplacé par un logo personnalisé
+  prismasec: Globe,
 };
 
 const EMPTY_FORM_DATA: ContactFormData = {
@@ -39,8 +44,7 @@ const EMPTY_FORM_DATA: ContactFormData = {
 
 export function ContactSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
-  const performanceMode = usePerformanceMode();
+  useInView(ref, { once: true, amount: 0.2 });
 
   const [formData, setFormData] = useState<ContactFormData>(EMPTY_FORM_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,14 +67,17 @@ export function ContactSection() {
     const { name } = e.target;
     const nextFormData = { ...formData, [name]: e.target.value };
     setFormData(nextFormData);
-    setTouched(prev => ({ ...prev, [name]: true }));
+    setTouched((prev) => ({ ...prev, [name]: true }));
     setErrors(getContactFieldErrors(nextFormData));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const allTouched = Object.keys(formData).reduce((acc, key) => ({ ...acc, [key]: true }), {});
+    const allTouched = Object.keys(formData).reduce(
+      (acc, key) => ({ ...acc, [key]: true }),
+      {}
+    );
     setTouched(allTouched);
     setSubmitError(null);
 
@@ -83,10 +90,10 @@ export function ContactSection() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
+      const response = await fetch("/api/contact", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -94,7 +101,7 @@ export function ContactSection() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de l\'envoi');
+        throw new Error(data.error || "Erreur lors de l'envoi");
       }
 
       setSubmitStatus("success");
@@ -106,9 +113,7 @@ export function ContactSection() {
         setErrors({});
         setTouched({});
       }, 4000);
-
     } catch (error) {
-      console.error('Erreur lors de l\'envoi:', error);
       setSubmitStatus("error");
       if (error instanceof Error) {
         setSubmitError(error.message);
@@ -125,50 +130,40 @@ export function ContactSection() {
   };
 
   return (
-    <div ref={ref} className="relative overflow-hidden">
-      {/* Harmonious Background Effects */}
-      <BackgroundEffects
-        variant="section"
-        intensity={performanceMode === 'low' ? 'low' : performanceMode === 'high' ? 'high' : 'medium'}
+    <div ref={ref} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <SectionIntro
+        eyebrow="Contact"
+        title={site.sections.contactTitle}
+        description={site.sections.contactIntro}
       />
 
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 1, y: 0 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-20"
-        >
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gradient-primary mb-6 leading-tight pb-2">
-            {site.sections.contactTitle}
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            {site.sections.contactIntro}
-          </p>
-        </motion.div>
+      <motion.div
+        {...landingReveal}
+        transition={{ ...landingReveal.transition, delay: 0.08 }}
+        className="mx-auto mt-8 grid max-w-5xl gap-3 sm:grid-cols-3"
+      >
+        {site.sales.qualification.map((item) => (
+          <div key={item} className={cn("rounded-xl px-4 py-3 text-sm text-muted-foreground", landingCardClass)}>
+            {item}
+          </div>
+        ))}
+      </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-16 lg:gap-20 items-start">
-          {/* Contact form */}
-          <motion.div
-            initial={{ opacity: 1, x: 0 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="lg:col-span-2"
-          >
-            <div className="glass rounded-2xl p-8">
-              <motion.div
-                className="flex items-center gap-3 mb-6"
-                whileHover={{ x: 5 }}
-              >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-foreground">Formulaire de contact</h3>
-              </motion.div>
+      <div className="mt-12 grid items-start gap-8 lg:grid-cols-[1.3fr_0.7fr]">
+        <motion.div {...landingReveal} transition={{ ...landingReveal.transition, delay: 0.12 }}>
+          <Card className={cn(landingCardClass, "rounded-2xl")}>
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                <MessageSquare className="size-5" />
+              </div>
+              <CardHeader className="p-0">
+                <CardTitle className="text-xl">Formulaire de contact</CardTitle>
+              </CardHeader>
+            </div>
 
+            <CardContent className="p-0 pt-6">
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-6">
+                <div className="grid gap-6 sm:grid-cols-2">
                   <input
                     type="text"
                     name="website"
@@ -179,13 +174,11 @@ export function ContactSection() {
                     aria-hidden="true"
                     className="hidden"
                   />
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileFocus={{ scale: 1.02 }}
-                  >
-                    <label className="block text-sm font-medium text-foreground mb-2">
+
+                  <div>
+                    <Label className="mb-2 block">
                       Nom <span className="text-red-400">*</span>
-                    </label>
+                    </Label>
                     <Input
                       type="text"
                       name="name"
@@ -193,29 +186,23 @@ export function ContactSection() {
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={cn(
-                        "bg-white/50 dark:bg-black/20 border-black/5 dark:border-white/10",
-                        errors.name && touched.name ? "border-red-500/50 focus-visible:ring-red-500/20" : "focus-visible:ring-green-500/20"
+                        "border-black/5 bg-white/50 dark:border-white/10 dark:bg-black/20",
+                        errors.name && touched.name
+                          ? "border-red-500/50 focus-visible:ring-red-500/20"
+                          : "focus-visible:ring-green-500/20"
                       )}
                       placeholder="Votre nom"
                       required
                     />
-                    {errors.name && touched.name && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-400 text-xs mt-1"
-                      >
-                        {errors.name}
-                      </motion.p>
-                    )}
-                  </motion.div>
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileFocus={{ scale: 1.02 }}
-                  >
-                    <label className="block text-sm font-medium text-foreground mb-2">
+                    {errors.name && touched.name ? (
+                      <p className="mt-1 text-xs text-red-400">{errors.name}</p>
+                    ) : null}
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">
                       Email <span className="text-red-400">*</span>
-                    </label>
+                    </Label>
                     <Input
                       type="email"
                       name="email"
@@ -223,66 +210,50 @@ export function ContactSection() {
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={cn(
-                        "bg-white/50 dark:bg-black/20 border-black/5 dark:border-white/10",
-                        errors.email && touched.email ? "border-red-500/50 focus-visible:ring-red-500/20" : "focus-visible:ring-green-500/20"
+                        "border-black/5 bg-white/50 dark:border-white/10 dark:bg-black/20",
+                        errors.email && touched.email
+                          ? "border-red-500/50 focus-visible:ring-red-500/20"
+                          : "focus-visible:ring-green-500/20"
                       )}
                       placeholder="contact@entreprise.com"
                       required
                     />
-                    {errors.email && touched.email && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-400 text-xs mt-1"
-                      >
-                        {errors.email}
-                      </motion.p>
-                    )}
-                  </motion.div>
+                    {errors.email && touched.email ? (
+                      <p className="mt-1 text-xs text-red-400">{errors.email}</p>
+                    ) : null}
+                  </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileFocus={{ scale: 1.02 }}
-                  >
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Entreprise
-                    </label>
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div>
+                    <Label className="mb-2 block">Entreprise</Label>
                     <Input
                       type="text"
                       name="company"
                       value={formData.company}
                       onChange={handleInputChange}
-                      className="bg-white/50 dark:bg-black/20 border-black/5 dark:border-white/10 focus-visible:ring-green-500/20"
-                      placeholder="Nom de votre entreprise"
+                      className="border-black/5 bg-white/50 dark:border-white/10 dark:bg-black/20 focus-visible:ring-green-500/20"
+                      placeholder="Nom de votre entreprise ou produit"
                     />
-                  </motion.div>
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileFocus={{ scale: 1.02 }}
-                  >
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Téléphone
-                    </label>
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">Téléphone</Label>
                     <Input
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="bg-white/50 dark:bg-black/20 border-black/5 dark:border-white/10 focus-visible:ring-green-500/20"
+                      className="border-black/5 bg-white/50 dark:border-white/10 dark:bg-black/20 focus-visible:ring-green-500/20"
                       placeholder="06 XX XX XX XX"
                     />
-                  </motion.div>
+                  </div>
                 </div>
 
-                <motion.div
-                  whileHover={{ scale: 1.01 }}
-                  whileFocus={{ scale: 1.01 }}
-                >
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                <div>
+                  <Label className="mb-2 block">
                     Message <span className="text-red-400">*</span>
-                  </label>
+                  </Label>
                   <Textarea
                     name="message"
                     value={formData.message}
@@ -290,175 +261,178 @@ export function ContactSection() {
                     onBlur={handleBlur}
                     rows={6}
                     className={cn(
-                      "bg-white/50 dark:bg-black/20 border-black/5 dark:border-white/10 resize-none",
-                      errors.message && touched.message ? "border-red-500/50 focus-visible:ring-red-500/20" : "focus-visible:ring-green-500/20"
+                      "resize-none border-black/5 bg-white/50 dark:border-white/10 dark:bg-black/20",
+                      errors.message && touched.message
+                        ? "border-red-500/50 focus-visible:ring-red-500/20"
+                        : "focus-visible:ring-green-500/20"
                     )}
-                    placeholder="Décrivez votre projet, vos défis de sécurité ou la vulnérabilité que vous souhaitez signaler..."
+                    placeholder="Décrivez le périmètre, la stack, l'échéance et ce que vous attendez de la mission..."
                     required
                   />
-                  <div className="flex justify-between items-center mt-1">
-                    {errors.message && touched.message && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-400 text-xs"
-                      >
-                        {errors.message}
-                      </motion.p>
-                    )}
-                    <p className={`text-xs ml-auto ${formData.message.length < 10 ? 'text-muted-foreground' : 'text-green-400'}`}>
+                  <div className="mt-1 flex items-center justify-between">
+                    {errors.message && touched.message ? (
+                      <p className="text-xs text-red-400">{errors.message}</p>
+                    ) : <span />}
+                    <p
+                      className={cn(
+                        "ml-auto text-xs",
+                        formData.message.length < 10 ? "text-muted-foreground" : "text-green-400"
+                      )}
+                    >
                       {formData.message.length}/500 caractères minimum
                     </p>
                   </div>
-                </motion.div>
+                  <p className="mt-2 text-xs text-muted-foreground">{site.sales.faqHint}</p>
+                </div>
 
-                {/* Status messages */}
-                {submitStatus === "error" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-2 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400"
-                  >
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    <p className="text-sm">
-                      {submitError || "Une erreur technique s'est produite. Veuillez reessayer ou me contacter directement a contact@romainstride.com."}
-                    </p>
-                  </motion.div>
-                )}
+                {submitStatus === "error" ? (
+                  <Alert variant="destructive">
+                    <AlertCircle className="size-4" />
+                    <AlertDescription>
+                      {submitError ||
+                        "Une erreur technique s'est produite. Veuillez reessayer ou me contacter directement a contact@romainstride.com."}
+                    </AlertDescription>
+                  </Alert>
+                ) : null}
 
-                {submitStatus === "success" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-2 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400"
-                  >
-                    <CheckCircle className="w-4 h-4 flex-shrink-0" />
-                    <p className="text-sm">
+                {submitStatus === "success" ? (
+                  <Alert className="border-green-500/20 bg-green-500/10 text-green-500 dark:text-green-400">
+                    <CheckCircle className="size-4" />
+                    <AlertDescription className="text-green-500 dark:text-green-400">
                       Message envoyé avec succès ! Je vous répondrai dans les 24h ouvrées.
-                    </p>
-                  </motion.div>
-                )}
+                    </AlertDescription>
+                  </Alert>
+                ) : null}
 
                 <Button
                   type="submit"
                   disabled={isSubmitting || submitStatus === "success" || Object.keys(errors).length > 0}
-                  className={cn(
-                    "w-full relative overflow-hidden transition-all duration-300",
-                    Object.keys(errors).length > 0 ? "opacity-50 cursor-not-allowed" : ""
-                  )}
+                  className={cn("w-full", Object.keys(errors).length > 0 ? "cursor-not-allowed opacity-50" : "")}
                   size="lg"
                 >
-                  <motion.span
-                    className="relative z-10 flex items-center justify-center gap-2"
-                    animate={isSubmitting ? { x: [0, 2, 0] } : {}}
-                    transition={{ duration: 0.5, repeat: isSubmitting ? Infinity : 0 }}
-                  >
-                    {submitStatus === "success" ? (
-                      <>
-                        <CheckCircle className="w-4 h-4" />
-                        Message envoyé
-                      </>
-                    ) : isSubmitting ? (
-                      <>
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        >
-                          <Lock className="w-4 h-4" />
-                        </motion.div>
-                        Envoi en cours
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        {Object.keys(errors).length > 0 ? 'Corrigez les erreurs' : 'Envoyer le message'}
-                      </>
-                    )}
-                  </motion.span>
-                  {Object.keys(errors).length === 0 && (
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600"
-                      initial={{ x: "-100%" }}
-                      whileHover={{ x: "0%" }}
-                      transition={{ duration: 0.3 }}
-                    />
+                  {submitStatus === "success" ? (
+                    <>
+                      <CheckCircle className="size-4" />
+                      Message envoyé
+                    </>
+                  ) : isSubmitting ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Lock className="size-4" />
+                      </motion.div>
+                      Envoi en cours
+                    </>
+                  ) : (
+                    <>
+                      <Send className="size-4" />
+                      {Object.keys(errors).length > 0 ? "Corrigez les erreurs" : "Recevoir un cadrage"}
+                    </>
                   )}
                 </Button>
               </form>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-            </div>
-          </motion.div>
+        <motion.div
+          {...landingReveal}
+          transition={{ ...landingReveal.transition, delay: 0.16 }}
+          className="space-y-6 lg:self-start"
+        >
+          <Card className={cn(landingCardClass, "rounded-2xl")}>
+            <CardHeader>
+              <CardTitle className="text-lg">Quand me contacter</CardTitle>
+              <CardDescription>
+                Les demandes qui avancent le plus vite ressemblent souvent à ça.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {site.sales.contactReasons.map((reason) => (
+                <div key={reason} className="rounded-xl border border-border/60 bg-background/60 p-4">
+                  <p className="text-sm text-muted-foreground">{reason}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
 
-          {/* Sidebar */}
-          <motion.div
-            initial={{ opacity: 1, x: 0 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="space-y-8 lg:self-center"
-          >
+          <Card className={cn(landingCardClass, "rounded-2xl")}>
+            <CardHeader>
+              <CardTitle className="text-lg">Comment ça se passe</CardTitle>
+              <CardDescription>
+                Un processus simple pour cadrer vite et éviter les allers-retours inutiles.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {site.sales.process.map((step, index) => (
+                <div key={step} className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/60 p-4">
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                    {index + 1}
+                  </div>
+                  <p className="text-sm text-muted-foreground">{step}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
 
-            {/* Social links */}
-            <div className="glass rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-6">Réseaux sociaux</h3>
-              <div className="space-y-4">
-                {site.socials.map((link, index) => {
-                  const key = link.label.toLowerCase();
-                  const IconComponent = iconMap[key] || Globe;
-                  const color =
-                    key === "github" ? "from-gray-600 to-gray-800" :
-                      key === "linkedin" ? "from-blue-600 to-blue-800" :
-                        key === "prismasec" ? "from-green-600 to-green-800" :
-                          "from-green-500 to-green-700";
-                  return (
-                    <motion.a
-                      key={link.label}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      initial={{ opacity: 1, x: 0 }}
-                      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.8 + (index * 0.1) }}
-                      whileHover={{ scale: 1.02, x: 5 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-3 p-3 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/10 hover:border-green-500/50 transition-colors group"
-                    >
-                      <motion.div
-                        className={`w-8 h-8 rounded-lg bg-gradient-to-r ${color} flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden`}
-                        whileHover={{ rotate: 10 }}
-                      >
-                        {key === "prismasec" ? (
-                          <Image
-                            src="/PrismaLogo.svg"
-                            alt="PrismaSec Logo"
-                            width={20}
-                            height={20}
-                            className="w-5 h-5 invert brightness-0"
-                          />
-                        ) : (
-                          <IconComponent className="w-4 h-4 text-white" />
-                        )}
-                      </motion.div>
-                      <div>
-                        <div className="font-medium text-foreground group-hover:text-green-400 transition-colors">
-                          {link.label}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {link.label === "GitHub" ? "Code source & outils de sécurité" :
-                            link.label === "LinkedIn" ? "Profil professionnel" :
-                              link.label === "PrismaSec" ? "Entreprise de cybersécurité" :
-                                link.label}
-                        </div>
+          <Card className={cn(landingCardClass, "rounded-2xl")}>
+            <CardHeader>
+              <CardTitle className="text-lg">Réseaux sociaux</CardTitle>
+              <CardDescription>
+                Pour vérifier le parcours, les projets et l&apos;écosystème autour de PrismaSec.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {site.socials.map((link) => {
+                const key = link.label.toLowerCase();
+                const IconComponent = iconMap[key] || Globe;
+                const color =
+                  key === "github"
+                    ? "from-gray-600 to-gray-800"
+                    : key === "linkedin"
+                      ? "from-blue-600 to-blue-800"
+                      : "from-green-600 to-green-800";
+
+                return (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/60 p-3 transition-colors hover:bg-accent/40"
+                  >
+                    <div className={`flex size-8 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-r ${color}`}>
+                      {key === "prismasec" ? (
+                        <Image
+                          src="/PrismaLogo.svg"
+                          alt="PrismaSec Logo"
+                          width={20}
+                          height={20}
+                          className="size-5 invert brightness-0"
+                        />
+                      ) : (
+                        <IconComponent className="size-4 text-white" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-medium text-foreground">{link.label}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {link.label === "GitHub"
+                          ? "Code source & outils de sécurité"
+                          : link.label === "LinkedIn"
+                            ? "Profil professionnel"
+                            : "Entreprise de cybersécurité"}
                       </div>
-                    </motion.a>
-                  );
-                })}
-              </div>
-            </div>
-
-
-          </motion.div>
-        </div>
-      </section>
+                    </div>
+                  </a>
+                );
+              })}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 }

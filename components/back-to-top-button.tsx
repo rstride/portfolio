@@ -1,6 +1,8 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function BackToTopButton() {
   const { scrollY } = useScroll();
@@ -8,27 +10,28 @@ export function BackToTopButton() {
   const scale = useTransform(scrollY, [300, 500], [0.8, 1]);
 
   return (
-    <motion.button
-      type="button"
-      aria-label="Revenir en haut"
-      className="fixed bottom-8 right-8 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg"
+    <motion.div
+      className="fixed bottom-8 right-8 z-40"
       style={{ opacity, scale }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
-      onClick={() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }}
     >
-      <motion.svg
-        className="h-6 w-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        animate={{ y: [0, -3, 0] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
+      <Button
+        type="button"
+        size="icon"
+        aria-label="Revenir en haut"
+        className="size-12 shadow-lg"
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
       >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
-      </motion.svg>
-    </motion.button>
+        <motion.div
+          animate={{ y: [0, -3, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <ArrowUp className="size-5" />
+        </motion.div>
+      </Button>
+    </motion.div>
   );
 }

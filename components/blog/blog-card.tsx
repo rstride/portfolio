@@ -4,8 +4,10 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Calendar, ArrowRight, Tag } from "lucide-react";
 import { PostData } from "@/lib/posts";
-import { Card } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface BlogCardProps {
     post: PostData;
@@ -36,7 +38,7 @@ export function BlogCard({ post, index }: BlogCardProps) {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
 
-                    <div className="p-6 flex flex-col h-[calc(100%-aspect-video)]">
+                    <CardHeader className="p-6 pb-3">
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
                             <Calendar className="w-3.5 h-3.5" />
                             <time dateTime={post.date}>
@@ -48,14 +50,16 @@ export function BlogCard({ post, index }: BlogCardProps) {
                             </time>
                         </div>
 
-                        <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                        <CardTitle className="text-xl group-hover:text-primary transition-colors line-clamp-2">
                             {post.title}
-                        </h3>
+                        </CardTitle>
 
-                        <p className="text-muted-foreground text-sm line-clamp-3 mb-6 flex-grow">
+                        <CardDescription className="mt-3 line-clamp-3 text-sm">
                             {post.excerpt}
-                        </p>
+                        </CardDescription>
+                    </CardHeader>
 
+                        <CardContent className="flex flex-1 flex-col justify-end p-6 pt-0">
                         <div className="flex items-center justify-between mt-auto">
                             <div className="flex flex-wrap gap-2">
                                 {post.tags && post.tags.slice(0, 2).map((tag) => (
@@ -65,12 +69,12 @@ export function BlogCard({ post, index }: BlogCardProps) {
                                 ))}
                             </div>
 
-                            <span className="inline-flex items-center text-sm font-medium text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                            <span className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "pointer-events-none px-0 text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300")}>
                                 Lire l&apos;article
                                 <ArrowRight className="w-4 h-4 ml-1" />
                             </span>
                         </div>
-                    </div>
+                        </CardContent>
                 </Card>
             </Link>
         </motion.div>

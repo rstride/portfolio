@@ -1,6 +1,9 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DisclosurePage() {
   const paragraphs = [
@@ -33,6 +36,7 @@ export default function DisclosurePage() {
           transition={{ duration: 0.6 }}
           className="mb-10"
         >
+          <Badge variant="outline" className="mb-4">Ethique</Badge>
           <h1 className="text-4xl font-bold tracking-tight mb-4">
             Divulgation responsable & éthique
           </h1>
@@ -60,9 +64,12 @@ export default function DisclosurePage() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mt-8 space-y-6"
         >
-          <div className="glass rounded-2xl p-6">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">Principes fondamentaux</h2>
-            <ul className="space-y-3">
+          <Card className="glass rounded-2xl">
+            <CardHeader>
+              <CardTitle className="text-xl">Principes fondamentaux</CardTitle>
+            </CardHeader>
+            <CardContent>
+            <ul className="flex flex-col gap-3">
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0" />
                 <span className="text-sm text-muted-foreground">Autorisation explicite et respect des conditions d&apos;utilisation des programmes</span>
@@ -80,17 +87,22 @@ export default function DisclosurePage() {
                 <span className="text-sm text-muted-foreground">Pas de publication d&apos;exploits avant correction et accord des parties</span>
               </li>
             </ul>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="glass rounded-2xl p-6">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">Recherche offensive & pédagogie</h2>
+          <Card className="glass rounded-2xl">
+            <CardHeader>
+              <CardTitle className="text-xl">Recherche offensive & pédagogie</CardTitle>
+            </CardHeader>
+            <CardContent>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Les travaux relatifs aux outils offensifs et à l&apos;analyse de sécurité sont strictement orientés pédagogie,
               détection et amélioration des défenses. Aucune assistance opérationnelle à un usage malveillant n&apos;est fournie.
               Mon objectif est de contribuer à renforcer la sécurité globale en partageant connaissances et méthodologies
               de manière responsable et constructive.
             </p>
-          </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         <motion.div
@@ -99,11 +111,14 @@ export default function DisclosurePage() {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="mt-10 flex flex-wrap items-center gap-4"
         >
-          <Link href="/contact" className="btn-primary">Discuter d&apos;un projet</Link>
-          <Link href="/services" className="btn-outline">Voir mes services</Link>
+          <Link href="/contact" className={buttonVariants()}>
+            Discuter d&apos;un projet
+          </Link>
+          <Link href="/services" className={buttonVariants({ variant: "outline" })}>
+            Voir mes services
+          </Link>
         </motion.div>
       </div>
     </section>
   );
 }
-

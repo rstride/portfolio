@@ -3,6 +3,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { site } from "@/content/site";
 import { Shield, Lock, Terminal } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export function Footer() {
   return (
@@ -75,39 +78,27 @@ export function Footer() {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <motion.div whileHover={{ scale: 1.05, y: -1 }}>
-              <Link
-                href="/legal/privacy"
-                className="text-muted-foreground hover:text-green-400 transition-colors duration-300 relative group"
-              >
-                {site.strings.footerPrivacyLabel}
-                <motion.div
-                  className="absolute bottom-0 left-0 w-full h-px bg-green-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
-                />
-              </Link>
-            </motion.div>
+            <Link href="/legal/privacy" className={buttonVariants({ variant: "ghost", size: "sm" }) + " px-0"}>
+              {site.strings.footerPrivacyLabel}
+            </Link>
 
-            <motion.div whileHover={{ scale: 1.05, y: -1 }}>
-              <Link
-                href="/legal/disclosure"
-                className="text-muted-foreground hover:text-blue-400 transition-colors duration-300 relative group"
-              >
-                Divulgation
-                <motion.div
-                  className="absolute bottom-0 left-0 w-full h-px bg-blue-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
-                />
-              </Link>
-            </motion.div>
+            <Link href="/legal/disclosure" className={buttonVariants({ variant: "ghost", size: "sm" }) + " px-0"}>
+              Divulgation
+            </Link>
+
+            <Separator orientation="vertical" className="hidden h-4 md:block" />
 
             {/* "Sécurisé par PrismaSec" replaces the button and links to prismasec.fr */}
             <a
               href="https://prismasec.fr"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-emerald-400 transition-colors"
+              className="flex items-center gap-2"
             >
-              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              <span>Sécurisé par PrismaSec</span>
+              <Badge variant="outline" className="gap-2 border-emerald-400/30 text-muted-foreground">
+                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                <span>Sécurisé par PrismaSec</span>
+              </Badge>
             </a>
           </motion.div>
         </motion.div>

@@ -9,6 +9,9 @@ export type Service = {
   description: string;
   deliverables: string[];
   benefits: string[];
+  bestFor: string;
+  outcome: string;
+  notFor: string;
 };
 
 export type KPI = {
@@ -31,27 +34,47 @@ export const site = {
     { href: "/blog", label: "Blog" },
     { href: "/contact", label: "Contact" },
   ],
+  serviceNavigation: [
+    {
+      href: "/services/pentest",
+      label: "Pentest",
+      description: "Pentest web/API professionnel avec preuves d'impact.",
+    },
+    {
+      href: "/services/audit",
+      label: "Audit",
+      description: "Audit sécurité avec feuille de route priorisée.",
+    },
+    {
+      href: "/services/training",
+      label: "Training",
+      description: "CTF et sensibilisation pour écoles et entreprises.",
+    },
+  ],
   hero: {
-    headlineA: "Hacker Éthique",
-    headlineB: "& Pentester",
+    eyebrow: "3 offres claires pour vendre une mission de sécurité sans flou",
+    headlineA: "Pentest, audit",
+    headlineB: "et training sécurité",
     subtext:
-      "Je trouve les failles avant les attaquants. Tests d'intrusion, bug bounty et conseil en sécurité offensive pour les entreprises qui veulent vraiment se protéger.",
+      "Je propose trois offres concrètes: pentest web/API professionnel, audit sécurité avec feuille de route priorisée, et CTF ou sensibilisation pour écoles et entreprises. Chaque mission est cadrée avec des livrables clairs, un résultat attendu et un échange direct avec vous.",
     ctaPrimary: {
-      label: "Discuter de votre projet",
-      href: "/contact",
+      label: "Réserver un appel découverte",
+      href: "https://cal.com/romainstride/intro",
     },
     ctaSecondary: {
-      label: "Découvrir mes prestations",
+      label: "Voir les offres packagées",
       href: "/services",
     },
+    proofStrip: [
+      "Livrables définis avant démarrage",
+      "Restitution orale incluse",
+      "Résultat attendu orienté correction",
+    ],
     specialties: [
       "Pentest Web, API & Auth",
-      "Pentest Infra & Cloud",
-      "Bug bounty & Halls of Fame",
-      "Recherche malware (éthique)",
-      "Divulgation responsable",
-      "Modélisation des menaces",
-      "DevSecOps",
+      "Audit sécurité priorisé",
+      "CTF & sensibilisation",
+      "Restitution actionnable",
     ],
   },
   socials: [
@@ -60,63 +83,44 @@ export const site = {
     { label: "PrismaSec", href: "https://prismasec.fr" },
   ] as SocialLink[],
   kpis: [
-    { label: "Bug bounty (YesWeHack)", value: "Actif" },
-    { label: "CTF (orga/part)", value: "Actif" },
-    { label: "Outils open-source", value: "En cours" },
-    { label: "École 42", value: "Alumni" },
+    { label: "Réponse initiale", value: "< 24h ouvrées" },
+    { label: "Offres packagées", value: "3" },
+    { label: "Debrief de restitution", value: "Inclus" },
+    { label: "Contact direct", value: "Oui" },
   ] as KPI[],
   services: [
     {
-      slug: "sensibilisation",
-      title: "Sensibilisation à la cybersécurité",
+      slug: "pentest",
+      title: "Pentest web/API professionnel",
       description:
-        "Sessions concrètes de sensibilisation (phishing, secrets, Shadow IT) adaptées à vos métiers, axées sur les bons réflexes.",
-      deliverables: ["Sessions live ou en ligne", "Scénarios de phishing", "Guides pratiques"],
-      benefits: ["Réduction du risque humain", "Culture sécurité renforcée", "Mesure de l’efficacité"],
+        "Je teste vos applications web, APIs, auth flows et espaces clients pour identifier les vulnérabilités réellement exploitables avant qu'elles ne deviennent un incident, un point de blocage ou un risque métier.",
+      deliverables: ["Rapport priorisé avec preuves d'impact", "Debrief technique avec l'équipe", "Retest après corrections"],
+      benefits: ["Visibilité sur le risque réel", "Corrections priorisées", "Confiance avant mise en production"],
+      bestFor: "Organisations avec application web, API ou portail exposé qui veulent une validation sérieuse du risque.",
+      outcome: "Une liste claire des vulnérabilités exploitables et un plan concret pour corriger vite.",
+      notFor: "Les équipes qui veulent uniquement un scan automatique ou un rapport sans échange technique.",
     },
     {
-      slug: "ctf",
-      title: "Organisation de CTF",
+      slug: "audit",
+      title: "Audit sécurité",
       description:
-        "Organisation de CTF pédagogiques (débutant à avancé) pour former, challenger et fédérer vos équipes autour de la sécurité offensive.",
-      deliverables: ["Challenges sur mesure", "Plateforme & scoring", "Briefing et debriefing"],
-      benefits: ["Apprentissage ludique", "Esprit d’équipe", "Détection de talents"],
+        "J'évalue votre posture sécurité de manière pragmatique: exposition, configurations clés, gouvernance, accès, sauvegardes et priorités de remédiation.",
+      deliverables: ["État des lieux sécurité", "Feuille de route priorisée", "Restitution orientée décision"],
+      benefits: ["Décisions plus claires", "Priorités réalistes", "Réduction du risque sans dispersion"],
+      bestFor: "Structures qui veulent savoir quoi traiter en premier sans lancer une mission lourde ou floue.",
+      outcome: "Une roadmap sécurité lisible avec quick wins, chantiers prioritaires et ordre d'exécution.",
+      notFor: "Les structures qui cherchent une certification clé en main ou un audit purement documentaire.",
     },
     {
-      slug: "audit-securite",
-      title: "Audit de sécurité",
+      slug: "training",
+      title: "CTF / sensibilisation pour écoles et entreprises",
       description:
-        "Évaluation de la posture (politiques, configurations, conformité) avec feuille de route priorisée et actionnable.",
-      deliverables: ["Analyse des politiques", "Vérification de configuration", "Feuille de route"],
-      benefits: ["Visibilité et priorités", "Conformité renforcée", "Décisions éclairées"],
-    },
-    {
-      slug: "pentest-web",
-      title: "Test d’intrusion web",
-      description:
-        "Tests applicatifs (OWASP, logique métier) avec preuves d’impact, priorisation et recommandations claires.",
-      deliverables: ["Rapport détaillé (preuves d’impact)", "Priorisation par risque", "Recommandations concrètes"],
-      benefits: ["Détection des risques majeurs", "Clarté des corrections", "Retests inclus"],
-    },
-    {
-      slug: "pentest-infra",
-      title: "Test d’intrusion infra",
-      description:
-        "Pentest réseau, systèmes et cloud (externe/interne) avec restitution claire et actions de mitigation.",
-      deliverables: ["Cartographie d’attaque", "Tests internes/externe", "Plan de mitigation"],
-      benefits: ["Réduction du périmètre attaquable", "Visibilité complète", "Confiance opérationnelle"],
-    },
-    {
-      slug: "formation-ia",
-      title: "Fondamentaux de l’IA pour la sécu",
-      description:
-        "Bases LLM, prompts, risques et usages maîtrisés côté produit/sécurité (optionnel).",
-      deliverables: [
-        "Ateliers interactifs",
-        "Supports de référence",
-        "Checklist de bonnes pratiques",
-      ],
-      benefits: ["Acculturation rapide", "Usage responsable", "Montée en autonomie"],
+        "Je construis des formats concrets pour faire monter le niveau sécurité: ateliers de sensibilisation, campagnes ciblées et CTF pédagogiques adaptés au niveau du public.",
+      deliverables: ["Programme sur mesure", "Supports ou challenges", "Debrief pédagogique avec points d'action"],
+      benefits: ["Engagement des participants", "Réflexes sécurité renforcés", "Format mémorable et concret"],
+      bestFor: "Écoles, bootcamps et entreprises qui veulent former sans ennuyer leur audience.",
+      outcome: "Des participants qui retiennent les bons réflexes et une session qui a un impact réel après l'événement.",
+      notFor: "Les structures qui veulent uniquement une présentation théorique sans interaction.",
     },
   ] as Service[],
   about: {
@@ -158,14 +162,14 @@ export const site = {
   },
   sections: {
     featuredServicesLabel: "Prestations",
-    servicesTitle: "Services",
+    servicesTitle: "Offres packagées",
     servicesIntro:
-      "Des prestations de sécurité offensive adaptées à votre contexte, avec livrables actionnables et accompagnement à la remédiation.",
+      "Des prestations claires, cadrées et orientées résultat pour acheter une mission de sécurité sans flou sur le livrable.",
     projectsTitle: "Expertise & Réalisations",
-    projectsIntro: "Retour d'expérience terrain, projets concrets et contributions à la communauté cybersécurité.",
+    projectsIntro: "Des preuves de crédibilité, mais surtout une approche orientée impact, priorisation et remédiation.",
     aboutTitle: "À propos",
-    contactTitle: "Parlons Sécurité",
-    contactIntro: "Projet de pentest, audit de sécurité ou question technique ? Je réponds sous 24h ouvrées.",
+    contactTitle: "Parlons de votre périmètre",
+    contactIntro: "Expliquez votre contexte, votre échéance et votre besoin. Je reviens vers vous avec un cadrage, une estimation et la meilleure formule pour avancer.",
     contactLeadPrefix: "Vous préférez échanger ? Prenez rendez-vous sur",
     highlightsTitle: "Points forts",
     methodologiesTitle: "Méthodologies",
@@ -195,70 +199,63 @@ export const site = {
     transfersText: "Les données peuvent être traitées dans l’UE. Je ne vends pas de données personnelles.",
   },
   proofs: [
-    { title: "Participation bug bounty (YesWeHack)", kpi: "Actif" },
-    { title: "Organisation & participation CTF", kpi: "Régulier" },
-    { title: "Outils offensifs à visée pédagogique", kpi: "Open-source" },
-    { title: "Accompagnement à la remédiation", kpi: "Retests" },
+    { title: "Rapports priorisés pour l'équipe tech", kpi: "Actionnables" },
+    { title: "Preuves d'impact sur applications et APIs", kpi: "Concrètes" },
+    { title: "Accompagnement à la correction", kpi: "Debrief + retest" },
+    { title: "Approche responsable et cadrée", kpi: "Sans flou" },
   ],
+  sales: {
+    buyerFit: [
+      "Vous avez un produit web ou une API à tester avant une release ou une vente.",
+      "Vous voulez une vision claire de votre posture sécurité sans mission floue.",
+      "Vous cherchez un format de sensibilisation ou de CTF qui marque vraiment les équipes.",
+    ],
+    process: [
+      "Appel de cadrage de 20 min pour comprendre votre contexte et le périmètre.",
+      "Proposition claire avec livrables, hypothèses et format d'intervention.",
+      "Mission cadrée, restitution orale et suivi de remédiation si nécessaire.",
+    ],
+    contactReasons: [
+      "Vous préparez une mise en production ou un audit client.",
+      "Vous avez besoin d'un pentest web/API ou d'un audit sécurité rapide.",
+      "Vous voulez organiser un atelier, une sensibilisation ou un CTF.",
+    ],
+    qualification: [
+      "Périmètre identifié ou en cours de cadrage",
+      "Besoin concret dans les 30 prochains jours",
+      "Décideur ou référent technique impliqué",
+    ],
+    faqHint: "Le plus simple est de donner le périmètre, la stack, l'échéance et la contrainte principale.",
+  },
   servicePages: {
-    "formation-ia": {
+    pentest: {
       intro:
-        "Je rends vos équipes autonomes sur l’IA générative : comprendre, bien demander, évaluer les risques et intégrer l’IA dans les workflows.",
-      audience: ["Équipes métier", "Produit / Tech", "Direction"],
+        "Je mène des pentests web/API orientés exploitabilité réelle, avec preuves d'impact sûres, priorisation et restitution directement utile à votre équipe produit, technique ou sécurité.",
+      audience: ["Équipes techniques", "Produit / Tech", "Organisations exposées sur le web"],
       process: [
-        "Cadrage des besoins et cas d’usage",
-        "Ateliers interactifs (bases, prompts, risques)",
-        "Mise en pratique sur vos cas réels",
+        "Cadrage du périmètre, des comptes et de la fenêtre de test",
+        "Tests manuels et outillés sur le scope validé",
+        "Rapport, debrief et retest après correction",
       ],
     },
-    sensibilisation: {
+    audit: {
       intro:
-        "Je fais passer les bons réflexes sécurité à l’échelle avec des formats courts, concrets et mesurables.",
-      audience: ["Tous collaborateurs", "Managers", "Ambassadeurs sécurité"],
+        "Je transforme une situation floue en plan d'action priorisé: exposition, configurations critiques, accès, sauvegardes, gouvernance et quick wins.",
+      audience: ["Dirigeants", "DSI / RSSI", "Référents techniques"],
       process: [
-        "État des lieux & messages clés",
-        "Campagne (sessions + phishing) et QCM",
-        "Mesure et actions de suivi",
+        "Collecte des éléments clés et cadrage des enjeux",
+        "Analyse du risque et identification des priorités",
+        "Restitution claire avec feuille de route réaliste",
       ],
     },
-    ctf: {
+    training: {
       intro:
-        "Je conçois et j’anime des CTF adaptés à votre niveau pour apprendre en s’amusant (web, forensics, réseau, crypto).",
-      audience: ["Équipes techniques", "Écoles / Bootcamps", "Communautés internes"],
+        "Je conçois des formats de training sécurité concrets: sensibilisation ciblée, atelier interactif ou CTF pédagogique selon votre public et votre niveau technique.",
+      audience: ["Écoles / Bootcamps", "Équipes métiers", "Équipes techniques"],
       process: [
-        "Objectifs & thèmes",
-        "Conception des épreuves et plateforme",
-        "Animation, scoring, debriefing",
-      ],
-    },
-    "audit-securite": {
-      intro:
-        "Je dresse une vision claire de votre posture sécurité et priorise les actions à fort impact.",
-      audience: ["Dirigeants", "DSI / RSSI", "Lead eng"],
-      process: [
-        "Collecte (politiques, archi, risques)",
-        "Analyse de configuration / écarts",
-        "Restitution + feuille de route",
-      ],
-    },
-    "pentest-web": {
-      intro:
-        "Je valide l’exploitabilité des vulnérabilités sur vos applications (OWASP Top 10, logique métier) avec des preuves claires.",
-      audience: ["Produit / Tech", "SecOps", "Conformité"],
-      process: [
-        "Cadrage et périmètre",
-        "Tests manuels & outillés",
-        "Rapport, priorisation, retest",
-      ],
-    },
-    "pentest-infra": {
-      intro:
-        "Je simule des attaques réseau (externe/interne) pour révéler les accès, latéralisation et élévations possibles.",
-      audience: ["Infra / Cloud", "SecOps", "Direction technique"],
-      process: [
-        "Définition du périmètre",
-        "Tests externes / internes",
-        "Restitution et plan d’actions",
+        "Objectifs pédagogiques et cadrage du public",
+        "Conception du contenu, des exercices ou des challenges",
+        "Animation, debrief et recommandations de suivi",
       ],
     },
   } as const,

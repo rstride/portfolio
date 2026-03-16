@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useState, useEffect } from "react";
 import { MessageSquare, X, Mail } from "lucide-react";
 import { site } from "@/content/site";
+import { Button } from "@/components/ui/button";
 
 export function FloatingContact() {
   const [isVisible, setIsVisible] = useState(false);
@@ -45,47 +46,62 @@ export function FloatingContact() {
             {/* Email */}
             <motion.a
               href={`mailto:${site.about.email}`}
-              className="flex items-center gap-3 px-4 py-3 bg-green-500/90 backdrop-blur-sm border border-green-400/30 rounded-xl text-white shadow-lg hover:bg-green-500 transition-colors"
+              className="inline-flex items-center gap-3 rounded-xl border border-border/60 bg-background/90 px-4 py-3 text-sm font-medium text-foreground shadow-lg backdrop-blur-sm transition-colors hover:bg-muted/80"
               whileHover={{ scale: 1.05, x: -5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Mail className="w-4 h-4" />
-              <span className="text-sm font-medium">Envoyer un email</span>
+              <Mail className="size-4" />
+              <span>Envoyer un email</span>
             </motion.a>
 
             {/* Scroll to contact form */}
-            <motion.button
+            <motion.div
               onClick={() => {
                 const contactSection = document.getElementById('contact');
                 contactSection?.scrollIntoView({ behavior: 'smooth' });
                 setIsExpanded(false);
               }}
-              className="flex items-center gap-3 px-4 py-3 bg-blue-500/90 backdrop-blur-sm border border-blue-400/30 rounded-xl text-white shadow-lg hover:bg-blue-500 transition-colors"
               whileHover={{ scale: 1.05, x: -5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <MessageSquare className="w-4 h-4" />
-              <span className="text-sm font-medium">Formulaire de contact</span>
-            </motion.button>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-auto justify-start gap-3 rounded-xl bg-background/90 px-4 py-3 text-sm shadow-lg backdrop-blur-sm"
+                onClick={() => {
+                  const contactSection = document.getElementById('contact');
+                  contactSection?.scrollIntoView({ behavior: 'smooth' });
+                  setIsExpanded(false);
+                }}
+              >
+                <MessageSquare className="size-4" />
+                <span>Formulaire de contact</span>
+              </Button>
+            </motion.div>
           </motion.div>
         )}
 
         {/* Main floating button */}
-        <motion.button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="w-14 h-14 bg-gradient-to-r from-green-500 to-blue-500 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-shadow"
+        <motion.div
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           animate={isExpanded ? { rotate: 45 } : { rotate: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <motion.div
-            animate={isExpanded ? { rotate: -45 } : { rotate: 0 }}
-            transition={{ duration: 0.2 }}
+          <Button
+            type="button"
+            size="icon"
+            className="size-14 rounded-full shadow-lg"
+            onClick={() => setIsExpanded(!isExpanded)}
           >
-            {isExpanded ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
-          </motion.div>
-        </motion.button>
+            <motion.div
+              animate={isExpanded ? { rotate: -45 } : { rotate: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {isExpanded ? <X className="size-6" /> : <MessageSquare className="size-6" />}
+            </motion.div>
+          </Button>
+        </motion.div>
 
         {/* Pulse animation */}
         <motion.div
