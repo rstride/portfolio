@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { site } from "@/content/site";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
+import { Navbar } from "@/features/layout/components/navbar";
+import { Footer } from "@/features/layout/components/footer";
 import { AnalyticsProvider } from "@/hooks/useAnalytics";
 import { ThemeProvider } from "@/components/theme-provider";
 

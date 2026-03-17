@@ -1,6 +1,6 @@
 import { getSortedPostsData } from "@/lib/posts";
 import { Metadata } from "next";
-import { BlogShowcase } from "@/components/blog/blog-showcase";
+import { BlogPageView } from "@/features/blog/page";
 
 export const metadata: Metadata = {
     title: "Blog",
@@ -24,9 +24,5 @@ export const metadata: Metadata = {
 export default function BlogPage() {
     const allPostsData = getSortedPostsData();
 
-    return (
-        <div className="pt-6 md:pt-8">
-            <BlogShowcase posts={allPostsData} />
-        </div>
-    );
+    return <BlogPageView posts={allPostsData} />;
 }

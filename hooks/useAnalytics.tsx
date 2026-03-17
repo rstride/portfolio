@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef } from "react";
 
 type Payload = Record<string, unknown> | undefined;
 type Gtag = (command: "event", event: string, payload: Record<string, unknown>) => void;
@@ -27,19 +27,21 @@ type QueuedEvent = { event: string; payload?: Payload };
 const AnalyticsCtx = createContext<null | ((event: string, payload?: Payload) => void)>(null);
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
-  const [queue, setQueue] = useState<QueuedEvent[]>([]);
+  const queueRef = useRef<QueuedEvent[]>([]);
   const flushing = useRef(false);
 
   const flush = useCallback(() => {
-    if (flushing.current || queue.length === 0) return;
+    if (flushing.current || queueRef.current.length === 0) return;
     flushing.current = true;
     try {
-      for (const item of queue) track(item.event, item.payload);
-      setQueue([]);
+      for (const item of queueRef.current) {
+        track(item.event, item.payload);
+      }
+      queueRef.current = [];
     } finally {
       flushing.current = false;
     }
-  }, [queue]);
+  }, []);
 
   useEffect(() => {
     const id = setInterval(flush, 1500);
@@ -56,7 +58,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   }, [flush]);
 
   const enqueue = useCallback((event: string, payload?: Payload) => {
-    setQueue((q) => [...q, { event, payload }]);
+    queueRef.current.push({ event, payload });
   }, []);
 
   return <AnalyticsCtx.Provider value={enqueue}>{children}</AnalyticsCtx.Provider>;

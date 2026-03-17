@@ -1,4 +1,4 @@
-import { site, type Service } from "@/content/site";
+import { getServiceBySlug, servicePages } from "@/content/site/services";
 
 type ServiceDetail = {
   intro: string;
@@ -6,7 +6,7 @@ type ServiceDetail = {
   process: ReadonlyArray<string>;
 };
 
-const serviceDetails = site.servicePages as Record<string, ServiceDetail>;
+const serviceDetails = servicePages as Record<string, ServiceDetail>;
 
 const customParagraphs: Record<string, string[]> = {
   pentest: [
@@ -27,14 +27,6 @@ const customParagraphs: Record<string, string[]> = {
     "Chaque intervention est pensee avec un objectif pedagogique clair, un support ou des challenges adaptes, puis un debrief qui transforme l'experience en actions concretes.",
   ],
 };
-
-export function getServiceHref(slug: string) {
-  return `/services/${slug}`;
-}
-
-export function getServiceBySlug(slug: string): Service | undefined {
-  return site.services.find((service) => service.slug === slug);
-}
 
 export function getServiceContent(slug: string) {
   const service = getServiceBySlug(slug);
