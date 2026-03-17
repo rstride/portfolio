@@ -25,7 +25,7 @@ export default function BlogPage() {
     const allPostsData = getSortedPostsData();
 
     return (
-        <div className="pt-8 md:pt-20">
+        <div className="pt-6 md:pt-8">
             <BlogShowcase posts={allPostsData} />
         </div>
     );

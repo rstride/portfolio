@@ -1,16 +1,15 @@
-"use client";
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:pointer-events-none active:translate-y-px",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 active:translate-y-px",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-sm hover:opacity-90",
-        outline: "border border-border/60 bg-background hover:bg-muted/50",
-        ghost: "hover:bg-muted/50",
+        default: "bg-primary text-primary-foreground shadow-sm hover:opacity-95 hover:shadow-md",
+        outline: "border border-border/80 bg-card/92 text-foreground hover:bg-accent/70",
+        ghost: "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
         link: "underline underline-offset-4",
       },
       size: {

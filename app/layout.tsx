@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { site } from "@/content/site";
-import { Header } from "@/components/header";
+import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { AnalyticsProvider } from "@/hooks/useAnalytics";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -26,8 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <AnalyticsProvider>
-            <Header />
-            <main className="flex-1 pt-[var(--site-header-offset,0px)] md:pt-0">{children}</main>
+            <Navbar />
+            <main className="flex-1 pt-[var(--site-navbar-height,6.5rem)]">{children}</main>
             <Footer />
           </AnalyticsProvider>
         </ThemeProvider>

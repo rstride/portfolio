@@ -16,16 +16,17 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import { landingCardClass, landingReveal, SectionIntro } from "@/components/landing/shared";
-import { site } from "@/content/site";
-import { type ContactFormData, getContactFieldErrors } from "@/lib/contact-schema";
-import { cn } from "@/lib/utils";
+import { landingReveal, SectionIntro } from "@/components/landing/shared";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { site } from "@/content/site";
+import { type ContactFormData, getContactFieldErrors } from "@/lib/contact-schema";
+import { cn } from "@/lib/utils";
 
 const iconMap: Record<string, LucideIcon> = {
   github: Github,
@@ -44,6 +45,9 @@ const EMPTY_FORM_DATA: ContactFormData = {
   phone: "",
   website: "",
 };
+
+const fieldClass =
+  "border-border/80 bg-background/75 shadow-none focus-visible:ring-ring focus-visible:ring-2";
 
 export function ContactSection() {
   const ref = useRef(null);
@@ -147,29 +151,34 @@ export function ContactSection() {
       <motion.div
         {...landingReveal}
         transition={{ ...landingReveal.transition, delay: 0.08 }}
-        className="mx-auto mt-8 grid max-w-4xl gap-3 sm:grid-cols-3"
+        className="section-signal mx-auto mt-8 grid max-w-4xl gap-3 px-5 py-5 sm:grid-cols-3"
       >
         {site.sales.qualification.map((item) => (
-          <div key={item} className={cn("rounded-xl px-4 py-3 text-sm text-muted-foreground", landingCardClass)}>
+          <div key={item} className="surface-subtle px-4 py-3 text-sm text-muted-foreground">
             {item}
           </div>
         ))}
       </motion.div>
 
-      <div className="mx-auto mt-12 grid max-w-6xl items-start gap-8 xl:grid-cols-[minmax(0,1.15fr)_360px]">
+      <div className="mx-auto mt-12 grid max-w-6xl items-start gap-8 xl:grid-cols-[minmax(0,1.12fr)_360px]">
         <motion.div {...landingReveal} transition={{ ...landingReveal.transition, delay: 0.12 }}>
-          <Card className={cn(landingCardClass, "rounded-2xl")}>
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                <MessageSquare className="size-5" />
+          <Card className="surface-panel overflow-hidden">
+            <CardHeader className="gap-5 bg-[linear-gradient(135deg,rgba(186,76,255,0.08),rgba(80,220,255,0.09))]">
+              <div className="flex items-center gap-3">
+                <div className="flex size-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground">
+                  <MessageSquare className="size-5" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl">Décrire votre besoin</CardTitle>
+                  <CardDescription className="mt-1">
+                    Quelques informations suffisent pour revenir avec un cadrage utile.
+                  </CardDescription>
+                </div>
               </div>
-              <CardHeader className="p-0">
-                <CardTitle className="text-xl">Formulaire de contact</CardTitle>
-              </CardHeader>
-            </div>
+            </CardHeader>
 
-            <CardContent className="p-0 pt-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
+            <CardContent className="p-6">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                 <div className="grid gap-6 sm:grid-cols-2">
                   <input
                     type="text"
@@ -182,96 +191,96 @@ export function ContactSection() {
                     className="hidden"
                   />
 
-                  <div>
-                    <Label className="mb-2 block">
-                      Nom <span className="text-red-400">*</span>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="name">
+                      Nom <span className="text-destructive">*</span>
                     </Label>
                     <Input
+                      id="name"
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={cn(
-                        "border-black/5 bg-white/50 dark:border-white/10 dark:bg-black/20",
-                        errors.name && touched.name
-                          ? "border-red-500/50 focus-visible:ring-red-500/20"
-                          : "focus-visible:ring-green-500/20"
+                        fieldClass,
+                        errors.name && touched.name && "border-destructive/60 focus-visible:ring-destructive/30"
                       )}
                       placeholder="Votre nom"
                       required
                     />
                     {errors.name && touched.name ? (
-                      <p className="mt-1 text-xs text-red-400">{errors.name}</p>
+                      <p className="text-xs text-destructive">{errors.name}</p>
                     ) : null}
                   </div>
 
-                  <div>
-                    <Label className="mb-2 block">
-                      Email <span className="text-red-400">*</span>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="email">
+                      Email <span className="text-destructive">*</span>
                     </Label>
                     <Input
+                      id="email"
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={cn(
-                        "border-black/5 bg-white/50 dark:border-white/10 dark:bg-black/20",
-                        errors.email && touched.email
-                          ? "border-red-500/50 focus-visible:ring-red-500/20"
-                          : "focus-visible:ring-green-500/20"
+                        fieldClass,
+                        errors.email && touched.email && "border-destructive/60 focus-visible:ring-destructive/30"
                       )}
                       placeholder="contact@entreprise.com"
                       required
                     />
                     {errors.email && touched.email ? (
-                      <p className="mt-1 text-xs text-red-400">{errors.email}</p>
+                      <p className="text-xs text-destructive">{errors.email}</p>
                     ) : null}
                   </div>
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">
-                  <div>
-                    <Label className="mb-2 block">Entreprise</Label>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="company">Entreprise</Label>
                     <Input
+                      id="company"
                       type="text"
                       name="company"
                       value={formData.company}
                       onChange={handleInputChange}
-                      className="border-black/5 bg-white/50 dark:border-white/10 dark:bg-black/20 focus-visible:ring-green-500/20"
+                      className={fieldClass}
                       placeholder="Nom de votre entreprise ou produit"
                     />
                   </div>
 
-                  <div>
-                    <Label className="mb-2 block">Téléphone</Label>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="phone">Téléphone</Label>
                     <Input
+                      id="phone"
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="border-black/5 bg-white/50 dark:border-white/10 dark:bg-black/20 focus-visible:ring-green-500/20"
+                      className={fieldClass}
                       placeholder="06 XX XX XX XX"
                     />
                   </div>
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-3">
-                  <div>
-                    <Label className="mb-2 block">
-                      Besoin principal <span className="text-red-400">*</span>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="service">
+                      Besoin principal <span className="text-destructive">*</span>
                     </Label>
                     <select
+                      id="service"
                       name="service"
                       value={formData.service}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={cn(
-                        "flex h-10 w-full rounded-md border border-black/5 bg-white/50 px-3 py-2 text-sm dark:border-white/10 dark:bg-black/20",
-                        errors.service && touched.service
-                          ? "border-red-500/50 focus-visible:ring-red-500/20"
-                          : "focus-visible:ring-green-500/20"
+                        "flex h-10 w-full rounded-md border px-3 py-2 text-sm shadow-none transition focus-visible:outline-none focus-visible:ring-2",
+                        fieldClass,
+                        errors.service && touched.service && "border-destructive/60 focus-visible:ring-destructive/30"
                       )}
                       required
                     >
@@ -282,24 +291,24 @@ export function ContactSection() {
                       <option value="Autre">Autre</option>
                     </select>
                     {errors.service && touched.service ? (
-                      <p className="mt-1 text-xs text-red-400">{errors.service}</p>
+                      <p className="text-xs text-destructive">{errors.service}</p>
                     ) : null}
                   </div>
 
-                  <div>
-                    <Label className="mb-2 block">
-                      Périmètre <span className="text-red-400">*</span>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="scopeType">
+                      Périmètre <span className="text-destructive">*</span>
                     </Label>
                     <select
+                      id="scopeType"
                       name="scopeType"
                       value={formData.scopeType}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={cn(
-                        "flex h-10 w-full rounded-md border border-black/5 bg-white/50 px-3 py-2 text-sm dark:border-white/10 dark:bg-black/20",
-                        errors.scopeType && touched.scopeType
-                          ? "border-red-500/50 focus-visible:ring-red-500/20"
-                          : "focus-visible:ring-green-500/20"
+                        "flex h-10 w-full rounded-md border px-3 py-2 text-sm shadow-none transition focus-visible:outline-none focus-visible:ring-2",
+                        fieldClass,
+                        errors.scopeType && touched.scopeType && "border-destructive/60 focus-visible:ring-destructive/30"
                       )}
                       required
                     >
@@ -311,24 +320,24 @@ export function ContactSection() {
                       <option value="À préciser">À préciser</option>
                     </select>
                     {errors.scopeType && touched.scopeType ? (
-                      <p className="mt-1 text-xs text-red-400">{errors.scopeType}</p>
+                      <p className="text-xs text-destructive">{errors.scopeType}</p>
                     ) : null}
                   </div>
 
-                  <div>
-                    <Label className="mb-2 block">
-                      Échéance <span className="text-red-400">*</span>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="timeline">
+                      Échéance <span className="text-destructive">*</span>
                     </Label>
                     <select
+                      id="timeline"
                       name="timeline"
                       value={formData.timeline}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={cn(
-                        "flex h-10 w-full rounded-md border border-black/5 bg-white/50 px-3 py-2 text-sm dark:border-white/10 dark:bg-black/20",
-                        errors.timeline && touched.timeline
-                          ? "border-red-500/50 focus-visible:ring-red-500/20"
-                          : "focus-visible:ring-green-500/20"
+                        "flex h-10 w-full rounded-md border px-3 py-2 text-sm shadow-none transition focus-visible:outline-none focus-visible:ring-2",
+                        fieldClass,
+                        errors.timeline && touched.timeline && "border-destructive/60 focus-visible:ring-destructive/30"
                       )}
                       required
                     >
@@ -339,44 +348,40 @@ export function ContactSection() {
                       <option value="Plus tard / en préparation">Plus tard / en préparation</option>
                     </select>
                     {errors.timeline && touched.timeline ? (
-                      <p className="mt-1 text-xs text-red-400">{errors.timeline}</p>
+                      <p className="text-xs text-destructive">{errors.timeline}</p>
                     ) : null}
                   </div>
                 </div>
 
-                <div>
-                  <Label className="mb-2 block">
-                    Message <span className="text-red-400">*</span>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="message">
+                    Message <span className="text-destructive">*</span>
                   </Label>
                   <Textarea
+                    id="message"
                     name="message"
                     value={formData.message}
                     onChange={handleInputChange}
                     onBlur={handleBlur}
                     rows={6}
                     className={cn(
-                      "resize-none border-black/5 bg-white/50 dark:border-white/10 dark:bg-black/20",
-                      errors.message && touched.message
-                        ? "border-red-500/50 focus-visible:ring-red-500/20"
-                        : "focus-visible:ring-green-500/20"
+                      "resize-none",
+                      fieldClass,
+                      errors.message && touched.message && "border-destructive/60 focus-visible:ring-destructive/30"
                     )}
                     placeholder="Décrivez le périmètre, la stack, l'échéance et ce que vous attendez de la mission..."
                     required
                   />
-                  <div className="mt-1 flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                     {errors.message && touched.message ? (
-                      <p className="text-xs text-red-400">{errors.message}</p>
-                    ) : <span />}
-                    <p
-                      className={cn(
-                        "ml-auto text-xs",
-                        formData.message.length < 10 ? "text-muted-foreground" : "text-green-400"
-                      )}
-                    >
-                      {formData.message.length}/500 caractères minimum
+                      <p className="text-xs text-destructive">{errors.message}</p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">{site.sales.faqHint}</p>
+                    )}
+                    <p className="ml-auto text-xs text-muted-foreground">
+                      {formData.message.length}/500 minimum
                     </p>
                   </div>
-                  <p className="mt-2 text-xs text-muted-foreground">{site.sales.faqHint}</p>
                 </div>
 
                 {submitStatus === "error" ? (
@@ -390,18 +395,19 @@ export function ContactSection() {
                 ) : null}
 
                 {submitStatus === "success" ? (
-                  <Alert className="border-green-500/20 bg-green-500/10 text-green-500 dark:text-green-400">
-                    <CheckCircle className="size-4" />
-                    <AlertDescription className="text-green-500 dark:text-green-400">
-                      Message envoyé avec succès !
-                    </AlertDescription>
+                  <Alert className="border-primary/20 bg-primary/[0.08] text-foreground">
+                    <CheckCircle className="size-4 text-primary" />
+                    <AlertDescription>Message envoyé avec succès.</AlertDescription>
                   </Alert>
                 ) : null}
 
                 <Button
                   type="submit"
                   disabled={isSubmitting || submitStatus === "success" || Object.keys(errors).length > 0}
-                  className={cn("w-full", Object.keys(errors).length > 0 ? "cursor-not-allowed opacity-50" : "")}
+                  className={cn(
+                    "w-full border-0 bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground",
+                    Object.keys(errors).length > 0 && "cursor-not-allowed opacity-50"
+                  )}
                   size="lg"
                 >
                   {submitStatus === "success" ? (
@@ -434,25 +440,41 @@ export function ContactSection() {
         <motion.div
           {...landingReveal}
           transition={{ ...landingReveal.transition, delay: 0.16 }}
-          className="space-y-6 lg:self-start"
+          className="flex flex-col gap-6 lg:self-start"
         >
-          <Card className={cn(landingCardClass, "rounded-2xl")}>
+          <Card className="surface-contrast overflow-hidden">
             <CardHeader>
-              <CardTitle className="text-lg">Réseaux sociaux</CardTitle>
-              <CardDescription>
-                Pour vérifier le parcours, les projets et l&apos;écosystème autour de PrismaSec.
+              <Badge variant="secondary" className="w-fit border-0 bg-white/10 text-white">
+                Avant l&apos;échange
+              </Badge>
+              <CardTitle className="text-lg text-white">Les informations utiles</CardTitle>
+              <CardDescription className="text-white/72">
+                Le plus important est le contexte, le périmètre et la contrainte principale.
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4">
+            <CardContent className="flex flex-col gap-3">
+              {site.sales.contactReasons.map((reason) => (
+                <div
+                  key={reason}
+                  className="rounded-[1.2rem] border border-white/12 bg-white/7 p-4 text-sm leading-relaxed text-white/78"
+                >
+                  {reason}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="surface-panel overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-lg">Présence en ligne</CardTitle>
+              <CardDescription>
+                Pour vérifier le parcours, les projets et l’écosystème autour de PrismaSec.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
               {site.socials.map((link) => {
                 const key = link.label.toLowerCase();
                 const IconComponent = iconMap[key] || Globe;
-                const color =
-                  key === "github"
-                    ? "from-gray-600 to-gray-800"
-                    : key === "linkedin"
-                      ? "from-blue-600 to-blue-800"
-                      : "from-green-600 to-green-800";
 
                 return (
                   <a
@@ -460,26 +482,26 @@ export function ContactSection() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/60 p-3 transition-colors hover:bg-accent/40"
+                    className="surface-subtle flex items-center gap-3 p-3 transition-colors hover:bg-accent/40"
                   >
-                    <div className={`flex size-8 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-r ${color}`}>
+                    <div className="flex size-10 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground">
                       {key === "prismasec" ? (
                         <Image
                           src="/PrismaLogo.svg"
                           alt="PrismaSec Logo"
                           width={20}
                           height={20}
-                          className="size-5 invert brightness-0"
+                          className="size-5 invert"
                         />
                       ) : (
-                        <IconComponent className="size-4 text-white" />
+                        <IconComponent className="size-4" />
                       )}
                     </div>
                     <div>
                       <div className="font-medium text-foreground">{link.label}</div>
                       <div className="text-xs text-muted-foreground">
                         {link.label === "GitHub"
-                          ? "Code source & outils de sécurité"
+                          ? "Code, outils et expérimentations"
                           : link.label === "LinkedIn"
                             ? "Profil professionnel"
                             : "Entreprise de cybersécurité"}

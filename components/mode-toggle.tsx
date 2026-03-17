@@ -16,26 +16,23 @@ export function ModeToggle() {
 
     if (!mounted) {
         return (
-            <div className="size-9 rounded-full border border-border/50 bg-background/50" />
+            <div className="size-9 rounded-full border border-white/10 bg-white/5" />
         );
     }
 
     return (
-        <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-        >
+        <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
             <Button
                 type="button"
                 variant="outline"
                 size="icon"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="relative rounded-full bg-background/50"
+                className="relative rounded-full border-white/10 bg-white/5 text-foreground shadow-none hover:bg-white/10"
                 aria-label="Toggle theme"
             >
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
+                <Sun className="h-[1.05rem] w-[1.05rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.05rem] w-[1.05rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
             </Button>
         </motion.div>
     );

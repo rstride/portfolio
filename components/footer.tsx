@@ -1,106 +1,79 @@
 "use client";
+
 import Link from "next/link";
+
 import { motion } from "framer-motion";
+import { ArrowUpRight, Shield } from "lucide-react";
+
 import { site } from "@/content/site";
-import { Shield, Lock, Terminal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 export function Footer() {
   return (
-    <footer className="border-t border-green-500/20 bg-background/80 backdrop-blur-xl relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 via-transparent to-blue-500/5" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+    <footer className="relative overflow-hidden border-t border-border/70 pt-6">
+      <div className="hero-grid absolute inset-x-0 top-0 h-32 opacity-42" />
+      <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(80,220,255,0.12),transparent_58%)]" />
 
-      {/* Floating security icons */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[Shield, Lock, Terminal].map((Icon, index) => (
-          <motion.div
-            key={index}
-            className="absolute"
-            style={{
-              left: `${10 + index * 35}%`,
-              top: `${20 + index * 15}%`
-            }}
-            animate={{
-              y: [0, -10, 0],
-              opacity: [0.1, 0.3, 0.1],
-              rotate: [0, 90, 180, 270, 360]
-            }}
-            transition={{
-              duration: 6 + index * 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: index * 1
-            }}
-          >
-            <Icon className="w-4 h-4 text-green-400/20" />
-          </motion.div>
-        ))}
-      </div>
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 relative z-10">
+      <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <motion.div
-          className="flex flex-col md:flex-row items-center justify-between gap-6"
-          initial={{ opacity: 0, y: 20 }}
+          className="surface-contrast overflow-hidden px-6 py-8 md:px-8"
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.4 }}
           viewport={{ once: true }}
         >
-          {/* Left side - Copyright */}
-          <motion.div
-            className="text-center md:text-left"
-            whileHover={{ scale: 1.05 }}
-          >
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()}
-              <span className="font-semibold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500 mx-1">
-                {site.name}
-              </span>
-              {site.strings.footerRightsSuffix}
-            </p>
-            <motion.p
-              className="text-xs text-green-400/60 mt-1"
-              animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              🔒 Hacker éthique & chercheur en sécurité
-            </motion.p>
-          </motion.div>
+          <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr] md:items-end">
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="flex size-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground">
+                  <Shield className="size-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">{site.name}</p>
+                  <p className="text-xs uppercase tracking-[0.22em] text-white/64">
+                    Security Consulting
+                  </p>
+                </div>
+              </div>
+              <h2 className="max-w-[12ch] text-3xl font-semibold tracking-tight text-white">
+                Des missions sécurité claires, utiles et assumées
+              </h2>
+              <p className="max-w-xl text-sm leading-relaxed text-white/74">
+                Pentest, audit et formation avec un cadre d’intervention lisible, une restitution
+                exploitable et une identité visuelle enfin cohérente avec un univers technique.
+              </p>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-white/64">
+                <span>© {new Date().getFullYear()} {site.name}</span>
+                <Separator orientation="vertical" className="hidden h-4 bg-white/12 md:block" />
+                <span>{site.strings.footerRightsSuffix}</span>
+              </div>
+            </div>
 
-          {/* Right side - Links + Security badge inline */}
-          <motion.div
-            className="flex items-center gap-6 text-sm"
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <Link href="/legal/privacy" className={buttonVariants({ variant: "ghost", size: "sm" }) + " px-0"}>
-              {site.strings.footerPrivacyLabel}
-            </Link>
+            <div className="flex flex-col gap-5 md:items-end">
+              <div className="flex flex-wrap gap-2 md:justify-end">
+                <Link href="/legal/privacy" className="rounded-full border border-white/12 px-3 py-2 text-sm text-white/74 transition hover:bg-white/8 hover:text-white">
+                  {site.strings.footerPrivacyLabel}
+                </Link>
+                <Link href="/legal/disclosure" className="rounded-full border border-white/12 px-3 py-2 text-sm text-white/74 transition hover:bg-white/8 hover:text-white">
+                  Divulgation
+                </Link>
+              </div>
 
-            <Link href="/legal/disclosure" className={buttonVariants({ variant: "ghost", size: "sm" }) + " px-0"}>
-              Divulgation
-            </Link>
-
-            <Separator orientation="vertical" className="hidden h-4 md:block" />
-
-            {/* "Sécurisé par PrismaSec" replaces the button and links to prismasec.fr */}
-            <a
-              href="https://prismasec.fr"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2"
-            >
-              <Badge variant="outline" className="gap-2 border-emerald-400/30 text-muted-foreground">
-                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                <span>Sécurisé par PrismaSec</span>
-              </Badge>
-            </a>
-          </motion.div>
+              <a
+                href="https://prismasec.fr"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-3 rounded-full border border-white/12 bg-white/8 px-3 py-2 text-sm text-white transition hover:bg-white/12"
+              >
+                <Badge variant="secondary" className="border-0 bg-white/10 text-white">
+                  PrismaSec
+                </Badge>
+                <span>Plateforme CTEM</span>
+                <ArrowUpRight className="size-4" />
+              </a>
+            </div>
+          </div>
         </motion.div>
       </div>
     </footer>

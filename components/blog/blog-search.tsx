@@ -11,7 +11,7 @@ interface BlogSearchProps {
 
 export function BlogSearch({ value, onChange }: BlogSearchProps) {
     return (
-        <Card className="mx-auto w-full max-w-md border-border/60 bg-background/80">
+        <Card className="surface-panel mx-auto w-full max-w-xl shadow-none">
             <CardContent className="relative p-2">
                 <div className="pointer-events-none absolute inset-y-0 left-5 flex items-center">
                     <Search className="size-5 text-muted-foreground" />

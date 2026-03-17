@@ -6,7 +6,10 @@ import { BackToTopButton } from "@/components/back-to-top-button";
 export default function Home() {
   return (
     <div className="relative overflow-x-hidden">
-      <section id="hero" className="min-h-screen">
+      <section
+        id="hero"
+        className="-mt-[var(--site-navbar-height,6.5rem)] min-h-screen pt-[var(--site-navbar-height,6.5rem)]"
+      >
         <Hero />
       </section>
 

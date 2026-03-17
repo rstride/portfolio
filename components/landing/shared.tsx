@@ -8,11 +8,11 @@ export const landingReveal = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, amount: 0.2 },
-  transition: { duration: 0.45, ease: "easeOut" as const },
+  transition: { duration: 0.4, ease: "easeOut" as const },
 };
 
 export const landingCardClass =
-  "border-border/60 bg-background/72 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg";
+  "surface-panel transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(25,12,45,0.14)]";
 
 type SectionIntroProps = {
   eyebrow?: string;
@@ -33,20 +33,20 @@ export function SectionIntro({
     <motion.div
       {...landingReveal}
       className={cn(
-        "mx-auto flex max-w-3xl flex-col gap-3",
+        "mx-auto flex max-w-3xl flex-col gap-4",
         align === "center" ? "items-center text-center" : "items-start text-left",
         className
       )}
     >
       {eyebrow ? (
-        <p className="text-xs font-medium uppercase tracking-[0.24em] text-primary">
+        <p className="eyebrow">
           {eyebrow}
         </p>
       ) : null}
-      <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+      <h2 className="max-w-[14ch] text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
         {title}
       </h2>
-      <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+      <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-[1.15rem]">
         {description}
       </p>
     </motion.div>
