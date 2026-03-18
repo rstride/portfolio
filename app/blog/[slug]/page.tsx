@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
 import {
-  BlogPostPageView,
+  BlogPostDetailView,
   buildBlogPostMetadata,
   getBlogPostStaticParams,
-} from "@/features/blog/post-page";
+} from "@/features/blog/detail-view";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -21,5 +21,5 @@ export async function generateStaticParams() {
 
 export default async function Post({ params }: Props) {
   const { slug } = await params;
-  return <BlogPostPageView slug={slug} />;
+  return <BlogPostDetailView slug={slug} />;
 }

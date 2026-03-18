@@ -1,4 +1,5 @@
-import { escapeHtml } from "@/lib/contact/security";
+import { escapeHtml } from "@/features/contact/server/security";
+import type { SmtpConfig } from "@/features/contact/server/config";
 
 type ContactPayload = {
   name: string;
@@ -9,16 +10,6 @@ type ContactPayload = {
   message: string;
   company?: string;
   phone?: string;
-};
-
-type SmtpConfig = {
-  host?: string;
-  port: number;
-  user?: string;
-  pass?: string;
-  secure: boolean;
-  from?: string;
-  to?: string;
 };
 
 export function createTransportOptions(smtp: SmtpConfig) {

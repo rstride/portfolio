@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Calendar, Clock3, ShieldCheck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import type { PostData } from "@/lib/posts";
+import type { PostData } from "@/features/blog/server";
 
 type PostHeaderProps = {
   post: PostData;
@@ -36,7 +36,7 @@ export function PostHeader({ post }: PostHeaderProps) {
         ) : null}
       </div>
 
-      <h1 className="max-w-[13ch] text-4xl font-semibold tracking-tight text-foreground sm:text-6xl">
+      <h1 className="max-w-[13ch] text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
         {post.title}
       </h1>
 
@@ -49,7 +49,7 @@ export function PostHeader({ post }: PostHeaderProps) {
       </div>
 
       {post.coverImage ? (
-        <div className="surface-panel relative mt-8 aspect-video w-full overflow-hidden shadow-[0_28px_70px_rgba(25,12,45,0.16)]">
+        <div className="editorial-card relative mt-8 aspect-video w-full overflow-hidden shadow-[0_24px_50px_rgba(10,28,24,0.08)]">
           <Image
             src={post.coverImage}
             alt={post.title}
@@ -57,7 +57,7 @@ export function PostHeader({ post }: PostHeaderProps) {
             className="object-cover"
             sizes="(min-width: 1024px) 768px, 100vw"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(25,12,45,0.18))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(10,28,24,0.12))]" />
         </div>
       ) : null}
     </header>

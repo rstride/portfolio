@@ -17,7 +17,7 @@ export function ModeToggle() {
   }, []);
 
   if (!mounted) {
-    return <div className="size-9 rounded-full border border-white/10 bg-white/5" />;
+    return <div className="size-10 rounded-full border border-border/70 bg-card/90" />;
   }
 
   return (
@@ -27,11 +27,11 @@ export function ModeToggle() {
         variant="outline"
         size="icon"
         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        className="relative rounded-full border-white/10 bg-white/5 text-foreground shadow-none hover:bg-white/10"
+        className="relative size-10 rounded-full border-border/70 bg-background/90 text-foreground shadow-none hover:bg-accent/70"
         aria-label="Toggle theme"
       >
-        <Sun className="h-[1.05rem] w-[1.05rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-        <Moon className="absolute h-[1.05rem] w-[1.05rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <Sun className="size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <Moon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
         <span className="sr-only">Toggle theme</span>
       </Button>
     </motion.div>

@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
+
 import matter from "gray-matter";
 
-import type { ParsedPostFile, PostFrontmatter } from "@/lib/posts/types";
+import type { ParsedPostFile, PostFrontmatter } from "@/features/blog/server/types";
 
 const POSTS_DIRECTORY = path.join(process.cwd(), "content/posts");
 const MARKDOWN_EXTENSION = ".md";
@@ -52,15 +53,13 @@ export function isPublished(frontmatter: PostFrontmatter): boolean {
   return publishedAt <= new Date();
 }
 
-export function readPublishedPostFiles(): ParsedPostFile[] {
-  return listPostFiles()
-    .map(readPostFile)
-    .filter((postFile) => isPublished(postFile.frontmatter));
-}
-
 export function readPostFile(fileName: string): ParsedPostFile {
   const slug = fileNameToSlug(fileName);
   return parsePostFile(path.join(POSTS_DIRECTORY, fileName), slug);
+}
+
+export function readPublishedPostFiles(): ParsedPostFile[] {
+  return listPostFiles().map(readPostFile).filter((postFile) => isPublished(postFile.frontmatter));
 }
 
 export function readPostBySlug(slug: string): ParsedPostFile | null {

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "node --import tsx --test tests/posts.test.ts tests/services.test.ts",
+    "test": "node --import tsx --test tests/*.test.ts",
     "check": "npm run lint && npm run test && npm run build"
   },
   "dependencies": {

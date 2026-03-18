@@ -1,54 +1,60 @@
 "use client";
 
-import { useRef } from "react";
+import Link from "next/link";
 
-import { motion, useInView } from "framer-motion";
-
+import { buttonVariants } from "@/components/ui/button";
 import { site } from "@/content/site";
-import { SectionIntro } from "@/shared/components/section-intro";
-import { revealInView } from "@/shared/motion/reveal";
-
 import { ContactForm } from "@/features/contact/components/contact-form";
 import { ContactSidebar } from "@/features/contact/components/contact-sidebar";
 import { useContactForm } from "@/features/contact/hooks/use-contact-form";
+import { PageHero } from "@/shared/components/page-hero";
 
 export function ContactSection() {
-  const ref = useRef(null);
-  useInView(ref, { once: true, amount: 0.2 });
   const form = useContactForm();
 
   return (
-    <div ref={ref} className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-      <SectionIntro
+    <div className="page-shell flex flex-col gap-8">
+      <PageHero
         eyebrow="Contact"
         title={site.sections.contactTitle}
         description={site.sections.contactIntro}
+        meta={["Contexte", "Périmètre", "Échéance"]}
+        actions={
+          <>
+            <Link href="/services" className={buttonVariants({ variant: "outline", size: "lg" })}>
+              {site.pageCtas.contact.primary.label}
+            </Link>
+            <Link href="/blog" className={buttonVariants({ variant: "ghost", size: "lg" })}>
+              {site.pageCtas.contact.secondary?.label}
+            </Link>
+          </>
+        }
+        aside={
+          <div className="surface-panel p-6 sm:p-7">
+            <p className="eyebrow">{site.pageCtas.contact.eyebrow}</p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+              {site.pageCtas.contact.title}
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              {site.pageCtas.contact.description}
+            </p>
+          </div>
+        }
       />
 
-      <motion.div
-        {...revealInView}
-        transition={{ ...revealInView.transition, delay: 0.08 }}
-        className="section-signal mx-auto mt-8 grid max-w-4xl gap-3 px-5 py-5 sm:grid-cols-3"
-      >
-        {site.sales.qualification.map((item) => (
-          <div key={item} className="surface-subtle px-4 py-3 text-sm text-muted-foreground">
-            {item}
-          </div>
-        ))}
-      </motion.div>
+      <section className="section-signal px-5 py-5 sm:px-6">
+        <div className="relative z-10 grid gap-3 sm:grid-cols-3">
+          {site.sales.qualification.map((item) => (
+            <div key={item} className="surface-subtle px-4 py-3 text-sm text-muted-foreground">
+              {item}
+            </div>
+          ))}
+        </div>
+      </section>
 
-      <div className="mx-auto mt-12 grid max-w-6xl items-start gap-8 xl:grid-cols-[minmax(0,1.12fr)_360px]">
-        <motion.div {...revealInView} transition={{ ...revealInView.transition, delay: 0.12 }}>
-          <ContactForm form={form} />
-        </motion.div>
-
-        <motion.div
-          {...revealInView}
-          transition={{ ...revealInView.transition, delay: 0.16 }}
-          className="flex flex-col gap-6 lg:self-start"
-        >
-          <ContactSidebar />
-        </motion.div>
+      <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <ContactForm form={form} />
+        <ContactSidebar />
       </div>
     </div>
   );

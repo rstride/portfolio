@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { site } from "@/content/site";
-import { getServiceContent } from "@/lib/service-details";
-import { ServiceDetailPageView } from "@/features/services/service-detail-page";
+import { ServiceDetailView } from "@/features/services/detail-view";
+import { getServiceContent } from "@/features/services/model";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -38,5 +38,5 @@ export default async function ServiceDetailPage({ params }: Props) {
     notFound();
   }
 
-  return <ServiceDetailPageView slug={slug} />;
+  return <ServiceDetailView slug={slug} />;
 }

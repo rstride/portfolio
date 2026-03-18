@@ -4,7 +4,7 @@ import { ArrowRight, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { PostData } from "@/lib/posts";
+import type { PostData } from "@/features/blog/server";
 
 type RelatedPostsProps = {
   posts: PostData[];
@@ -25,12 +25,12 @@ export function RelatedPosts({ posts, hasRelatedPosts }: RelatedPostsProps) {
       <div className="mb-6 flex items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">
-            {hasRelatedPosts ? "Articles lies" : "Continuer la lecture"}
+            {hasRelatedPosts ? "Articles liés" : "Continuer la lecture"}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {hasRelatedPosts
-              ? "Des sujets proches pour approfondir la meme logique de risque ou de remediation."
-              : "Quelques articles utiles pour prolonger la lecture et preparer la suite."}
+              ? "Des sujets proches pour approfondir la même logique de risque ou de remédiation."
+              : "Quelques articles utiles pour prolonger la lecture et préparer la suite."}
           </p>
         </div>
         <Link href="/blog" className={buttonVariants({ variant: "outline", size: "sm" })}>
@@ -41,7 +41,7 @@ export function RelatedPosts({ posts, hasRelatedPosts }: RelatedPostsProps) {
       <div className="grid gap-4 md:grid-cols-3">
         {posts.map((post) => (
           <Link key={post.slug} href={`/blog/${post.slug}`} className="group">
-            <Card className="surface-panel h-full overflow-hidden transition-colors group-hover:border-primary/25">
+            <Card className="h-full overflow-hidden transition-colors group-hover:border-primary/25">
               <CardHeader>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Calendar className="size-3.5" />

@@ -4,21 +4,21 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const disclosureParagraphs = [
+const privacyParagraphs = [
   "Je mène mes recherches et activités de sécurité dans un cadre légal et éthique. Les tests ne sont effectués que sur des périmètres explicitement autorisés (contrats, programmes de bug bounty) et les preuves de concept sont limitées au minimum nécessaire.",
   "Mon approche de divulgation responsable s'inscrit dans les meilleures pratiques de l'industrie : autorisation explicite, respect des conditions d'utilisation des programmes, signalement coordonné et publication contrôlée des informations de sécurité.",
   "Pour les vulnérabilités découvertes, je privilégie toujours le signalement privé aux équipes concernées avec un délai raisonnable pour la correction, plutôt que la publication immédiate qui pourrait exposer inutilement les utilisateurs.",
   "Dans le cadre de mes travaux de recherche offensive, je m'engage à ne fournir aucune assistance opérationnelle à des usages malveillants. Tous mes travaux sont orientés pédagogie, amélioration des défenses et compréhension des mécanismes de sécurité.",
 ];
 
-const disclosurePrinciples = [
+const privacyPrinciples = [
   "Autorisation explicite et respect des conditions d'utilisation des programmes",
   "Respect de la vie privée et limitation des accès aux données strictement nécessaires",
   "Signalement responsable avec délais de correction raisonnables",
   "Pas de publication d'exploits avant correction et accord des parties",
 ];
 
-export function DisclosurePageView() {
+export function PrivacyPageView() {
   return (
     <section className="relative overflow-hidden">
       <div className="technical-grid absolute inset-x-0 top-0 -z-10 h-80 opacity-40" />
@@ -37,7 +37,7 @@ export function DisclosurePageView() {
           </div>
 
           <div className="flex flex-col gap-6">
-            {disclosureParagraphs.map((paragraph) => (
+            {privacyParagraphs.map((paragraph) => (
               <p key={paragraph} className="text-lg leading-relaxed text-muted-foreground">
                 {paragraph}
               </p>
@@ -51,7 +51,7 @@ export function DisclosurePageView() {
               </CardHeader>
               <CardContent>
                 <ul className="flex flex-col gap-3">
-                  {disclosurePrinciples.map((principle) => (
+                  {privacyPrinciples.map((principle) => (
                     <li key={principle} className="flex items-start gap-3">
                       <div className="mt-2 size-2 shrink-0 rounded-full bg-primary" />
                       <span className="text-sm text-muted-foreground">{principle}</span>

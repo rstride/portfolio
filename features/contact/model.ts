@@ -1,7 +1,7 @@
 import { Github, Globe, Linkedin } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import type { ContactFormData } from "@/lib/contact-schema";
+import type { ContactFormData } from "@/features/contact/schema";
 
 export const iconMap: Record<string, LucideIcon> = {
   github: Github,
@@ -22,7 +22,7 @@ export const EMPTY_FORM_DATA: ContactFormData = {
 };
 
 export const fieldClass =
-  "border-border/80 bg-background/75 shadow-none focus-visible:ring-ring focus-visible:ring-2";
+  "field-surface border-border/80 bg-background/92 shadow-none focus-visible:ring-ring focus-visible:ring-2";
 
 export const serviceOptions = [
   { value: "Pentest", label: "Pentest" },

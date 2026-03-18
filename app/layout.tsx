@@ -3,8 +3,8 @@ import "./globals.css";
 import { site } from "@/content/site";
 import { Navbar } from "@/features/layout/components/navbar";
 import { Footer } from "@/features/layout/components/footer";
-import { AnalyticsProvider } from "@/hooks/useAnalytics";
-import { ThemeProvider } from "@/components/theme-provider";
+import { AnalyticsProvider } from "@/shared/providers/analytics-provider";
+import { ThemeProvider } from "@/shared/providers/theme-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://rstride.fr"),

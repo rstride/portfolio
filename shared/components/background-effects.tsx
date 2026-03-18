@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useReducedMotion } from "@/shared/hooks/use-reduced-motion";
 
 interface BackgroundEffectsProps {
   variant?: "hero" | "section" | "contact";

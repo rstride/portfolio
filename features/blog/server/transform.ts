@@ -1,4 +1,4 @@
-import type { ParsedPostFile, PostData, PostFrontmatter } from "@/lib/posts/types";
+import type { ParsedPostFile, PostData, PostFrontmatter } from "@/features/blog/server/types";
 
 const WORDS_PER_MINUTE = 220;
 const EXCERPT_MAX_LENGTH = 180;

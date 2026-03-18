@@ -1,6 +1,6 @@
-import { getSortedPostsData } from "@/lib/posts";
 import { Metadata } from "next";
-import { BlogPageView } from "@/features/blog/page";
+import { getSortedPostsData } from "@/features/blog/server";
+import { BlogView } from "@/features/blog/view";
 
 export const metadata: Metadata = {
     title: "Blog",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-    const allPostsData = getSortedPostsData();
+  const allPostsData = getSortedPostsData();
 
-    return <BlogPageView posts={allPostsData} />;
+  return <BlogView posts={allPostsData} />;
 }

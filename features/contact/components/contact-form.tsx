@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import { motion } from "framer-motion";
 import { AlertCircle, CheckCircle, Lock, MessageSquare, Send } from "lucide-react";
 
@@ -10,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { site } from "@/content/site";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 
 import { useContactForm } from "@/features/contact/hooks/use-contact-form";
 import {
@@ -24,6 +26,15 @@ type ContactFormProps = {
   form: ReturnType<typeof useContactForm>;
 };
 
+type BaseFieldProps = {
+  id: string;
+  label: string;
+  required?: boolean;
+  error?: string;
+  hint?: string;
+  children: ReactNode;
+};
+
 type SelectFieldProps = {
   id: "service" | "scopeType" | "timeline";
   label: string;
@@ -35,6 +46,19 @@ type SelectFieldProps = {
   onBlur: ContactFormProps["form"]["handleBlur"];
 };
 
+function FieldBlock({ id, label, required, error, hint, children }: BaseFieldProps) {
+  return (
+    <div className="flex flex-col gap-2.5">
+      <Label htmlFor={id}>
+        {label}
+        {required ? <span className="text-destructive"> *</span> : null}
+      </Label>
+      {children}
+      {error ? <p className="text-xs text-destructive">{error}</p> : hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
 function SelectField({
   id,
   label,
@@ -45,11 +69,10 @@ function SelectField({
   onChange,
   onBlur,
 }: SelectFieldProps) {
+  const invalid = Boolean(error && touched);
+
   return (
-    <div className="flex flex-col gap-2">
-      <Label htmlFor={id}>
-        {label} <span className="text-destructive">*</span>
-      </Label>
+    <FieldBlock id={id} label={label} required error={invalid ? error : undefined}>
       <select
         id={id}
         name={id}
@@ -57,9 +80,9 @@ function SelectField({
         onChange={onChange}
         onBlur={onBlur}
         className={cn(
-          "flex h-10 w-full rounded-md border px-3 py-2 text-sm shadow-none transition focus-visible:outline-none focus-visible:ring-2",
+          "field-surface flex h-11 w-full px-3 py-2 text-sm transition focus-visible:outline-none focus-visible:ring-2",
           fieldClass,
-          error && touched && "border-destructive/60 focus-visible:ring-destructive/30"
+          invalid && "border-destructive/60 focus-visible:ring-destructive/30"
         )}
         required
       >
@@ -70,8 +93,7 @@ function SelectField({
           </option>
         ))}
       </select>
-      {error && touched ? <p className="text-xs text-destructive">{error}</p> : null}
-    </div>
+    </FieldBlock>
   );
 }
 
@@ -79,39 +101,41 @@ export function ContactForm({ form }: ContactFormProps) {
   const hasErrors = Object.keys(form.errors).length > 0;
 
   return (
-    <Card className="surface-panel overflow-hidden">
-      <CardHeader className="gap-5 bg-[linear-gradient(135deg,rgba(36,184,122,0.08),rgba(80,220,255,0.09))]">
+    <Card className="overflow-hidden">
+      <CardHeader className="gap-5 border-b border-border/60 bg-[linear-gradient(135deg,rgba(36,184,122,0.06),rgba(80,220,255,0.08))]">
         <div className="flex items-center gap-3">
           <div className="flex size-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground">
-            <MessageSquare className="size-5" />
+            <MessageSquare />
           </div>
           <div>
             <CardTitle className="text-xl">Décrire votre besoin</CardTitle>
             <CardDescription className="mt-1">
-              Quelques informations suffisent pour revenir avec un cadrage utile.
+              Une description simple du contexte suffit pour revenir avec un cadrage utile.
             </CardDescription>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="p-6">
+      <CardContent className="p-6 sm:p-7">
         <form onSubmit={form.handleSubmit} className="flex flex-col gap-6">
-          <div className="grid gap-6 sm:grid-cols-2">
-            <input
-              type="text"
-              name="website"
-              value={form.formData.website}
-              onChange={form.handleInputChange}
-              tabIndex={-1}
-              autoComplete="off"
-              aria-hidden="true"
-              className="hidden"
-            />
+          <input
+            type="text"
+            name="website"
+            value={form.formData.website}
+            onChange={form.handleInputChange}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="hidden"
+          />
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="name">
-                Nom <span className="text-destructive">*</span>
-              </Label>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <FieldBlock
+              id="name"
+              label="Nom"
+              required
+              error={form.touched.name ? form.errors.name : undefined}
+            >
               <Input
                 id="name"
                 type="text"
@@ -128,15 +152,14 @@ export function ContactForm({ form }: ContactFormProps) {
                 placeholder="Votre nom"
                 required
               />
-              {form.errors.name && form.touched.name ? (
-                <p className="text-xs text-destructive">{form.errors.name}</p>
-              ) : null}
-            </div>
+            </FieldBlock>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">
-                Email <span className="text-destructive">*</span>
-              </Label>
+            <FieldBlock
+              id="email"
+              label="Email"
+              required
+              error={form.touched.email ? form.errors.email : undefined}
+            >
               <Input
                 id="email"
                 type="email"
@@ -153,15 +176,11 @@ export function ContactForm({ form }: ContactFormProps) {
                 placeholder="contact@entreprise.com"
                 required
               />
-              {form.errors.email && form.touched.email ? (
-                <p className="text-xs text-destructive">{form.errors.email}</p>
-              ) : null}
-            </div>
+            </FieldBlock>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="company">Entreprise</Label>
+            <FieldBlock id="company" label="Entreprise">
               <Input
                 id="company"
                 type="text"
@@ -171,10 +190,9 @@ export function ContactForm({ form }: ContactFormProps) {
                 className={fieldClass}
                 placeholder="Nom de votre entreprise ou produit"
               />
-            </div>
+            </FieldBlock>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="phone">Téléphone</Label>
+            <FieldBlock id="phone" label="Téléphone">
               <Input
                 id="phone"
                 type="tel"
@@ -184,7 +202,7 @@ export function ContactForm({ form }: ContactFormProps) {
                 className={fieldClass}
                 placeholder="06 XX XX XX XX"
               />
-            </div>
+            </FieldBlock>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-3">
@@ -220,17 +238,20 @@ export function ContactForm({ form }: ContactFormProps) {
             />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="message">
-              Message <span className="text-destructive">*</span>
-            </Label>
+          <FieldBlock
+            id="message"
+            label="Message"
+            required
+            error={form.touched.message ? form.errors.message : undefined}
+            hint={!form.errors.message || !form.touched.message ? site.sales.faqHint : undefined}
+          >
             <Textarea
               id="message"
               name="message"
               value={form.formData.message}
               onChange={form.handleInputChange}
               onBlur={form.handleBlur}
-              rows={6}
+              rows={7}
               className={cn(
                 "resize-none",
                 fieldClass,
@@ -241,31 +262,26 @@ export function ContactForm({ form }: ContactFormProps) {
               placeholder="Décrivez le périmètre, la stack, l'échéance et ce que vous attendez de la mission..."
               required
             />
-            <div className="flex items-center justify-between">
-              {form.errors.message && form.touched.message ? (
-                <p className="text-xs text-destructive">{form.errors.message}</p>
-              ) : (
-                <p className="text-xs text-muted-foreground">{site.sales.faqHint}</p>
-              )}
-              <p className="ml-auto text-xs text-muted-foreground">
+            <div className="flex items-center justify-end">
+              <p className="text-xs text-muted-foreground">
                 {form.formData.message.length}/500 minimum
               </p>
             </div>
-          </div>
+          </FieldBlock>
 
           {form.submitStatus === "error" ? (
             <Alert variant="destructive">
-              <AlertCircle className="size-4" />
+              <AlertCircle />
               <AlertDescription>
                 {form.submitError ||
-                  "Une erreur technique s'est produite. Veuillez reessayer ou me contacter directement a contact@rstride.fr."}
+                  "Une erreur technique s'est produite. Veuillez réessayer ou me contacter directement à contact@rstride.fr."}
               </AlertDescription>
             </Alert>
           ) : null}
 
           {form.submitStatus === "success" ? (
             <Alert className="border-primary/20 bg-primary/[0.08] text-foreground">
-              <CheckCircle className="size-4 text-primary" />
+              <CheckCircle className="text-primary" />
               <AlertDescription>Message envoyé avec succès.</AlertDescription>
             </Alert>
           ) : null}
@@ -281,7 +297,7 @@ export function ContactForm({ form }: ContactFormProps) {
           >
             {form.submitStatus === "success" ? (
               <>
-                <CheckCircle className="size-4" />
+                <CheckCircle />
                 Message envoyé
               </>
             ) : form.isSubmitting ? (
@@ -290,13 +306,13 @@ export function ContactForm({ form }: ContactFormProps) {
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 >
-                  <Lock className="size-4" />
+                  <Lock />
                 </motion.div>
                 Envoi en cours
               </>
             ) : (
               <>
-                <Send className="size-4" />
+                <Send />
                 {hasErrors ? "Corrigez les erreurs" : "Recevoir une proposition"}
               </>
             )}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { type ContactFormData, getContactFieldErrors } from "@/lib/contact-schema";
+import { type ContactFormData, getContactFieldErrors } from "@/features/contact/schema";
 
 import { EMPTY_FORM_DATA } from "@/features/contact/model";
 

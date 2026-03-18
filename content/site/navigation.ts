@@ -1,11 +1,15 @@
-import type { SocialLink } from "@/content/site/types";
+import type { ActionLink, SocialLink } from "@/content/site/types";
 
-export const nav = [
+export const primaryNav = [
   { href: "/", label: "Accueil" },
   { href: "/services", label: "Services" },
   { href: "/blog", label: "Blog" },
-  { href: "/contact", label: "Contact" },
-] as const;
+] as ActionLink[];
+
+export const navPrimaryCta = {
+  href: "/contact",
+  label: "Contact",
+} as const satisfies ActionLink;
 
 export const socials = [
   { label: "GitHub", href: "https://github.com/rstride" },

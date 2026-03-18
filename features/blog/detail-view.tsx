@@ -1,17 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 
-import { site } from "@/content/site";
-import { getAllPostSlugs, getPostData, getRelatedPosts, getSortedPostsData } from "@/lib/posts";
-import { BackgroundEffects } from "@/shared/components/background-effects";
+import { ArrowLeft } from "lucide-react";
 
+import { site } from "@/content/site";
+import {
+  getAllPostSlugs,
+  getPostData,
+  getRelatedPosts,
+  getSortedPostsData,
+} from "@/features/blog/server";
 import { PostAuthorCard } from "@/features/blog/components/post-author-card";
 import { PostHeader } from "@/features/blog/components/post-header";
 import { RelatedPosts } from "@/features/blog/components/related-posts";
+import { BackgroundEffects } from "@/shared/components/background-effects";
+import { CtaBand } from "@/shared/components/cta-band";
 
-type BlogPostPageProps = {
+type BlogPostDetailViewProps = {
   slug: string;
 };
 
@@ -64,7 +70,7 @@ export function getBlogPostStaticParams() {
   }));
 }
 
-export async function BlogPostPageView({ slug }: BlogPostPageProps) {
+export async function BlogPostDetailView({ slug }: BlogPostDetailViewProps) {
   const post = await getPostData(slug);
 
   if (!post) {
@@ -124,6 +130,10 @@ export async function BlogPostPageView({ slug }: BlogPostPageProps) {
 
             <div className="prose prose-lg relative z-10 mt-10 max-w-none prose-headings:scroll-mt-20 prose-headings:font-semibold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl dark:prose-invert">
               <div dangerouslySetInnerHTML={{ __html: post.contentHtml || "" }} />
+            </div>
+
+            <div className="relative z-10 mt-14">
+              <CtaBand cta={site.pageCtas.blog} />
             </div>
 
             <PostAuthorCard />

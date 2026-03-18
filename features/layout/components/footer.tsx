@@ -2,64 +2,61 @@
 
 import Link from "next/link";
 
-import { motion } from "framer-motion";
-import { ArrowUpRight, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { site } from "@/content/site";
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-border/70 pt-6">
-      <div className="hero-grid absolute inset-x-0 top-0 h-32 opacity-42" />
-      <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(80,220,255,0.1),transparent_58%)]" />
-
-      <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <motion.div
-          className="surface-contrast overflow-hidden px-6 py-8 md:px-8"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          viewport={{ once: true }}
-        >
-          <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr] md:items-end">
-            <div className="space-y-5">
+    <footer className="relative overflow-hidden border-t border-border/70 pt-4">
+      <div className="page-shell pb-6">
+        <div className="surface-panel overflow-hidden px-5 py-6 sm:px-6">
+          <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] md:items-end">
+            <div className="grid gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex size-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground">
+                <div className="flex size-10 items-center justify-center rounded-[0.95rem] bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground">
                   <Shield className="size-4" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white">{site.name}</p>
-                  <p className="text-xs uppercase tracking-[0.22em] text-white/64">
+                  <p className="text-sm font-semibold text-foreground">{site.name}</p>
+                  <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
                     Security Consulting
                   </p>
                 </div>
               </div>
-              <h2 className="max-w-[12ch] text-3xl font-semibold tracking-tight text-white">
-                Des missions sécurité claires, utiles et assumées
-              </h2>
-              <p className="max-w-xl text-sm leading-relaxed text-white/74">
-                Pentest, audit et formation.
-              </p>
-              <div className="flex flex-wrap items-center gap-3 text-sm text-white/64">
+
+              <div>
+                <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                  Pentest, audit et formation.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                 <span>© {new Date().getFullYear()} {site.name}</span>
-                <Separator orientation="vertical" className="hidden h-4 bg-white/12 md:block" />
+                <Separator orientation="vertical" className="hidden h-4 md:block" />
                 <span>{site.strings.footerRightsSuffix}</span>
               </div>
             </div>
 
-            <div className="flex flex-col gap-5 md:items-end">
+            <div className="grid gap-4 md:justify-items-end">
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2.5 rounded-full bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-[0_14px_30px_rgba(22,126,102,0.18)] transition hover:opacity-95"
+              >
+                Contact
+              </Link>
+
               <div className="flex flex-wrap gap-2 md:justify-end">
                 <Link
                   href="/legal/privacy"
-                  className="rounded-full border border-white/12 px-3 py-2 text-sm text-white/74 transition hover:bg-white/8 hover:text-white"
+                  className="rounded-full border border-border/70 px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-accent/60 hover:text-foreground"
                 >
                   {site.strings.footerPrivacyLabel}
                 </Link>
                 <Link
                   href="/legal/disclosure"
-                  className="rounded-full border border-white/12 px-3 py-2 text-sm text-white/74 transition hover:bg-white/8 hover:text-white"
+                  className="rounded-full border border-border/70 px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-accent/60 hover:text-foreground"
                 >
                   Divulgation
                 </Link>
@@ -69,17 +66,14 @@ export function Footer() {
                 href="https://prismasec.fr"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-3 rounded-full border border-white/12 bg-white/8 px-3 py-2 text-sm text-white transition hover:bg-white/12"
+                className="inline-flex items-center gap-3 text-sm text-muted-foreground transition hover:text-foreground"
               >
-                <Badge variant="secondary" className="border-0 bg-white/10 text-white">
-                  PrismaSec
-                </Badge>
-                <span>Plateforme CTEM</span>
-                <ArrowUpRight className="size-4" />
+                <span className="size-2.5 rounded-full bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))]" />
+                <span>Sécurisé par PrismaSec</span>
               </a>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </footer>
   );

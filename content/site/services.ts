@@ -11,6 +11,9 @@ export const services = [
     bestFor: "Les organisations qui exposent une application, une API ou un espace client et veulent une évaluation sérieuse du risque.",
     outcome: "Une liste claire des vulnérabilités exploitables, avec un ordre de correction cohérent.",
     notFor: "Les équipes qui cherchent uniquement un scan automatique ou un rapport sans échange technique.",
+    format: "Mission ciblée sur un périmètre applicatif ou API clairement défini.",
+    timeline: "Cadrage rapide, tests concentrés, restitution puis retest.",
+    proof: "Approche orientée impact réel, pas simple conformité de surface.",
     navigationDescription: "Tests d’intrusion sur vos systèmes d'information.",
     icon: "shield",
   },
@@ -24,6 +27,9 @@ export const services = [
     bestFor: "Les structures qui veulent savoir quoi traiter en premier sans lancer une mission lourde ou floue.",
     outcome: "Une feuille de route lisible, avec quick wins, chantiers prioritaires et ordre d’exécution.",
     notFor: "Les structures qui cherchent uniquement un audit documentaire ou une certification clé en main.",
+    format: "Analyse pragmatique de l’exposition, des accès et des mesures structurantes.",
+    timeline: "Collecte, analyse, restitution puis feuille de route opérationnelle.",
+    proof: "Focalisé sur les arbitrages utiles au décideur et au référent technique.",
     navigationDescription: "État des lieux de vos processus de sécurité.",
     icon: "search",
   },
@@ -37,6 +43,9 @@ export const services = [
     bestFor: "Les écoles, organismes de formation et entreprises qui veulent une intervention utile et vivante.",
     outcome: "Des participants qui comprennent mieux les risques et retiennent les bons réflexes.",
     notFor: "Les structures qui veulent uniquement une présentation théorique sans interaction.",
+    format: "Sensibilisation, atelier ou CTF adapté au niveau réel du public.",
+    timeline: "Cadrage pédagogique, conception, animation puis débrief.",
+    proof: "Formats conçus pour faire participer, comprendre et retenir durablement.",
     navigationDescription: "Sensibilisation, ateliers et CTF pédagogiques.",
     icon: "graduation-cap",
   },
@@ -52,6 +61,9 @@ export const servicePages = {
       "Tests manuels et outillés sur le scope validé",
       "Rapport, restitution orale et retest après correction",
     ],
+    faqTitle: "Quand lancer un pentest ?",
+    faqAnswer:
+      "Le bon moment est avant une mise en production, après une évolution sensible ou quand vous avez besoin de valider l’exposition réelle d’un parcours critique.",
   },
   audit: {
     intro:
@@ -62,6 +74,9 @@ export const servicePages = {
       "Analyse du risque et identification des priorités",
       "Restitution claire avec feuille de route réaliste",
     ],
+    faqTitle: "Quand choisir un audit plutôt qu’un pentest ?",
+    faqAnswer:
+      "Quand la question n’est pas seulement « où sont les failles ? », mais surtout « que faut-il traiter en premier pour réduire le risque sans se disperser ? »",
   },
   training: {
     intro:
@@ -72,6 +87,9 @@ export const servicePages = {
       "Conception du contenu, des exercices ou des challenges",
       "Animation, debrief et recommandations de suivi",
     ],
+    faqTitle: "Quel format choisir pour faire progresser un public ?",
+    faqAnswer:
+      "Le format dépend du niveau du public et de l’objectif : sensibiliser, entraîner des réflexes, ou faire pratiquer dans un cadre plus technique et engageant.",
   },
 } as const satisfies Record<string, ServicePageDetail>;
 
@@ -79,6 +97,7 @@ export const serviceNavigation: ServiceNavigationItem[] = services.map((service)
   href: getServiceHref(service.slug),
   label: service.title.replace(", sensibilisation et CTF", "").replace(" web/API", ""),
   description: service.navigationDescription,
+  icon: service.icon,
 }));
 
 export function getServiceHref(slug: string) {

@@ -1,4 +1,5 @@
 "use client";
+
 import { createContext, useCallback, useContext, useEffect, useRef } from "react";
 
 type Payload = Record<string, unknown> | undefined;
@@ -10,13 +11,14 @@ type AnalyticsWindow = Window & {
 
 export function track(event: string, payload?: Payload) {
   try {
-    const w = window as AnalyticsWindow;
-    if (typeof w.gtag === "function") {
-      w.gtag("event", event, payload ?? {});
-    } else if (Array.isArray(w.dataLayer)) {
-      w.dataLayer.push({ event, ...(payload ?? {}) });
+    const currentWindow = window as AnalyticsWindow;
+    if (typeof currentWindow.gtag === "function") {
+      currentWindow.gtag("event", event, payload ?? {});
+    } else if (Array.isArray(currentWindow.dataLayer)) {
+      currentWindow.dataLayer.push({ event, ...(payload ?? {}) });
     }
   } catch {}
+
   if (process.env.NODE_ENV !== "production") {
     console.info(`[analytics] ${event}`, payload || {});
   }
@@ -24,35 +26,42 @@ export function track(event: string, payload?: Payload) {
 
 type QueuedEvent = { event: string; payload?: Payload };
 
-const AnalyticsCtx = createContext<null | ((event: string, payload?: Payload) => void)>(null);
+const AnalyticsContext = createContext<null | ((event: string, payload?: Payload) => void)>(null);
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const queueRef = useRef<QueuedEvent[]>([]);
-  const flushing = useRef(false);
+  const flushingRef = useRef(false);
 
   const flush = useCallback(() => {
-    if (flushing.current || queueRef.current.length === 0) return;
-    flushing.current = true;
+    if (flushingRef.current || queueRef.current.length === 0) {
+      return;
+    }
+
+    flushingRef.current = true;
     try {
       for (const item of queueRef.current) {
         track(item.event, item.payload);
       }
       queueRef.current = [];
     } finally {
-      flushing.current = false;
+      flushingRef.current = false;
     }
   }, []);
 
   useEffect(() => {
-    const id = setInterval(flush, 1500);
-    const onVis = () => {
-      if (document.visibilityState === "hidden") flush();
+    const intervalId = setInterval(flush, 1500);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        flush();
+      }
     };
-    window.addEventListener("visibilitychange", onVis);
+
+    window.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("beforeunload", flush);
+
     return () => {
-      clearInterval(id);
-      window.removeEventListener("visibilitychange", onVis);
+      clearInterval(intervalId);
+      window.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("beforeunload", flush);
     };
   }, [flush]);
@@ -61,11 +70,12 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     queueRef.current.push({ event, payload });
   }, []);
 
-  return <AnalyticsCtx.Provider value={enqueue}>{children}</AnalyticsCtx.Provider>;
+  return <AnalyticsContext.Provider value={enqueue}>{children}</AnalyticsContext.Provider>;
 }
 
 export function useAnalytics() {
-  const enqueue = useContext(AnalyticsCtx);
+  const enqueue = useContext(AnalyticsContext);
+
   return {
     queue: enqueue,
     track,

@@ -1,8 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { fileNameToSlug, isPublishableFile, isPublished } from "@/lib/posts/repository";
-import { getExcerpt, getReadingTime, stripMarkdown } from "@/lib/posts/transform";
+import {
+  fileNameToSlug,
+  getExcerpt,
+  getReadingTime,
+  isPublishableFile,
+  isPublished,
+  stripMarkdown,
+} from "@/features/blog/server";
 
 test("isPublishableFile filters copied drafts", () => {
   assert.equal(isPublishableFile("hello.md"), true);

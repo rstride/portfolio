@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-import { contactSchema } from "@/lib/contact-schema";
-import { getSmtpConfig } from "@/lib/contact/config";
-import { createContactMailOptions, createTransportOptions } from "@/lib/contact/mail";
-import { getClientIp, isRateLimited } from "@/lib/contact/security";
+import { contactSchema } from "@/features/contact/schema";
+import { getSmtpConfig } from "@/features/contact/server/config";
+import { createContactMailOptions, createTransportOptions } from "@/features/contact/server/mail";
+import { getClientIp, isRateLimited } from "@/features/contact/server/security";
 
 export async function POST(request: NextRequest) {
   try {

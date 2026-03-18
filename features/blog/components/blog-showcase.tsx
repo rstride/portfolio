@@ -1,23 +1,23 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
+import Link from "next/link";
 
-import { motion, useInView } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
 import { BlogCard } from "@/features/blog/components/blog-card";
 import { BlogSearch } from "@/features/blog/components/blog-search";
-import { BackgroundEffects } from "@/shared/components/background-effects";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PostData } from "@/lib/posts";
-import { cn } from "@/lib/utils";
-import { revealInView } from "@/shared/motion/reveal";
+import { CtaBand } from "@/shared/components/cta-band";
+import { PageHero } from "@/shared/components/page-hero";
+import type { PostData } from "@/features/blog/server";
+import { site } from "@/content/site";
+import { cn } from "@/shared/lib/utils";
 
 export function BlogShowcase({ posts }: { posts: PostData[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string>("all");
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.1 });
   const featuredPost = posts[0];
   const remainingPosts = featuredPost ? posts.slice(1) : posts;
 
@@ -42,79 +42,99 @@ export function BlogShowcase({ posts }: { posts: PostData[] }) {
   }, [activeTag, remainingPosts, searchQuery]);
 
   return (
-    <div ref={ref} className="relative overflow-hidden">
-      <BackgroundEffects variant="section" intensity="medium" />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-4 pb-12 pt-4 sm:px-6 lg:px-8 lg:pb-20 lg:pt-6">
-        <section className="section-editorial px-6 pb-10 pt-6 sm:px-8 lg:px-12 lg:pb-14 lg:pt-8">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-            transition={{ duration: 0.45 }}
-            className="relative z-10 mx-auto max-w-3xl text-center"
-          >
-            <p className="eyebrow">Articles</p>
-            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-foreground sm:text-6xl">
-              Blog cybersécurité
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-              Analyses, retours terrain et guides concrets sur le pentest, l&apos;audit sécurité et la
-              sécurisation des applications.
-            </p>
-            <div className="mt-8">
-              <BlogSearch value={searchQuery} onChange={setSearchQuery} />
-            </div>
-          </motion.div>
-
-          {featuredPost ? (
-            <motion.div
-              {...revealInView}
-              transition={{ ...revealInView.transition, delay: 0.08 }}
-              className="mt-12"
-            >
-              <BlogCard post={featuredPost} featured />
-            </motion.div>
-          ) : null}
-
-          <Card className="surface-panel mt-8 shadow-none">
-            <CardContent className="flex flex-col gap-5 p-5">
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => {
-                  const active = tag === activeTag;
-                  return (
-                    <Button
-                      key={tag}
-                      type="button"
-                      variant={active ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setActiveTag(tag)}
-                      className={cn(
-                        "capitalize",
-                        active
-                          ? "border-0 bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground"
-                          : "shadow-none"
-                      )}
-                    >
-                      {tag === "all" ? "Tous les sujets" : tag}
-                    </Button>
-                  );
-                })}
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {filteredPosts.length > 0 ? (
-                  filteredPosts.map((post, index) => (
-                    <BlogCard key={post.slug} post={post} index={index} />
-                  ))
-                ) : (
-                  <div className="col-span-full rounded-[1.5rem] border border-dashed border-border/80 px-6 py-12 text-center text-muted-foreground">
-                    Aucun article trouve pour ce filtre.
-                  </div>
+    <div className="relative overflow-hidden pb-20">
+      <div className="page-shell flex flex-col gap-8">
+        <PageHero
+          eyebrow="Articles"
+          title="Blog cybersécurité"
+          description="Analyses, retours terrain et guides concrets sur le pentest, l’audit sécurité et la sécurisation des applications."
+          meta={["Retours terrain", "Analyse de risque", "AppSec pragmatique"]}
+          actions={
+            <>
+              <Link
+                href={site.pageCtas.blog.primary.href}
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "border-0 bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground shadow-[0_16px_34px_rgba(22,126,102,0.24)]"
                 )}
+              >
+                {site.pageCtas.blog.primary.label}
+                <ArrowRight data-icon="inline-end" />
+              </Link>
+              <Link href={site.pageCtas.blog.secondary!.href} className={buttonVariants({ variant: "outline", size: "lg" })}>
+                {site.pageCtas.blog.secondary?.label}
+              </Link>
+            </>
+          }
+          aside={
+            <div className="surface-panel p-6 sm:p-7">
+              <p className="eyebrow">Rechercher</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+                Trouver un sujet utile rapidement
+              </h2>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                Filtrer par thème ou rechercher un article précis pour retrouver un retour terrain
+                ou un guide.
+              </p>
+              <div className="mt-6">
+                <BlogSearch value={searchQuery} onChange={setSearchQuery} />
               </div>
-            </CardContent>
-          </Card>
-        </section>
+            </div>
+          }
+        />
+
+        {featuredPost ? (
+          <section className="grid gap-4">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <p className="eyebrow">Article en avant</p>
+                <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground">
+                  Un contenu éditorial au service des missions
+                </h2>
+              </div>
+            </div>
+            <BlogCard post={featuredPost} featured />
+          </section>
+        ) : null}
+
+        <Card className="shadow-none">
+          <CardContent className="flex flex-col gap-6 p-5 sm:p-6">
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag) => {
+                const active = tag === activeTag;
+                return (
+                  <Button
+                    key={tag}
+                    type="button"
+                    variant={active ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setActiveTag(tag)}
+                    className={cn(
+                      "capitalize",
+                      active
+                        ? "border-0 bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground"
+                        : "shadow-none"
+                    )}
+                  >
+                    {tag === "all" ? "Tous les sujets" : tag}
+                  </Button>
+                );
+              })}
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {filteredPosts.length > 0 ? (
+                filteredPosts.map((post, index) => (
+                  <BlogCard key={post.slug} post={post} index={index} />
+                ))
+              ) : (
+                <div className="empty-panel col-span-full">Aucun article trouvé pour ce filtre.</div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <CtaBand cta={site.pageCtas.blog} />
       </div>
     </div>
   );

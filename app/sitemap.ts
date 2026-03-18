@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/content/site";
-import { getSortedPostsData } from "@/lib/posts";
+import { getSortedPostsData } from "@/features/blog/server";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "https://rstride.fr";

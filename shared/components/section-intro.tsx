@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 
 import { revealInView } from "@/shared/motion/reveal";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 
 type SectionIntroProps = {
   eyebrow?: string;
@@ -30,10 +30,10 @@ export function SectionIntro({
       )}
     >
       {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-      <h2 className="max-w-[14ch] text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+      <h2 className="max-w-[14ch] text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
         {title}
       </h2>
-      <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-[1.15rem]">
+      <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
         {description}
       </p>
     </motion.div>
