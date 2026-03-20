@@ -1,10 +1,27 @@
 import type { Metadata } from "next";
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+
 import "./globals.css";
 import { site } from "@/content/site";
 import { Navbar } from "@/features/layout/components/navbar";
 import { Footer } from "@/features/layout/components/footer";
 import { AnalyticsProvider } from "@/shared/providers/analytics-provider";
 import { ThemeProvider } from "@/shared/providers/theme-provider";
+
+const headingFont = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+});
+
+const bodyFont = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const monoFont = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://rstride.fr"),
@@ -18,16 +35,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className="antialiased min-h-screen flex flex-col">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+      <body
+        className={`${headingFont.variable} ${bodyFont.variable} ${monoFont.variable} flex min-h-screen flex-col bg-background text-foreground antialiased`}
+      >
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <AnalyticsProvider>
             <Navbar />
-            <main className="flex-1 pt-[var(--site-navbar-height,6.5rem)]">{children}</main>
+            <main className="flex-1 pt-[var(--site-navbar-height,5rem)]">{children}</main>
             <Footer />
           </AnalyticsProvider>
         </ThemeProvider>

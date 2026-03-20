@@ -19,7 +19,7 @@ function formatPostDate(date: string) {
 export function PostHeader({ post }: PostHeaderProps) {
   return (
     <header className="relative z-10 mt-8">
-      <div className="mb-5 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+      <div className="font-label mb-5 flex flex-wrap items-center gap-4 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
         <div className="flex items-center gap-2">
           <Calendar className="size-4" />
           <time dateTime={post.date}>{formatPostDate(post.date)}</time>
@@ -36,20 +36,20 @@ export function PostHeader({ post }: PostHeaderProps) {
         ) : null}
       </div>
 
-      <h1 className="max-w-[13ch] text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+      <h1 className="font-headline max-w-[13ch] text-4xl font-bold uppercase leading-[0.94] tracking-[-0.05em] text-foreground sm:text-5xl lg:text-6xl">
         {post.title}
       </h1>
 
       <div className="mt-6 flex flex-wrap gap-2">
         {post.tags?.map((tag) => (
-          <Badge key={tag} variant="secondary" className="brand-chip border-0 bg-transparent">
+          <Badge key={tag} variant="outline">
             {tag}
           </Badge>
         ))}
       </div>
 
       {post.coverImage ? (
-        <div className="editorial-card relative mt-8 aspect-video w-full overflow-hidden shadow-[0_24px_50px_rgba(10,28,24,0.08)]">
+        <div className="editorial-card relative mt-8 aspect-video w-full overflow-hidden">
           <Image
             src={post.coverImage}
             alt={post.title}

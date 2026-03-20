@@ -30,7 +30,7 @@ export function SectionIntro({
       )}
     >
       {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-      <h2 className="max-w-[14ch] text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+      <h2 className="font-headline max-w-[14ch] text-3xl font-bold uppercase leading-[0.98] tracking-[-0.04em] text-foreground sm:text-4xl lg:text-5xl">
         {title}
       </h2>
       <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">

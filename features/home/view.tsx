@@ -7,18 +7,23 @@ import { BackToTopButton } from "@/shared/components/back-to-top-button";
 import { CtaBand } from "@/shared/components/cta-band";
 import { EngagementSteps } from "@/shared/components/engagement-steps";
 import { SectionIntro } from "@/shared/components/section-intro";
+import { cn } from "@/shared/lib/utils";
 
 export function HomeView() {
   return (
-    <div className="relative overflow-x-hidden pb-20">
+    <div className="relative overflow-x-hidden pb-24">
       <section
         id="hero"
-        className="-mt-[var(--site-navbar-height,6.5rem)] pt-[var(--site-navbar-height,6.5rem)]"
+        className="-mt-[var(--site-navbar-height,6rem)] pt-[var(--site-navbar-height,6rem)]"
       >
         <Hero />
       </section>
 
-      <section id="proofs" className="py-8 lg:py-10">
+      <section id="projects" className="py-16 lg:py-24">
+        <ProjectsShowcase />
+      </section>
+
+      <section id="proofs" className="py-16 lg:py-24">
         <div className="page-shell">
           <SectionIntro
             eyebrow={site.homeSections.proofs.eyebrow}
@@ -28,13 +33,16 @@ export function HomeView() {
             className="mx-0"
           />
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-4">
-            {site.homeProofs.map((proof) => (
-              <article key={proof.title} className="proof-card">
-                <Badge variant="outline" className="w-fit">
+          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {site.homeProofs.map((proof, index) => (
+              <article
+                key={proof.title}
+                className={cn("proof-card", index % 2 === 1 && "xl:translate-y-8")}
+              >
+                <Badge variant="secondary" className="w-fit">
                   {proof.kpi}
                 </Badge>
-                <p className="mt-4 text-lg font-semibold tracking-tight text-foreground">
+                <p className="font-headline mt-6 text-3xl font-bold uppercase leading-[0.96] tracking-[-0.04em] text-foreground">
                   {proof.title}
                 </p>
               </article>
@@ -43,15 +51,11 @@ export function HomeView() {
         </div>
       </section>
 
-      <section id="services" className="py-14 lg:py-18">
+      <section id="services" className="py-16 lg:py-24">
         <ServicesSection />
       </section>
 
-      <section id="projects" className="py-14 lg:py-18">
-        <ProjectsShowcase />
-      </section>
-
-      <section id="process" className="page-shell py-14 lg:py-18">
+      <section id="process" className="page-shell py-16 lg:py-24">
         <EngagementSteps
           eyebrow={site.homeSections.process.eyebrow}
           title={site.homeSections.process.title}
@@ -60,7 +64,7 @@ export function HomeView() {
         />
       </section>
 
-      <section className="page-shell pt-6">
+      <section className="page-shell pt-4">
         <CtaBand cta={site.pageCtas.home} />
       </section>
 

@@ -10,7 +10,7 @@ import { BlogSearch } from "@/features/blog/components/blog-search";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CtaBand } from "@/shared/components/cta-band";
-import { PageHero } from "@/shared/components/page-hero";
+import { PageHeader } from "@/shared/components/page-header";
 import type { PostData } from "@/features/blog/server";
 import { site } from "@/content/site";
 import { cn } from "@/shared/lib/utils";
@@ -44,20 +44,14 @@ export function BlogShowcase({ posts }: { posts: PostData[] }) {
   return (
     <div className="relative overflow-hidden pb-20">
       <div className="page-shell flex flex-col gap-8">
-        <PageHero
+        <PageHeader
           eyebrow="Articles"
           title="Blog cybersécurité"
           description="Analyses, retours terrain et guides concrets sur le pentest, l’audit sécurité et la sécurisation des applications."
           meta={["Retours terrain", "Analyse de risque", "AppSec pragmatique"]}
           actions={
             <>
-              <Link
-                href={site.pageCtas.blog.primary.href}
-                className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "border-0 bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground shadow-[0_16px_34px_rgba(22,126,102,0.24)]"
-                )}
-              >
+              <Link href={site.pageCtas.blog.primary.href} className={cn(buttonVariants({ size: "lg" }))}>
                 {site.pageCtas.blog.primary.label}
                 <ArrowRight data-icon="inline-end" />
               </Link>
@@ -68,8 +62,8 @@ export function BlogShowcase({ posts }: { posts: PostData[] }) {
           }
           aside={
             <div className="surface-panel p-6 sm:p-7">
-              <p className="eyebrow">Rechercher</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+              <span className="status-chip w-fit">Blog archive</span>
+              <h2 className="font-headline mt-5 text-3xl font-bold uppercase leading-[0.96] tracking-[-0.04em] text-foreground">
                 Trouver un sujet utile rapidement
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -88,7 +82,7 @@ export function BlogShowcase({ posts }: { posts: PostData[] }) {
             <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="eyebrow">Article en avant</p>
-                <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground">
+                <h2 className="font-headline mt-3 text-4xl font-bold uppercase tracking-[-0.04em] text-foreground">
                   Un contenu éditorial au service des missions
                 </h2>
               </div>
@@ -97,7 +91,7 @@ export function BlogShowcase({ posts }: { posts: PostData[] }) {
           </section>
         ) : null}
 
-        <Card className="shadow-none">
+        <Card className="section-frame shadow-none">
           <CardContent className="flex flex-col gap-6 p-5 sm:p-6">
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => {
@@ -109,12 +103,7 @@ export function BlogShowcase({ posts }: { posts: PostData[] }) {
                     variant={active ? "default" : "outline"}
                     size="sm"
                     onClick={() => setActiveTag(tag)}
-                    className={cn(
-                      "capitalize",
-                      active
-                        ? "border-0 bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground"
-                        : "shadow-none"
-                    )}
+                    className={cn("capitalize", !active && "shadow-none")}
                   >
                     {tag === "all" ? "Tous les sujets" : tag}
                   </Button>
@@ -122,7 +111,7 @@ export function BlogShowcase({ posts }: { posts: PostData[] }) {
               })}
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4">
               {filteredPosts.length > 0 ? (
                 filteredPosts.map((post, index) => (
                   <BlogCard key={post.slug} post={post} index={index} />

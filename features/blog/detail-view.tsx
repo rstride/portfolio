@@ -115,12 +115,12 @@ export async function BlogPostDetailView({ slug }: BlogPostDetailViewProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <article className="relative z-10 px-4 pb-20 pt-6 sm:px-6 md:pt-10 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <div className="section-editorial px-6 py-8 sm:px-8 lg:px-12 lg:py-12">
+      <article className="relative z-10 px-4 pb-20 pt-4 sm:px-6 md:pt-8 lg:px-8">
+        <div className="page-shell max-w-5xl px-0">
+          <div className="article-shell px-6 py-8 sm:px-8 lg:px-12 lg:py-12">
             <Link
               href="/blog"
-              className="relative z-10 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="relative z-10 inline-flex items-center gap-2 font-label text-[11px] uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-foreground"
             >
               <ArrowLeft className="size-4" />
               Retour au blog
@@ -128,7 +128,7 @@ export async function BlogPostDetailView({ slug }: BlogPostDetailViewProps) {
 
             <PostHeader post={post} />
 
-            <div className="prose prose-lg relative z-10 mt-10 max-w-none prose-headings:scroll-mt-20 prose-headings:font-semibold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl dark:prose-invert">
+            <div className="prose prose-lg relative z-10 mt-10 max-w-none prose-headings:scroll-mt-20 prose-a:no-underline hover:prose-a:underline">
               <div dangerouslySetInnerHTML={{ __html: post.contentHtml || "" }} />
             </div>
 

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/shared/lib/utils";
 
-type PageHeroProps = {
+type PageHeaderProps = {
   eyebrow?: string;
   title: string;
   description: string;
@@ -13,7 +13,7 @@ type PageHeroProps = {
   titleClassName?: string;
 };
 
-export function PageHero({
+export function PageHeader({
   eyebrow,
   title,
   description,
@@ -22,28 +22,28 @@ export function PageHero({
   meta,
   className,
   titleClassName,
-}: PageHeroProps) {
+}: PageHeaderProps) {
   return (
-    <section className={cn("page-hero", className)}>
-      <div className="hero-grid absolute inset-0 opacity-45" />
+    <section className={cn("px-1 py-2 sm:px-0 lg:py-4", className)}>
       <div
         className={cn(
-          "relative z-10 grid h-full gap-10 lg:gap-12",
-          aside ? "lg:grid-cols-[minmax(0,1.02fr)_0.98fr] lg:items-center" : "max-w-5xl"
+          "grid gap-8 lg:gap-10",
+          aside ? "lg:grid-cols-[minmax(0,1.04fr)_0.96fr] lg:items-start" : "max-w-3xl"
         )}
       >
-        <div className="flex flex-col justify-center gap-7 lg:justify-start">
+        <div className="flex flex-col gap-6">
           {eyebrow ? <span className="status-chip w-fit">{eyebrow}</span> : null}
-          <div className="flex flex-col gap-5">
+
+          <div className="flex flex-col gap-4">
             <h1
               className={cn(
-                "font-headline max-w-[12ch] text-4xl font-bold uppercase leading-[0.94] tracking-[-0.05em] text-foreground sm:text-5xl lg:text-6xl",
+                "font-headline max-w-[13ch] text-3xl font-bold uppercase leading-[0.98] tracking-[-0.04em] text-foreground sm:text-4xl lg:text-5xl",
                 titleClassName
               )}
             >
               {title}
             </h1>
-            <p className="max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
               {description}
             </p>
           </div>
@@ -61,7 +61,7 @@ export function PageHero({
           ) : null}
         </div>
 
-        {aside ? <div className="relative z-10 lg:self-end">{aside}</div> : null}
+        {aside ? <div>{aside}</div> : null}
       </div>
     </section>
   );

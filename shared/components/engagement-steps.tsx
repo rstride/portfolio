@@ -18,7 +18,7 @@ export function EngagementSteps({
       <div className="relative z-10 flex flex-col gap-8">
         <div className="max-w-3xl">
           {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="font-headline mt-3 text-4xl font-bold uppercase leading-[0.96] tracking-[-0.05em] text-foreground sm:text-5xl">
             {title}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -29,10 +29,12 @@ export function EngagementSteps({
         <div className="grid gap-4 lg:grid-cols-3">
           {steps.map((step, index) => (
             <div key={step.title} className="process-card">
-              <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-primary">
-                Étape {index + 1}
+              <div className="font-label text-[11px] uppercase tracking-[0.2em] text-primary">
+                Step_{index + 1}
               </div>
-              <p className="mt-3 text-lg font-semibold text-foreground">{step.title}</p>
+              <p className="font-headline mt-4 text-2xl font-bold uppercase tracking-[-0.03em] text-foreground">
+                {step.title}
+              </p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 {step.description}
               </p>

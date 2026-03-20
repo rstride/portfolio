@@ -7,8 +7,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { site } from "@/content/site";
 import { getServiceContent } from "@/features/services/model";
 import { CtaBand } from "@/shared/components/cta-band";
+import { PageHeader } from "@/shared/components/page-header";
 import { cn } from "@/shared/lib/utils";
-import { PageHero } from "@/shared/components/page-hero";
 
 export function ServiceDetailView({ slug }: { slug: string }) {
   const content = getServiceContent(slug);
@@ -20,22 +20,16 @@ export function ServiceDetailView({ slug }: { slug: string }) {
   const { service, details, paragraphs } = content;
 
   return (
-    <section className="relative overflow-hidden pb-20 pt-6 lg:pb-24 lg:pt-10">
+    <section className="relative overflow-hidden pb-20 pt-4 lg:pb-24 lg:pt-6">
       <div className="page-shell flex flex-col gap-8">
-        <PageHero
+        <PageHeader
           eyebrow="Service"
           title={service.title}
           description={service.description}
           meta={[service.format, service.timeline]}
           actions={
             <>
-              <Link
-                href="/contact"
-                className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "border-0 bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground shadow-[0_16px_34px_rgba(22,126,102,0.24)]"
-                )}
-              >
+              <Link href="/contact" className={cn(buttonVariants({ size: "lg" }))}>
                 Discuter de ce service
                 <ArrowRight data-icon="inline-end" />
               </Link>
@@ -46,20 +40,20 @@ export function ServiceDetailView({ slug }: { slug: string }) {
           }
           aside={
             <div className="surface-panel p-6 sm:p-7">
-              <p className="eyebrow">Résultat attendu</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+              <span className="status-chip w-fit">Résultat attendu</span>
+              <h2 className="font-headline mt-5 text-3xl font-bold uppercase leading-[0.96] tracking-[-0.04em] text-foreground">
                 {service.outcome}
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{service.proof}</p>
               <div className="mt-6 grid gap-3">
                 <div className="surface-subtle p-4">
-                  <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="font-label text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                     Idéal pour
                   </p>
                   <p className="mt-2 text-sm leading-relaxed text-foreground">{service.bestFor}</p>
                 </div>
                 <div className="surface-subtle p-4">
-                  <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="font-label text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                     Pas idéal si
                   </p>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -73,25 +67,25 @@ export function ServiceDetailView({ slug }: { slug: string }) {
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <article className="metric-card">
-            <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="font-label text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               Livrable clé
             </p>
             <p className="mt-3 text-base font-semibold text-foreground">{service.deliverables[0]}</p>
           </article>
           <article className="metric-card">
-            <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="font-label text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               Format
             </p>
             <p className="mt-3 text-sm leading-relaxed text-foreground">{service.format}</p>
           </article>
           <article className="metric-card">
-            <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="font-label text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               Temporalité
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{service.timeline}</p>
           </article>
           <article className="metric-card">
-            <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="font-label text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               Public
             </p>
             <p className="mt-3 text-sm leading-relaxed text-foreground">
@@ -103,7 +97,7 @@ export function ServiceDetailView({ slug }: { slug: string }) {
         <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
           <div className="grid gap-6">
             <article className="surface-panel p-6 sm:p-8">
-              <Badge variant="outline" className="w-fit">
+              <Badge variant="secondary" className="w-fit">
                 Ce que la mission traite
               </Badge>
               <div className="mt-5 grid gap-5">
@@ -118,13 +112,13 @@ export function ServiceDetailView({ slug }: { slug: string }) {
             <article className="comparison-card">
               <div className="grid gap-8 md:grid-cols-2">
                 <div>
-                  <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                  <h2 className="font-headline text-2xl font-bold uppercase tracking-[-0.03em] text-foreground">
                     Ce que vous recevez
                   </h2>
                   <div className="mt-5 flex flex-col gap-3">
                     {service.deliverables.map((deliverable) => (
                       <div key={deliverable} className="flex items-start gap-3 text-sm text-muted-foreground">
-                        <span className="mt-2 size-1.5 rounded-full bg-primary" />
+                        <span className="mt-2 size-1.5 bg-primary" />
                         <span>{deliverable}</span>
                       </div>
                     ))}
@@ -132,13 +126,13 @@ export function ServiceDetailView({ slug }: { slug: string }) {
                 </div>
 
                 <div>
-                  <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                  <h2 className="font-headline text-2xl font-bold uppercase tracking-[-0.03em] text-foreground">
                     Ce que cela vous apporte
                   </h2>
                   <div className="mt-5 flex flex-col gap-3">
                     {service.benefits.map((benefit) => (
                       <div key={benefit} className="flex items-start gap-3 text-sm text-muted-foreground">
-                        <span className="mt-2 size-1.5 rounded-full bg-primary" />
+                        <span className="mt-2 size-1.5 bg-primary" />
                         <span>{benefit}</span>
                       </div>
                     ))}
@@ -150,14 +144,14 @@ export function ServiceDetailView({ slug }: { slug: string }) {
             <article className="section-signal px-6 py-8 sm:px-8">
               <div className="relative z-10">
                 <p className="eyebrow">Déroulé</p>
-                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+                <h2 className="font-headline mt-3 text-3xl font-bold uppercase leading-[0.96] tracking-[-0.04em] text-foreground">
                   Une mission courte, directe et cadrée
                 </h2>
                 <div className="mt-6 grid gap-4 md:grid-cols-3">
                   {details?.process.map((step, index) => (
                     <div key={step} className="process-card">
-                      <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-primary">
-                        Étape {index + 1}
+                      <div className="font-label text-[11px] uppercase tracking-[0.18em] text-primary">
+                        Step_{index + 1}
                       </div>
                       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{step}</p>
                     </div>
@@ -169,22 +163,24 @@ export function ServiceDetailView({ slug }: { slug: string }) {
 
           <aside className="grid gap-6 lg:content-start">
             <article className="surface-panel p-6">
-              <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="font-label text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 Introduction
               </p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{details?.intro}</p>
             </article>
 
             <article className="surface-tint p-6">
-              <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-primary">
+              <p className="font-label text-[11px] uppercase tracking-[0.18em] text-primary">
                 Question fréquente
               </p>
-              <h2 className="mt-3 text-lg font-semibold text-foreground">{details?.faqTitle}</h2>
+              <h2 className="font-headline mt-3 text-2xl font-bold uppercase leading-none tracking-[-0.03em] text-foreground">
+                {details?.faqTitle}
+              </h2>
               <p className="mt-3 text-sm leading-relaxed text-foreground">{details?.faqAnswer}</p>
             </article>
 
             <article className="surface-panel p-6">
-              <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="font-label text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 Quand me contacter
               </p>
               <div className="mt-4 grid gap-3">

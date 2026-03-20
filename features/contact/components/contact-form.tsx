@@ -48,8 +48,8 @@ type SelectFieldProps = {
 
 function FieldBlock({ id, label, required, error, hint, children }: BaseFieldProps) {
   return (
-    <div className="flex flex-col gap-2.5">
-      <Label htmlFor={id}>
+    <div className="flex flex-col gap-3">
+      <Label htmlFor={id} className="font-label text-[11px] uppercase tracking-[0.16em] text-primary">
         {label}
         {required ? <span className="text-destructive"> *</span> : null}
       </Label>
@@ -80,7 +80,7 @@ function SelectField({
         onChange={onChange}
         onBlur={onBlur}
         className={cn(
-          "field-surface flex h-11 w-full px-3 py-2 text-sm transition focus-visible:outline-none focus-visible:ring-2",
+          "field-surface flex h-11 w-full text-sm transition focus-visible:outline-none",
           fieldClass,
           invalid && "border-destructive/60 focus-visible:ring-destructive/30"
         )}
@@ -101,14 +101,14 @@ export function ContactForm({ form }: ContactFormProps) {
   const hasErrors = Object.keys(form.errors).length > 0;
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="gap-5 border-b border-border/60 bg-[linear-gradient(135deg,rgba(36,184,122,0.06),rgba(80,220,255,0.08))]">
+    <Card className="section-editorial overflow-hidden">
+      <CardHeader className="gap-5 border-b border-border/16 bg-transparent">
         <div className="flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground">
+          <div className="flex size-11 items-center justify-center border border-primary/20 bg-primary/10 text-primary">
             <MessageSquare />
           </div>
           <div>
-            <CardTitle className="text-xl">Décrire votre besoin</CardTitle>
+            <CardTitle className="text-3xl uppercase">Décrire votre besoin</CardTitle>
             <CardDescription className="mt-1">
               Une description simple du contexte suffit pour revenir avec un cadrage utile.
             </CardDescription>
@@ -147,7 +147,7 @@ export function ContactForm({ form }: ContactFormProps) {
                   fieldClass,
                   form.errors.name &&
                     form.touched.name &&
-                    "border-destructive/60 focus-visible:ring-destructive/30"
+                    "border-destructive/60"
                 )}
                 placeholder="Votre nom"
                 required
@@ -171,7 +171,7 @@ export function ContactForm({ form }: ContactFormProps) {
                   fieldClass,
                   form.errors.email &&
                     form.touched.email &&
-                    "border-destructive/60 focus-visible:ring-destructive/30"
+                    "border-destructive/60"
                 )}
                 placeholder="contact@entreprise.com"
                 required
@@ -257,7 +257,7 @@ export function ContactForm({ form }: ContactFormProps) {
                 fieldClass,
                 form.errors.message &&
                   form.touched.message &&
-                  "border-destructive/60 focus-visible:ring-destructive/30"
+                  "border-destructive/60"
               )}
               placeholder="Décrivez le périmètre, la stack, l'échéance et ce que vous attendez de la mission..."
               required
@@ -290,7 +290,7 @@ export function ContactForm({ form }: ContactFormProps) {
             type="submit"
             disabled={form.isSubmitting || form.submitStatus === "success" || hasErrors}
             className={cn(
-              "w-full border-0 bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground",
+              "w-full",
               hasErrors && "cursor-not-allowed opacity-50"
             )}
             size="lg"

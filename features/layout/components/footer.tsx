@@ -2,76 +2,47 @@
 
 import Link from "next/link";
 
-import { Shield } from "lucide-react";
-
-import { Separator } from "@/components/ui/separator";
 import { site } from "@/content/site";
 
 export function Footer() {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="relative overflow-hidden border-t border-border/70 pt-4">
-      <div className="page-shell pb-6">
-        <div className="surface-panel overflow-hidden px-5 py-6 sm:px-6">
-          <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] md:items-end">
-            <div className="grid gap-4">
-              <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-[0.95rem] bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground">
-                  <Shield className="size-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{site.name}</p>
-                  <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
-                    Security Consulting
-                  </p>
-                </div>
-              </div>
+    <footer className="border-t border-border/16">
+      <div className="page-shell py-4">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="font-label text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+            © {year} {site.name}. {site.strings.footerRightsSuffix}
+          </div>
 
-              <div>
-                <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                  Pentest, audit et formation.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                <span>© {new Date().getFullYear()} {site.name}</span>
-                <Separator orientation="vertical" className="hidden h-4 md:block" />
-                <span>{site.strings.footerRightsSuffix}</span>
-              </div>
-            </div>
-
-            <div className="grid gap-4 md:justify-items-end">
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2.5 rounded-full bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-[0_14px_30px_rgba(22,126,102,0.18)] transition hover:opacity-95"
-              >
-                Contact
-              </Link>
-
-              <div className="flex flex-wrap gap-2 md:justify-end">
-                <Link
-                  href="/legal/privacy"
-                  className="rounded-full border border-border/70 px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-accent/60 hover:text-foreground"
-                >
-                  {site.strings.footerPrivacyLabel}
-                </Link>
-                <Link
-                  href="/legal/disclosure"
-                  className="rounded-full border border-border/70 px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-accent/60 hover:text-foreground"
-                >
-                  Divulgation
-                </Link>
-              </div>
-
+          <div className="flex flex-wrap items-center gap-5 font-label text-[10px] uppercase tracking-[0.16em]">
+            {site.socials
+              .filter((social) => social.label !== "PrismaSec")
+              .map((social) => (
               <a
-                href="https://prismasec.fr"
+                key={social.label}
+                href={social.href}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-3 text-sm text-muted-foreground transition hover:text-foreground"
+                className="text-muted-foreground hover:text-primary"
               >
-                <span className="size-2.5 rounded-full bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))]" />
-                <span>Sécurisé par PrismaSec</span>
+                {social.label}
               </a>
-            </div>
+            ))}
+            <Link href="/legal/privacy" className="text-muted-foreground hover:text-primary">
+              {site.strings.footerPrivacyLabel}
+            </Link>
+            <Link href="/legal/disclosure" className="text-muted-foreground hover:text-primary">
+              Divulgation
+            </Link>
+            <a
+              href="https://prismasec.fr"
+              target="_blank"
+              rel="noreferrer"
+              className="text-secondary hover:text-primary"
+            >
+              Secured by PrismaSec
+            </a>
           </div>
         </div>
       </div>

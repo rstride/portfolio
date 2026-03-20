@@ -16,15 +16,15 @@ export function PostAuthorCard() {
     <div className="relative z-10 mt-14">
       <Card className="surface-contrast overflow-hidden">
         <CardHeader>
-          <Badge variant="secondary" className="mb-3 w-fit border-0 bg-white/10 text-white">
+          <Badge variant="secondary" className="mb-3 w-fit border-white/12 bg-white/8 text-white">
             Auteur
           </Badge>
           <div className="flex items-start gap-4">
-            <div className="relative size-16 overflow-hidden rounded-[1.2rem] border border-white/12">
+            <div className="relative size-16 overflow-hidden border border-white/12">
               <Image src="/romain.png" alt={site.name} fill className="object-cover" sizes="64px" />
             </div>
             <div>
-              <CardTitle className="text-lg text-white">{site.name}</CardTitle>
+              <CardTitle className="text-2xl uppercase text-white">{site.name}</CardTitle>
               <CardDescription className="mt-1 text-white/70">{site.role}</CardDescription>
             </div>
           </div>
@@ -33,7 +33,7 @@ export function PostAuthorCard() {
           <p className="text-sm leading-relaxed text-white/76">{site.about.bio}</p>
           <div className="flex flex-wrap gap-2">
             {site.proofs.slice(0, 3).map((proof) => (
-              <Badge key={proof.title} variant="secondary" className="border-0 bg-white/10 text-white">
+              <Badge key={proof.title} variant="secondary" className="border-white/12 bg-white/8 text-white">
                 {proof.kpi}
               </Badge>
             ))}

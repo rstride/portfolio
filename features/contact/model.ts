@@ -22,7 +22,7 @@ export const EMPTY_FORM_DATA: ContactFormData = {
 };
 
 export const fieldClass =
-  "field-surface border-border/80 bg-background/92 shadow-none focus-visible:ring-ring focus-visible:ring-2";
+  "field-surface text-foreground shadow-none focus-visible:ring-0";
 
 export const serviceOptions = [
   { value: "Pentest", label: "Pentest" },

@@ -16,16 +16,16 @@ export function ContactSidebar() {
     <div className="flex flex-col gap-6 lg:self-start">
       <Card className="surface-contrast overflow-hidden">
         <CardHeader>
-          <Badge variant="secondary" className="w-fit border-0 bg-white/10 text-white">
+          <Badge variant="secondary" className="w-fit border-white/12 bg-white/8 text-white">
             Réponse attendue
           </Badge>
-          <CardTitle className="text-lg text-white">Un cadrage rapide et utile</CardTitle>
+          <CardTitle className="text-3xl uppercase text-white">Un cadrage rapide et utile</CardTitle>
           <CardDescription className="text-white/72">
             Je reviens avec un format adapté au besoin réel, pas avec une proposition standard.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
-          <div className="rounded-[1.2rem] border border-white/12 bg-white/8 p-4">
+          <div className="border border-white/12 bg-white/8 p-4">
             <div className="flex items-center gap-3 text-white">
               <TimerReset className="size-4" />
               <p className="text-sm font-medium">Retour avec un cadrage lisible</p>
@@ -36,7 +36,7 @@ export function ContactSidebar() {
             </p>
           </div>
 
-          <div className="rounded-[1.2rem] border border-white/12 bg-white/8 p-4">
+          <div className="border border-white/12 bg-white/8 p-4">
             <div className="flex items-center gap-3 text-white">
               <Mail className="size-4" />
               <p className="text-sm font-medium">Contact direct</p>
@@ -54,7 +54,7 @@ export function ContactSidebar() {
 
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle className="text-lg">Préparer l’échange</CardTitle>
+          <CardTitle className="text-3xl uppercase">Préparer l’échange</CardTitle>
           <CardDescription>
             Quelques informations concrètes suffisent pour avancer plus vite.
           </CardDescription>
@@ -70,7 +70,7 @@ export function ContactSidebar() {
 
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle className="text-lg">Présence en ligne</CardTitle>
+          <CardTitle className="text-3xl uppercase">Présence en ligne</CardTitle>
           <CardDescription>
             Pour vérifier le parcours, les projets et l’écosystème autour de PrismaSec.
           </CardDescription>
@@ -88,7 +88,7 @@ export function ContactSidebar() {
                 rel="noopener noreferrer"
                 className="surface-subtle flex items-center gap-3 p-3 transition-colors hover:bg-accent/40"
               >
-                <div className="flex size-10 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,var(--primary),var(--brand-secondary))] text-primary-foreground">
+                <div className="flex size-10 items-center justify-center border border-primary/20 bg-primary/10 text-primary">
                   {key === "prismasec" ? (
                     <Image
                       src="/PrismaLogo.svg"
