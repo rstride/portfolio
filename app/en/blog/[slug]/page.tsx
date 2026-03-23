@@ -7,7 +7,7 @@ import { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const post = getBlogPostBySlug(resolvedParams.slug, 'fr');
+  const post = getBlogPostBySlug(resolvedParams.slug, 'en');
 
   if (!post) {
     return {
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: post.meta.title,
       description: post.meta.excerpt,
       type: 'article',
-      url: `https://rstride.fr/blog/${post.slug}`,
+      url: `https://rstride.fr/en/blog/${post.slug}`,
       authors: [post.meta.author],
       publishedTime: post.meta.date,
       tags: post.meta.tags,
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const post = getBlogPostBySlug(resolvedParams.slug, 'fr');
+  const post = getBlogPostBySlug(resolvedParams.slug, 'en');
 
   if (!post) {
     notFound();
@@ -52,9 +52,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
       transition={{ duration: 0.5 }}
       className="px-6 md:px-24 py-12 max-w-4xl mx-auto"
     >
-      <Link href="/blog" className="inline-flex items-center gap-2 font-mono text-xs text-on-surface-variant hover:text-primary transition-colors mb-12 uppercase tracking-widest">
+      <Link href="/en/blog" className="inline-flex items-center gap-2 font-mono text-xs text-on-surface-variant hover:text-primary transition-colors mb-12 uppercase tracking-widest">
         <ArrowLeft className="w-4 h-4" />
-        RETOUR_AUX_LOGS
+        RETURN_TO_LOGS
       </Link>
 
       <article>
@@ -103,9 +103,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               <span className="font-headline font-bold text-xl text-primary">0x</span>
             </div>
             <div>
-              <h4 className="font-headline font-bold text-lg text-on-surface mb-2">À PROPOS DE L&apos;AUTEUR</h4>
+              <h4 className="font-headline font-bold text-lg text-on-surface mb-2">ABOUT THE AUTHOR</h4>
               <p className="text-sm text-on-surface-variant font-light leading-relaxed">
-                Romain Stride (0x7E3) est un chercheur senior en sécurité spécialisé dans la sécurité des applications web et le développement d&apos;exploits. Quand il ne casse pas des choses, il construit des architectures sécurisées.
+                Romain Stride (0x7E3) is a Senior Security Researcher focusing on web application security and exploit development. When not breaking things, he builds secure architectures.
               </p>
             </div>
           </div>

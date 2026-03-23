@@ -3,7 +3,7 @@ import { getBlogPosts } from '@/lib/markdown';
 import { BlogList } from '@/components/blog-list';
 
 export default function BlogArchive() {
-  const posts = getBlogPosts('fr');
+  const posts = getBlogPosts('en');
 
   return (
     <motion.div 
@@ -20,11 +20,11 @@ export default function BlogArchive() {
           SECURITY_LOGS .
         </h1>
         <p className="text-on-surface-variant text-lg leading-relaxed font-light max-w-2xl">
-          Write-ups techniques, analyses de vulnérabilités et recherche en sécurité offensive. Documenter l&apos;exploitation pour mieux comprendre la défense.
+          Technical write-ups, vulnerability analyses, and offensive security research. Documenting exploitation to better understand defense.
         </p>
       </header>
 
-      <BlogList posts={posts} locale="fr" />
+      <BlogList posts={posts} locale="en" />
     </motion.div>
   );
 }

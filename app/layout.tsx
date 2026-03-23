@@ -1,50 +1,50 @@
-import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import type { Metadata } from 'next';
+import { Space_Grotesk, Inter, JetBrains_Mono } from 'next/font/google';
+import './globals.css';
+import { Navigation } from '@/components/navigation';
+import { Footer } from '@/components/footer';
 
-import "./globals.css";
-import { site } from "@/content/site";
-import { Navbar } from "@/features/layout/components/navbar";
-import { Footer } from "@/features/layout/components/footer";
-import { AnalyticsProvider } from "@/shared/providers/analytics-provider";
-import { ThemeProvider } from "@/shared/providers/theme-provider";
-
-const headingFont = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
-});
-
-const bodyFont = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const monoFont = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
-});
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-headline' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-body' });
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://rstride.fr"),
-  title: { default: `${site.name} — ${site.role}`, template: `%s — ${site.name}` },
-  description: `${site.role}. ${site.hero.subtext}`,
-  openGraph: { title: `${site.name} — ${site.role}`, description: `${site.role}. ${site.hero.subtext}`, url: "/", siteName: site.name, locale: "fr_FR", type: "website" },
-  twitter: { card: "summary_large_image", title: `${site.name} — ${site.company.tagline}`, description: site.hero.subtext },
-  robots: { index: true, follow: true },
+  title: 'Romain Stride // Pentester Portfolio',
+  description: 'Offensive Security & Development. Pentester, Security Researcher & Developer.',
+  openGraph: {
+    title: 'Romain Stride // Pentester Portfolio',
+    description: 'Offensive Security & Development. Pentester, Security Researcher & Developer.',
+    url: 'https://rstride.fr',
+    siteName: 'Romain Stride',
+    images: [
+      {
+        url: 'https://rstride.fr/og-image.jpg', // Placeholder for actual OG image
+        width: 1200,
+        height: 630,
+        alt: 'Romain Stride - Offensive Security',
+      },
+    ],
+    locale: 'fr_FR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Romain Stride // Pentester Portfolio',
+    description: 'Offensive Security & Development. Pentester, Security Researcher & Developer.',
+    images: ['https://rstride.fr/og-image.jpg'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
-      <body
-        className={`${headingFont.variable} ${bodyFont.variable} ${monoFont.variable} flex min-h-screen flex-col bg-background text-foreground antialiased`}
-      >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <AnalyticsProvider>
-            <Navbar />
-            <main className="flex-1 pt-[var(--site-navbar-height,5rem)]">{children}</main>
-            <Footer />
-          </AnalyticsProvider>
-        </ThemeProvider>
+    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}>
+      <body className="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary antialiased min-h-screen flex flex-col">
+        <div className="fixed inset-0 dot-grid pointer-events-none z-0"></div>
+        <Navigation />
+        <main className="relative z-10 flex-grow pt-24">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

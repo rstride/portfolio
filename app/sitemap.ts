@@ -1,17 +1,45 @@
-import type { MetadataRoute } from "next";
-import { site } from "@/content/site";
-import { getSortedPostsData } from "@/features/blog/server";
+import { MetadataRoute } from 'next';
+import { getBlogPosts } from '@/lib/markdown';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://rstride.fr";
-  const staticRoutes = ["/", "/services", "/blog", "/contact", "/legal/disclosure"];
-  const serviceRoutes = site.services.map((service) => `/services/${service.slug}`);
-  const blogRoutes = getSortedPostsData().map((post) => `/blog/${post.slug}`);
+  const siteUrl = 'https://rstride.fr';
+  
+  const frPosts = getBlogPosts('fr');
+  const enPosts = getBlogPosts('en');
 
-  const routes = [...staticRoutes, ...serviceRoutes, ...blogRoutes].map((route) => ({
-    url: `${base}${route}`,
-    changeFrequency: "monthly" as const,
-    priority: route === "/" ? 1 : 0.7,
+  const frBlogUrls = frPosts.map((post) => ({
+    url: `${siteUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
   }));
-  return routes;
+
+  const enBlogUrls = enPosts.map((post) => ({
+    url: `${siteUrl}/en/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
+  const staticRoutes = [
+    '',
+    '/about',
+    '/services',
+    '/contact',
+    '/blog',
+    '/privacy',
+    '/en',
+    '/en/about',
+    '/en/services',
+    '/en/contact',
+    '/en/blog',
+    '/en/privacy',
+  ].map((route) => ({
+    url: `${siteUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: route === '' || route === '/en' ? 1 : 0.8,
+  }));
+
+  return [...staticRoutes, ...frBlogUrls, ...enBlogUrls];
 }

@@ -19,20 +19,20 @@ export default function Home() {
           </span>
           
           <h1 className="font-headline text-5xl md:text-7xl lg:text-8xl font-bold uppercase tracking-tighter leading-[0.9] text-on-surface mb-8">
-            PENTESTER <span className="text-secondary">&amp;</span> DÉVELOPPEUR <br /> SÉCURITÉ
+            PENTESTER <span className="text-secondary">&amp;</span> SECURITY <br /> DEVELOPER
           </h1>
           
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             <div className="md:col-span-8">
               <p className="text-lg md:text-xl text-on-surface-variant leading-relaxed max-w-2xl mb-12 font-light">
-                Pentester freelance et alumni de l&apos;École 42, spécialisé dans la recherche de vulnérabilités et l&apos;exploitation bas niveau. Avec une forte expertise en C et Assembleur, je décortique les systèmes pour en comprendre les failles fondamentales.
+                Freelance pentester and École 42 alumni, specializing in vulnerability research and low-level exploitation. With strong expertise in C and Assembly, I dissect systems to understand their core flaws.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link href="/contact" className="bg-primary text-on-primary font-mono text-sm font-bold uppercase px-8 py-4 transition-all terminal-glow active:scale-95 inline-block">
-                  Prendre_contact
+                <Link href="/en/contact" className="bg-primary text-on-primary font-mono text-sm font-bold uppercase px-8 py-4 transition-all terminal-glow active:scale-95 inline-block">
+                  INITIATE ENGAGEMENT
                 </Link>
-                <Link href="/services" className="border border-outline-variant/30 text-primary font-mono text-sm font-bold uppercase px-8 py-4 hover:bg-surface-container transition-all active:scale-95 inline-block">
-                  Voir_mes_services
+                <Link href="/en/services" className="border border-outline-variant/30 text-primary font-mono text-sm font-bold uppercase px-8 py-4 hover:bg-surface-container transition-all active:scale-95 inline-block">
+                  VIEW CAPABILITIES
                 </Link>
               </div>
             </div>
@@ -44,73 +44,73 @@ export default function Home() {
       <section className="bg-surface-container-low py-24 px-6 md:px-24 border-y border-outline-variant/10">
         <div className="mb-20">
           <h2 className="font-headline text-3xl md:text-4xl font-bold uppercase tracking-widest text-on-surface flex items-center gap-4">
-            <span className="text-secondary">[</span> CAPACITÉS_CLÉS <span className="text-secondary">]</span>
+            <span className="text-secondary">[</span> CORE_CAPABILITIES <span className="text-secondary">]</span>
           </h2>
         </div>
 
-        {/* Row 1: SÉCURITÉ OFFENSIVE */}
+        {/* Row 1: OFFENSIVE SECURITY */}
         <div className="mb-20">
           <h3 className="font-headline text-xl font-bold uppercase tracking-widest text-primary mb-8 flex items-center gap-4">
             <span className="w-12 h-[1px] bg-primary"></span>
-            SÉCURITÉ OFFENSIVE
+            OFFENSIVE SECURITY
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <CapabilityCard 
               icon={<Globe className="w-8 h-8 text-primary" />}
               title="WEB APP"
-              desc="Top 10 OWASP, Contournement d'Auth, SQLi, XSS, Failles Logiques"
+              desc="OWASP Top 10, Auth Bypass, SQLi, XSS, Logic Flaws"
               borderColor="border-primary/30"
             />
             <CapabilityCard 
               icon={<Network className="w-8 h-8 text-secondary" />}
-              title="RÉSEAU"
-              desc="Pentest, Pivoting, Exploitation AD, MiTM"
+              title="NETWORK"
+              desc="Pentest, Pivoting, AD Exploitation, MiTM"
               borderColor="border-secondary/30"
             />
             <CapabilityCard 
               icon={<Code className="w-8 h-8 text-primary" />}
               title="API"
-              desc="REST/GraphQL, BOLA, Assignation de Masse, Rate Limiting"
+              desc="REST/GraphQL, BOLA, Mass Assignment, Rate Limiting"
               borderColor="border-primary/30"
             />
             <CapabilityCard 
               icon={<Cloud className="w-8 h-8 text-secondary" />}
               title="CLOUD"
-              desc="AWS, Azure, Mauvaises Configs IAM, Exposition S3, K8s"
+              desc="AWS, Azure, IAM Misconfigs, S3 Exposure, K8s"
               borderColor="border-secondary/30"
             />
           </div>
         </div>
 
-        {/* Row 2: DÉVELOPPEMENT */}
+        {/* Row 2: DEVELOPMENT */}
         <div>
           <h3 className="font-headline text-xl font-bold uppercase tracking-widest text-secondary mb-8 flex items-center gap-4">
             <span className="w-12 h-[1px] bg-secondary"></span>
-            DÉVELOPPEMENT
+            DEVELOPMENT
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <CapabilityCard 
               icon={<Cpu className="w-8 h-8 text-primary" />}
               title="KERNEL"
-              desc="C, Programmation Bas Niveau, Drivers Kernel, Gestion Mémoire"
+              desc="C, Low-level Programming, Kernel Drivers, Memory Management"
               borderColor="border-primary/30"
             />
             <CapabilityCard 
               icon={<ShieldAlert className="w-8 h-8 text-secondary" />}
               title="MALWARE"
-              desc="Rétro-ingénierie, Obfuscation, Anti-AV, Analyse"
+              desc="Reverse Engineering, Obfuscation, Anti-AV, Analysis"
               borderColor="border-secondary/30"
             />
             <CapabilityCard 
               icon={<Terminal className="w-8 h-8 text-primary" />}
-              title="OUTILS OFFENSIFS"
-              desc="Python, Automatisation, Outils Sur Mesure, Frameworks d'Exploitation"
+              title="OFFENSIVE TOOLS"
+              desc="Python, Automation, Custom Tooling, Exploitation Frameworks"
               borderColor="border-primary/30"
             />
             <CapabilityCard 
               icon={<GraduationCap className="w-8 h-8 text-secondary" />}
-              title="CHALLENGES PÉDAGOGIQUES"
-              desc="Création de CTF, Formation, Ateliers Sécurité, Mentorat"
+              title="EDUCATIONAL CHALLENGES"
+              desc="CTF Creation, Training, Security Workshops, Mentorship"
               borderColor="border-secondary/30"
             />
           </div>
@@ -142,34 +142,34 @@ export default function Home() {
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-4 mb-8">
                 <div className="h-[1px] w-12 bg-secondary"></div>
-                <span className="font-mono text-xs uppercase text-secondary tracking-widest">À propos de l&apos;opérateur</span>
+                <span className="font-mono text-xs uppercase text-secondary tracking-widest">About the operator</span>
               </div>
               
               <h2 className="font-headline text-4xl md:text-5xl font-bold uppercase mb-10 leading-tight text-on-surface">
-                PHILOSOPHIE DES <br /> OPÉRATIONS OFFENSIVES
+                OFFENSIVE OPERATIONS <br /> PHILOSOPHY
               </h2>
               
               <div className="space-y-6 text-on-surface-variant leading-relaxed text-lg font-light">
                 <p>
-                  Je suis un pentester freelance passionné par la sécurité offensive et l&apos;ingénierie inverse. Formé à l&apos;École 42, j&apos;ai forgé mes compétences techniques à travers la pratique intensive et le <span className="text-primary italic font-normal">peer-to-peer learning</span>.
+                  I am a freelance pentester passionate about offensive security and reverse engineering. Trained at École 42, I forged my technical skills through intensive hands-on practice and <span className="text-primary italic font-normal">peer-to-peer learning</span>.
                 </p>
                 <p>
-                  Mon approche de la cybersécurité repose sur le partage de connaissances : je suis convaincu que c&apos;est en collaborant et en documentant nos découvertes que nous grandissons ensemble. C&apos;est d&apos;ailleurs le but de ce portfolio et de mes write-ups. Sur le terrain, je me concentre principalement sur les langages bas niveau comme le C et l&apos;Assembleur.
+                  My approach to cybersecurity is rooted in knowledge sharing: I firmly believe that collaborating and documenting our findings is how we grow together. That is the very purpose of this portfolio and my write-ups. In the field, I focus heavily on low-level languages like C and Assembly.
                 </p>
               </div>
               
               <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-12">
                 <div className="space-y-12">
                   <div>
-                    <h4 className="font-mono text-xs uppercase text-primary mb-6 tracking-widest font-bold">Expertise Technique</h4>
+                    <h4 className="font-mono text-xs uppercase text-primary mb-6 tracking-widest font-bold">Technical Expertise</h4>
                     <ul className="space-y-3 text-sm text-on-surface-variant">
-                      <li className="flex items-start gap-3"><span className="w-1.5 h-1.5 bg-primary mt-1.5 shrink-0"></span><span>Exploitation Bas Niveau (C, ASM)</span></li>
-                      <li className="flex items-start gap-3"><span className="w-1.5 h-1.5 bg-primary mt-1.5 shrink-0"></span><span>Tests d&apos;Intrusion &amp; Red Teaming</span></li>
-                      <li className="flex items-start gap-3"><span className="w-1.5 h-1.5 bg-primary mt-1.5 shrink-0"></span><span>Recherche de Vulnérabilités</span></li>
+                      <li className="flex items-start gap-3"><span className="w-1.5 h-1.5 bg-primary mt-1.5 shrink-0"></span><span>Low-Level Exploitation (C, ASM)</span></li>
+                      <li className="flex items-start gap-3"><span className="w-1.5 h-1.5 bg-primary mt-1.5 shrink-0"></span><span>Penetration Testing &amp; Red Teaming</span></li>
+                      <li className="flex items-start gap-3"><span className="w-1.5 h-1.5 bg-primary mt-1.5 shrink-0"></span><span>Vulnerability Research</span></li>
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-mono text-xs uppercase text-secondary mb-6 tracking-widest font-bold">Formation &amp; Rangs</h4>
+                    <h4 className="font-mono text-xs uppercase text-secondary mb-6 tracking-widest font-bold">Training &amp; Ranks</h4>
                     <div className="space-y-4 text-sm">
                       <div className="flex justify-between border-b border-outline-variant/20 pb-2">
                         <span className="text-on-surface">HackTheBox</span>
@@ -177,7 +177,7 @@ export default function Home() {
                       </div>
                       <div className="flex justify-between border-b border-outline-variant/20 pb-2">
                         <span className="text-on-surface">TryHackMe</span>
-                        <span className="font-mono text-xs text-secondary">Guru (Certifié PT1)</span>
+                        <span className="font-mono text-xs text-secondary">Guru (PT1 Certified)</span>
                       </div>
                       <div className="flex justify-between border-b border-outline-variant/20 pb-2">
                         <span className="text-on-surface">École 42</span>
@@ -188,14 +188,14 @@ export default function Home() {
                 </div>
                 
                 <div>
-                  <h4 className="font-mono text-xs uppercase text-primary mb-6 tracking-widest font-bold">Historique Opérationnel</h4>
+                  <h4 className="font-mono text-xs uppercase text-primary mb-6 tracking-widest font-bold">Operational History</h4>
                   <div className="space-y-4 text-sm">
                     <div className="flex justify-between border-b border-outline-variant/20 pb-2">
                       <span className="text-on-surface">CEO @ PrismaSec</span>
-                      <span className="font-mono text-xs text-on-surface-variant/60">2025-Présent</span>
+                      <span className="font-mono text-xs text-on-surface-variant/60">2025-Present</span>
                     </div>
                     <div className="flex justify-between border-b border-outline-variant/20 pb-2">
-                      <span className="text-on-surface">Fondateur @ Lost in the shell</span>
+                      <span className="text-on-surface">Founder @ Lost in the shell</span>
                       <span className="font-mono text-xs text-on-surface-variant/60">2022-2024</span>
                     </div>
                   </div>
@@ -213,15 +213,15 @@ export default function Home() {
         
         <div className="relative z-10 max-w-3xl">
           <h2 className="font-headline text-4xl md:text-6xl font-bold uppercase mb-8 leading-tight text-on-surface">
-            PRÊT À RENFORCER <br /> VOTRE POSTURE ?
+            READY TO STRENGTHEN <br /> YOUR POSTURE?
           </h2>
           <p className="text-on-surface-variant text-lg mb-12 max-w-xl mx-auto font-light">
-            N&apos;attendez pas qu&apos;une brèche se produise. Trouvons les failles de votre sécurité avant que les acteurs malveillants ne le fassent.
+            Don&apos;t wait for a breach to happen. Let&apos;s find the holes in your security before the threat actors do.
           </p>
           <div className="bg-surface-container p-1 inline-flex flex-col sm:flex-row items-center gap-4 border border-outline-variant/20">
             <span className="font-mono text-sm text-primary px-6 py-3">contact@rstride.fr</span>
-            <Link href="/contact" className="bg-primary text-on-primary font-mono text-sm font-bold uppercase px-8 py-4 transition-all hover:bg-primary-dim active:scale-95 w-full sm:w-auto">
-              CONTACTEZ-MOI
+            <Link href="/en/contact" className="bg-primary text-on-primary font-mono text-sm font-bold uppercase px-8 py-4 transition-all hover:bg-primary-dim active:scale-95 w-full sm:w-auto">
+              CONTACT ME
             </Link>
           </div>
         </div>

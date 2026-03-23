@@ -19,7 +19,7 @@ export default function ContactPage() {
             <span className="text-primary">HANDSHAKE.</span>
           </h1>
           <p className="text-on-surface-variant text-lg leading-relaxed font-light mb-12 max-w-md">
-            Pour toute demande d&apos;audit, de formation ou de collaboration technique. Les communications sont chiffrées de bout en bout.
+            For audit requests, training, or technical collaboration. All communications are end-to-end encrypted.
           </p>
 
           <div className="space-y-8 font-mono text-sm">
