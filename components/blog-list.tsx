@@ -36,9 +36,9 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
   const categories = Array.from(new Set(posts.flatMap(post => post.tags)));
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+    <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 xl:gap-16">
       {/* Sidebar / Filters */}
-      <div className="lg:col-span-3 space-y-8">
+      <div className="xl:col-span-4 2xl:col-span-3 space-y-8">
         <div className="bg-surface-container p-6 border border-outline-variant/20">
           <div className="flex items-center gap-3 mb-6 border-b border-outline-variant/20 pb-4">
             <Search className="w-5 h-5 text-primary" />
@@ -119,7 +119,7 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
       </div>
 
       {/* Blog List */}
-      <div className="lg:col-span-9 space-y-6">
+      <div className="xl:col-span-8 2xl:col-span-9 space-y-6">
         <div className="flex justify-between items-center border-b border-outline-variant/20 pb-4 mb-8">
           <span className="font-mono text-xs text-on-surface-variant">
             {locale === 'fr' ? `Affichage de ${filteredPosts.length} entrées` : `Showing ${filteredPosts.length} entries`}

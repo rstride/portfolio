@@ -8,7 +8,7 @@ export default function ServicesPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="px-6 md:px-24 py-12 max-w-7xl mx-auto"
+      className="page-frame py-12 xl:py-16"
     >
       {/* Header Section */}
       <header className="mb-24">

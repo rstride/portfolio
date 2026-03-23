@@ -7,10 +7,10 @@ export default function ContactPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="px-6 md:px-24 py-12 max-w-7xl mx-auto min-h-[80vh] flex flex-col justify-center"
+      className="page-frame py-12 xl:py-20 min-h-[80vh] flex flex-col justify-center"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <div>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-16 xl:gap-20 items-center frame-stack">
+        <div className="xl:col-span-5 2xl:pr-12">
           <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
             Secure Channel // Establish Connection
           </span>
@@ -18,7 +18,7 @@ export default function ContactPage() {
             INITIATE <br />
             <span className="text-primary">HANDSHAKE.</span>
           </h1>
-          <p className="text-on-surface-variant text-lg leading-relaxed font-light mb-12 max-w-md">
+          <p className="text-on-surface-variant text-lg xl:text-xl leading-relaxed font-light mb-12 max-w-lg">
             For audit requests, training, or technical collaboration. All communications are end-to-end encrypted.
           </p>
 
@@ -39,7 +39,7 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div className="bg-surface-container-low p-8 md:p-12 border border-outline-variant/20 relative tech-border">
+        <div className="xl:col-span-7 bg-surface-container-low p-8 md:p-12 xl:p-14 border border-outline-variant/20 relative tech-border">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
           
           <div className="flex items-center gap-3 mb-8 border-b border-outline-variant/20 pb-4">

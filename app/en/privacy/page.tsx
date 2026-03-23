@@ -6,17 +6,18 @@ export default function PrivacyPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="px-6 md:px-24 py-24 max-w-4xl mx-auto min-h-[80vh]"
+      className="reading-frame frame-stack py-24 min-h-[80vh]"
     >
-      <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
-        Legal // Privacy
-      </span>
-      <h1 className="text-4xl md:text-6xl font-headline font-bold text-on-surface tracking-tighter leading-none mb-12">
-        PRIVACY <br />
-        <span className="text-primary">POLICY.</span>
-      </h1>
-      
-      <div className="space-y-8 text-on-surface-variant leading-relaxed font-light">
+      <div className="reading-column">
+        <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
+          Legal // Privacy
+        </span>
+        <h1 className="text-4xl md:text-6xl font-headline font-bold text-on-surface tracking-tighter leading-none mb-12">
+          PRIVACY <br />
+          <span className="text-primary">POLICY.</span>
+        </h1>
+        
+        <div className="space-y-8 text-on-surface-variant leading-relaxed font-light">
         <section>
           <h2 className="text-2xl font-headline font-bold text-on-surface mb-4">1. Data Collection</h2>
           <p>
@@ -51,6 +52,7 @@ export default function PrivacyPage() {
             In accordance with current regulations (GDPR), you have the right to access, rectify, delete, and oppose your personal data. To exercise these rights, please contact me via the dedicated form.
           </p>
         </section>
+        </div>
       </div>
     </motion.div>
   );

@@ -10,14 +10,14 @@ export default function BlogArchive() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="px-6 md:px-24 py-12 max-w-7xl mx-auto"
+      className="page-frame py-12 xl:py-16"
     >
       <header className="mb-16">
         <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
           Knowledge Base // Vulnerability Research
         </span>
         <h1 className="text-5xl md:text-7xl font-headline font-bold text-on-surface tracking-tighter leading-none mb-8">
-          SECURITY_LOGS .
+          SECURITY_BLOG .
         </h1>
         <p className="text-on-surface-variant text-lg leading-relaxed font-light max-w-2xl">
           Write-ups techniques, analyses de vulnérabilités et recherche en sécurité offensive. Documenter l&apos;exploitation pour mieux comprendre la défense.

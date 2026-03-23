@@ -6,17 +6,18 @@ export default function PrivacyPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="px-6 md:px-24 py-24 max-w-4xl mx-auto min-h-[80vh]"
+      className="reading-frame frame-stack py-24 min-h-[80vh]"
     >
-      <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
-        Legal // Privacy
-      </span>
-      <h1 className="text-4xl md:text-6xl font-headline font-bold text-on-surface tracking-tighter leading-none mb-12">
-        POLITIQUE DE <br />
-        <span className="text-primary">CONFIDENTIALITÉ.</span>
-      </h1>
-      
-      <div className="space-y-8 text-on-surface-variant leading-relaxed font-light">
+      <div className="reading-column">
+        <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
+          Legal // Privacy
+        </span>
+        <h1 className="text-4xl md:text-6xl font-headline font-bold text-on-surface tracking-tighter leading-none mb-12">
+          POLITIQUE DE <br />
+          <span className="text-primary">CONFIDENTIALITÉ.</span>
+        </h1>
+        
+        <div className="space-y-8 text-on-surface-variant leading-relaxed font-light">
         <section>
           <h2 className="text-2xl font-headline font-bold text-on-surface mb-4">1. Collecte des données</h2>
           <p>
@@ -51,6 +52,7 @@ export default function PrivacyPage() {
             Conformément à la réglementation en vigueur (RGPD), vous disposez d&apos;un droit d&apos;accès, de rectification, de suppression et d&apos;opposition concernant vos données personnelles. Pour exercer ces droits, veuillez me contacter via le formulaire dédié.
           </p>
         </section>
+        </div>
       </div>
     </motion.div>
   );

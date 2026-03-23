@@ -40,6 +40,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}>
       <body className="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary antialiased min-h-screen flex flex-col">
         <div className="fixed inset-0 dot-grid pointer-events-none z-0"></div>
+        <div className="site-ambient">
+          <div className="site-ambient-glow site-ambient-glow--left"></div>
+          <div className="site-ambient-glow site-ambient-glow--right"></div>
+        </div>
         <Navigation />
         <main className="relative z-10 flex-grow pt-24">
           {children}

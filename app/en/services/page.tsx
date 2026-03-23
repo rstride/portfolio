@@ -11,8 +11,9 @@ export default function ServicesPage() {
       className="flex flex-col"
     >
       {/* Header */}
-      <section className="px-6 md:px-24 py-20 bg-surface-container-low border-b border-outline-variant/10">
-        <div className="max-w-4xl">
+      <section className="py-20 bg-surface-container-low border-b border-outline-variant/10">
+        <div className="page-frame">
+          <div className="max-w-5xl">
           <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
             Operational Capabilities // Services
           </span>
@@ -24,11 +25,12 @@ export default function ServicesPage() {
             From targeted penetration testing to advanced security training. I provide actionable intelligence to secure your critical infrastructure.
           </p>
         </div>
+        </div>
       </section>
 
       {/* Intro */}
-      <section className="px-6 md:px-24 py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+      <section className="py-24">
+        <div className="page-frame grid grid-cols-1 lg:grid-cols-2 gap-16">
           <div className="flex flex-col justify-center">
             <h2 className="font-headline text-3xl font-bold mb-6 text-on-surface">OUR DUAL EXPERTISE</h2>
             <p className="text-on-surface-variant leading-relaxed font-light">
@@ -51,7 +53,8 @@ export default function ServicesPage() {
       </section>
 
       {/* Audits Section */}
-      <section className="px-6 md:px-24 py-24 bg-surface-container-lowest border-y border-outline-variant/10">
+      <section className="py-24 bg-surface-container-lowest border-y border-outline-variant/10">
+        <div className="page-frame">
         <div className="mb-16 flex items-center gap-4">
           <div className="h-[1px] w-16 bg-primary"></div>
           <h2 className="font-headline text-3xl md:text-4xl font-bold uppercase tracking-widest text-on-surface">
@@ -121,10 +124,12 @@ export default function ServicesPage() {
             </div>
           </div>
         </div>
+        </div>
       </section>
 
       {/* Formations Section */}
-      <section className="px-6 md:px-24 py-24">
+      <section className="py-24">
+        <div className="page-frame">
         <div className="mb-16 flex items-center gap-4 justify-end">
           <h2 className="font-headline text-3xl md:text-4xl font-bold uppercase tracking-widest text-on-surface">
             TRAINING &amp; WORKSHOPS
@@ -199,6 +204,7 @@ export default function ServicesPage() {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </section>
     </motion.div>

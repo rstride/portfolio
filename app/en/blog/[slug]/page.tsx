@@ -50,14 +50,15 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="px-6 md:px-24 py-12 max-w-4xl mx-auto"
+      className="reading-frame frame-stack py-12 xl:py-16"
     >
-      <Link href="/en/blog" className="inline-flex items-center gap-2 font-mono text-xs text-on-surface-variant hover:text-primary transition-colors mb-12 uppercase tracking-widest">
-        <ArrowLeft className="w-4 h-4" />
-        RETURN_TO_LOGS
-      </Link>
+      <div className="reading-column">
+        <Link href="/en/blog" className="inline-flex items-center gap-2 font-mono text-xs text-on-surface-variant hover:text-primary transition-colors mb-12 uppercase tracking-widest">
+          <ArrowLeft className="w-4 h-4" />
+          RETURN_TO_LOGS
+        </Link>
 
-      <article>
+        <article>
         <header className="mb-16 border-b border-outline-variant/20 pb-12">
           <div className="flex flex-wrap items-center gap-4 mb-6">
             <span className="font-mono text-xs text-primary bg-primary/10 px-3 py-1.5 border border-primary/20">
@@ -110,7 +111,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             </div>
           </div>
         </footer>
-      </article>
+        </article>
+      </div>
     </motion.div>
   );
 }

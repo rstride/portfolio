@@ -1,7 +1,17 @@
 import type {NextConfig} from 'next';
 
+const isDevCommand = process.argv.includes('dev');
+
 const nextConfig: NextConfig = {
+  distDir: isDevCommand ? '.next-dev' : '.next',
   reactStrictMode: true,
+  allowedDevOrigins: [
+    '51.210.245.136',
+    'localhost',
+    '127.0.0.1',
+    'rstride.fr',
+    'www.rstride.fr',
+  ],
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -21,16 +31,7 @@ const nextConfig: NextConfig = {
   },
   output: 'standalone',
   transpilePackages: ['motion'],
-  webpack: (config, {dev}) => {
-    // HMR is disabled in AI Studio via DISABLE_HMR env var.
-    // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
-    if (dev && process.env.DISABLE_HMR === 'true') {
-      config.watchOptions = {
-        ignored: /.*/,
-      };
-    }
-    return config;
-  },
+  turbopack: {}
 };
 
 export default nextConfig;
