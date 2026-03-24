@@ -9,12 +9,9 @@ test("getContactFieldErrors returns keyed messages for invalid data", () => {
     name: "",
     email: "invalid",
     service: "",
-    scopeType: "",
-    timeline: "",
     message: "short",
     company: "",
     phone: "",
-    website: "",
   });
 
   assert.equal(errors.name, "Le nom doit contenir au moins 2 caracteres");

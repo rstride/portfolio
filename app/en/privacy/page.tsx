@@ -21,7 +21,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-headline font-bold text-on-surface mb-4">1. Data Collection</h2>
           <p>
-            This portfolio website does not collect any personal data without the user&apos;s knowledge. The only information collected is what you choose to transmit via the contact form (name, email address, message content).
+            This portfolio website does not collect any personal data without the user&apos;s knowledge. The only information collected is what you choose to transmit via the contact form (name, email address, engagement type, message, and optionally company and phone).
           </p>
         </section>
 

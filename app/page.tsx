@@ -3,6 +3,111 @@ import Link from 'next/link';
 import { Globe, Network, Code, Cloud, Cpu, ShieldAlert, Terminal, GraduationCap } from 'lucide-react';
 import * as motion from 'motion/react-client';
 
+type CapabilityTone = 'primary' | 'secondary';
+type CapabilitySize = 'featured' | 'standard' | 'compact';
+
+type Capability = {
+  title: string;
+  description: string;
+  eyebrow: string;
+  status: string;
+  icon: React.ReactNode;
+  tone: CapabilityTone;
+  size: CapabilitySize;
+  tags?: string[];
+  meta?: string[];
+};
+
+const offensiveCapabilities: Capability[] = [
+  {
+    title: 'WEB APP',
+    description: "Top 10 OWASP, Contournement d'Auth, SQLi, XSS, Failles Logiques",
+    eyebrow: 'Vecteur // Surface Principale',
+    status: 'signal fort',
+    icon: <Globe className="w-7 h-7" />,
+    tone: 'primary',
+    size: 'featured',
+    tags: ['OWASP', 'AUTH', 'LOGIC'],
+    meta: ['Audit logique métier', 'Tests auth/session', 'Exploitation contrôlée'],
+  },
+  {
+    title: 'RÉSEAU',
+    description: 'Pentest, Pivoting, Exploitation AD, MiTM',
+    eyebrow: 'Latéral // Portée Interne',
+    status: 'actif',
+    icon: <Network className="w-6 h-6" />,
+    tone: 'secondary',
+    size: 'compact',
+    tags: ['AD', 'MITM'],
+  },
+  {
+    title: 'API',
+    description: 'REST/GraphQL, BOLA, Assignation de Masse, Rate Limiting',
+    eyebrow: 'Protocole // Exposition Forte',
+    status: 'prioritaire',
+    icon: <Code className="w-7 h-7" />,
+    tone: 'primary',
+    size: 'standard',
+    tags: ['REST', 'BOLA', 'GRAPHQL'],
+    meta: ['Contrôle d’accès objet', 'Tests abus métier'],
+  },
+  {
+    title: 'CLOUD',
+    description: 'AWS, Azure, Mauvaises Configs IAM, Exposition S3, K8s',
+    eyebrow: 'Infra // Responsabilité Partagée',
+    status: 'cartographié',
+    icon: <Cloud className="w-6 h-6" />,
+    tone: 'secondary',
+    size: 'compact',
+    tags: ['IAM', 'S3', 'K8S'],
+  },
+];
+
+const developmentCapabilities: Capability[] = [
+  {
+    title: 'KERNEL',
+    description: 'C, Programmation Bas Niveau, Drivers Kernel, Gestion Mémoire',
+    eyebrow: 'Exécution // Bas Niveau',
+    status: 'analyse profonde',
+    icon: <Cpu className="w-7 h-7" />,
+    tone: 'primary',
+    size: 'standard',
+    tags: ['C', 'ASM', 'MEM'],
+    meta: ['Compréhension système', 'Analyse mémoire'],
+  },
+  {
+    title: 'MALWARE',
+    description: 'Rétro-ingénierie, Obfuscation, Anti-AV, Analyse',
+    eyebrow: 'Analyse // Reverse',
+    status: 'suivi',
+    icon: <ShieldAlert className="w-6 h-6" />,
+    tone: 'secondary',
+    size: 'compact',
+    tags: ['RE', 'EVADE'],
+  },
+  {
+    title: 'OUTILS OFFENSIFS',
+    description: 'Python, Automatisation, Outils Sur Mesure, Frameworks d&apos;Exploitation',
+    eyebrow: 'Outillage // Terrain',
+    status: 'mise en avant',
+    icon: <Terminal className="w-7 h-7" />,
+    tone: 'primary',
+    size: 'featured',
+    tags: ['PYTHON', 'OPS', 'CUSTOM'],
+    meta: ['Automatisation offensive', 'Chaînes d’exploitation', 'Outils sur mesure'],
+  },
+  {
+    title: 'CHALLENGES PÉDAGOGIQUES',
+    description: 'Création de CTF, Formation, Ateliers Sécurité, Mentorat',
+    eyebrow: 'Formation // Transmission',
+    status: 'en cours',
+    icon: <GraduationCap className="w-6 h-6" />,
+    tone: 'secondary',
+    size: 'compact',
+    tags: ['CTF', 'WORKSHOP'],
+  },
+];
+
 export default function Home() {
   return (
     <motion.div
@@ -40,8 +145,6 @@ export default function Home() {
         </div>
       </section>
 
-
-
       <section className="py-32 relative overflow-hidden">
         <div className="page-frame">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
@@ -50,7 +153,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-primary/5 mix-blend-overlay z-10"></div>
                 <div className="w-full h-full border border-primary/10 relative overflow-hidden grayscale contrast-125 opacity-80">
                   <Image
-                    src="https://picsum.photos/seed/hacker/800/1000"
+                    src="/public/42perpi.png"
                     alt="Operator Profile"
                     fill
                     className="object-cover"
@@ -130,39 +233,16 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-32 border-y border-outline-variant/10">
+      <section className="py-28 border-y border-outline-variant/10">
         <div className="page-frame">
-          <div className="mb-20">
+          <div className="mb-12">
             <h2 className="font-headline text-3xl md:text-4xl font-bold uppercase tracking-widest text-on-surface flex items-center gap-4">
               <span className="text-secondary">[</span> CAPACITÉS_CLÉS <span className="text-secondary">]</span>
             </h2>
           </div>
 
-          <div className="mb-20">
-            <h3 className="font-headline text-xl font-bold uppercase tracking-widest text-primary mb-8 flex items-center gap-4">
-              <span className="w-12 h-[1px] bg-primary"></span>
-              SÉCURITÉ OFFENSIVE
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <CapabilityCard icon={<Globe className="w-8 h-8 text-primary" />} title="WEB APP" desc="Top 10 OWASP, Contournement d'Auth, SQLi, XSS, Failles Logiques" borderColor="border-primary/30" />
-              <CapabilityCard icon={<Network className="w-8 h-8 text-secondary" />} title="RÉSEAU" desc="Pentest, Pivoting, Exploitation AD, MiTM" borderColor="border-secondary/30" />
-              <CapabilityCard icon={<Code className="w-8 h-8 text-primary" />} title="API" desc="REST/GraphQL, BOLA, Assignation de Masse, Rate Limiting" borderColor="border-primary/30" />
-              <CapabilityCard icon={<Cloud className="w-8 h-8 text-secondary" />} title="CLOUD" desc="AWS, Azure, Mauvaises Configs IAM, Exposition S3, K8s" borderColor="border-secondary/30" />
-            </div>
-          </div>
-
-          <div>
-            <h3 className="font-headline text-xl font-bold uppercase tracking-widest text-secondary mb-8 flex items-center gap-4">
-              <span className="w-12 h-[1px] bg-secondary"></span>
-              DÉVELOPPEMENT
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <CapabilityCard icon={<Cpu className="w-8 h-8 text-primary" />} title="KERNEL" desc="C, Programmation Bas Niveau, Drivers Kernel, Gestion Mémoire" borderColor="border-primary/30" />
-              <CapabilityCard icon={<ShieldAlert className="w-8 h-8 text-secondary" />} title="MALWARE" desc="Rétro-ingénierie, Obfuscation, Anti-AV, Analyse" borderColor="border-secondary/30" />
-              <CapabilityCard icon={<Terminal className="w-8 h-8 text-primary" />} title="OUTILS OFFENSIFS" desc="Python, Automatisation, Outils Sur Mesure, Frameworks d'Exploitation" borderColor="border-primary/30" />
-              <CapabilityCard icon={<GraduationCap className="w-8 h-8 text-secondary" />} title="CHALLENGES PÉDAGOGIQUES" desc="Création de CTF, Formation, Ateliers Sécurité, Mentorat" borderColor="border-secondary/30" />
-            </div>
-          </div>
+          <CapabilityRow title="SÉCURITÉ OFFENSIVE" tone="primary" items={offensiveCapabilities} />
+          <CapabilityRow title="DÉVELOPPEMENT" tone="secondary" items={developmentCapabilities} />
         </div>
       </section>
 
@@ -191,14 +271,67 @@ export default function Home() {
   );
 }
 
-function CapabilityCard({ icon, title, desc, borderColor }: { icon: React.ReactNode, title: string, desc: string, borderColor: string }) {
+function CapabilityRow({ title, tone, items }: { title: string; tone: CapabilityTone; items: Capability[] }) {
   return (
-    <div className={`bg-surface-container-highest p-8 aspect-square flex flex-col justify-between hover:bg-surface-container transition-colors duration-300 border-b-4 ${borderColor}`}>
-      <div className="mb-6">{icon}</div>
-      <div>
-        <h4 className="font-headline text-xl font-bold uppercase mb-3 text-on-surface">{title}</h4>
-        <p className="text-xs text-on-surface-variant font-mono leading-relaxed opacity-80">{desc}</p>
+    <div className="mb-14 last:mb-0">
+      <div className="capability-row-header">
+        <span className={`capability-row-line ${tone === 'primary' ? 'capability-row-line-primary' : 'capability-row-line-secondary'}`}></span>
+        <h3 className={`font-headline text-xl font-bold uppercase tracking-widest ${tone === 'primary' ? 'text-primary' : 'text-secondary'}`}>
+          {title}
+        </h3>
+      </div>
+
+      <div className="capability-grid">
+        {items.map((item) => (
+          <CapabilityCard key={item.title} item={item} />
+        ))}
       </div>
     </div>
+  );
+}
+
+function CapabilityCard({ item }: { item: Capability }) {
+  const toneClass = item.tone === 'primary' ? 'capability-card-primary' : 'capability-card-secondary';
+  const sizeClass =
+    item.size === 'featured'
+      ? 'capability-card-featured'
+      : item.size === 'standard'
+        ? 'capability-card-standard'
+        : 'capability-card-compact';
+
+  return (
+    <article className={`capability-card ${toneClass} ${sizeClass}`}>
+      <div className="capability-card-beam"></div>
+      <div className="capability-card-scan"></div>
+
+      <div className="capability-card-head">
+        <div className="capability-card-icon">{item.icon}</div>
+        <div className="capability-card-status">
+          <span className="capability-card-eyebrow">{item.eyebrow}</span>
+          <span className="capability-card-state">{item.status}</span>
+        </div>
+      </div>
+
+      <div className="capability-card-body">
+        <h4 className="font-headline text-2xl font-bold uppercase text-on-surface">{item.title}</h4>
+        <p className="text-xs text-on-surface-variant font-mono leading-relaxed opacity-85">{item.description}</p>
+      </div>
+
+      {item.meta && (
+        <div className="capability-card-meta">
+          {item.meta.map((entry) => (
+            <span key={entry}>{entry}</span>
+          ))}
+        </div>
+      )}
+
+      {item.tags && (
+        <div className="capability-card-tags">
+          {item.tags.map((tag) => (
+            <span key={tag}>{tag}</span>
+          ))}
+        </div>
+      )}
+    </article>
   );
 }

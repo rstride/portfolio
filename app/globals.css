@@ -194,6 +194,230 @@
   background: color-mix(in srgb, var(--color-secondary) 10%, transparent);
 }
 
+.capability-process-panel {
+  border-color: color-mix(in srgb, currentColor 18%, var(--color-outline-variant));
+  position: relative;
+  overflow: hidden;
+}
+
+.capability-process-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, color-mix(in srgb, currentColor 8%, transparent), transparent 45%);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.capability-row-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.capability-row-line {
+  width: 2.75rem;
+  height: 1px;
+  flex-shrink: 0;
+}
+
+.capability-row-line-primary {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-primary) 35%, transparent), var(--color-primary));
+}
+
+.capability-row-line-secondary {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-secondary) 35%, transparent), var(--color-secondary));
+}
+
+.capability-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.capability-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 16rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  background: var(--color-surface-container-highest);
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 55%, transparent);
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.capability-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(140deg, color-mix(in srgb, currentColor 6%, transparent), transparent 48%);
+  opacity: 0;
+  transition: opacity 220ms ease;
+  pointer-events: none;
+}
+
+.capability-card-primary {
+  color: var(--color-primary);
+}
+
+.capability-card-secondary {
+  color: var(--color-secondary);
+}
+
+.capability-card-featured {
+  min-height: 18.5rem;
+}
+
+.capability-card-standard {
+  min-height: 17rem;
+}
+
+.capability-card-compact {
+  min-height: 15rem;
+}
+
+.capability-card-beam {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: currentColor;
+  opacity: 0.6;
+  transform-origin: left;
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+
+.capability-card-scan {
+  position: absolute;
+  top: 0;
+  left: -35%;
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, currentColor 18%, transparent), transparent);
+  opacity: 0;
+  transform: skewX(-24deg);
+  transition: left 280ms ease, opacity 220ms ease;
+  pointer-events: none;
+}
+
+.capability-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.capability-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  color: currentColor;
+  flex-shrink: 0;
+}
+
+.capability-card-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  text-align: right;
+}
+
+.capability-card-eyebrow,
+.capability-card-state {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 0.58rem;
+}
+
+.capability-card-eyebrow {
+  color: color-mix(in srgb, var(--color-on-surface-variant) 90%, transparent);
+}
+
+.capability-card-state {
+  color: currentColor;
+}
+
+.capability-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.capability-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: auto;
+  opacity: 0.7;
+  transform: translateY(0.35rem);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.capability-card-meta span,
+.capability-card-tags span {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+.capability-card-meta span {
+  padding: 0.5rem 0.7rem;
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  color: var(--color-on-surface-variant);
+}
+
+.capability-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.capability-card-tags span {
+  color: color-mix(in srgb, currentColor 88%, transparent);
+}
+
+.capability-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, currentColor 40%, transparent);
+  background: var(--color-surface-container-high);
+  box-shadow: 0 16px 36px color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.capability-card:hover::after {
+  opacity: 1;
+}
+
+.capability-card:hover .capability-card-beam {
+  transform: scaleX(1.04);
+  opacity: 1;
+}
+
+.capability-card:hover .capability-card-scan {
+  left: 112%;
+  opacity: 1;
+}
+
+.capability-card:hover .capability-card-meta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 @media (min-width: 768px) {
   .chrome-frame,
   .page-frame,
@@ -208,6 +432,15 @@
 
   .reading-frame {
     width: min(calc(100% - 6rem), 104rem);
+  }
+
+  .capability-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .capability-card {
+    padding: 1.5rem;
   }
 }
 
@@ -236,6 +469,25 @@
   .dot-grid {
     opacity: 0.14;
     background-size: 30px 30px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .capability-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .capability-card-featured {
+    grid-column: span 5 / span 5;
+  }
+
+  .capability-card-standard {
+    grid-column: span 4 / span 4;
+  }
+
+  .capability-card-compact {
+    grid-column: span 3 / span 3;
   }
 }
 

@@ -21,7 +21,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-headline font-bold text-on-surface mb-4">1. Collecte des données</h2>
           <p>
-            Ce site vitrine ne collecte aucune donnée personnelle à l&apos;insu de l&apos;utilisateur. Les seules informations recueillies sont celles que vous choisissez de transmettre via le formulaire de contact (nom, adresse e-mail, contenu du message).
+            Ce site vitrine ne collecte aucune donnée personnelle à l&apos;insu de l&apos;utilisateur. Les seules informations recueillies sont celles que vous choisissez de transmettre via le formulaire de contact (nom, adresse e-mail, type de demande, message, ainsi que le cas échéant votre société et téléphone).
           </p>
         </section>
 
