@@ -93,8 +93,13 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           </div>
         </header>
 
+        <div className="article-intro-rail mb-10">
+          <span className="article-intro-kicker">DOSSIER_TECHNIQUE</span>
+          <span className="article-intro-line"></span>
+        </div>
+
         <div
-          className="prose prose-invert prose-p:text-on-surface-variant prose-p:font-light prose-p:leading-relaxed prose-headings:font-headline prose-headings:text-on-surface prose-a:text-primary prose-strong:text-on-surface prose-pre:bg-[#0c0e12] prose-pre:border prose-pre:border-outline-variant/20 max-w-none"
+          className="article-body"
           dangerouslySetInnerHTML={{ __html: html }}
         />
 

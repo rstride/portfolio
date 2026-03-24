@@ -3,8 +3,10 @@ import path from 'path';
 import matter from 'gray-matter';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
 import rehypePrettyCode from 'rehype-pretty-code';
+import rehypeSlug from 'rehype-slug';
 import rehypeStringify from 'rehype-stringify';
 
 const contentDirectory = path.join(process.cwd(), 'content/blog');
@@ -25,11 +27,13 @@ export interface BlogPostMeta {
 export async function markdownToHtml(markdown: string) {
   const result = await unified()
     .use(remarkParse)
+    .use(remarkGfm)
     .use(remarkRehype)
     .use(rehypePrettyCode, {
       theme: 'aurora-x',
       keepBackground: true,
     })
+    .use(rehypeSlug)
     .use(rehypeStringify)
     .process(markdown);
   return result.toString();

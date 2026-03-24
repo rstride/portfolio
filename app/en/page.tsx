@@ -141,46 +141,6 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-
-            <div className="xl:col-span-5 2xl:col-span-4">
-              <div className="hero-panel bg-surface-container-low border border-outline-variant/20 p-8 2xl:p-10 frame-stack">
-                <div className="absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-primary via-secondary to-transparent"></div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-5 relative z-10">
-                  <div className="bg-surface-container-highest/80 border border-outline-variant/20 p-5">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary mb-3">OPERATIONAL_FOCUS</div>
-                    <p className="text-sm text-on-surface-variant font-light leading-relaxed">
-                      Offensive security for web, APIs, and infrastructure with a strong low-level exploitation bias.
-                    </p>
-                  </div>
-                  <div className="bg-surface-container-highest/80 border border-outline-variant/20 p-5">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-secondary mb-3">ACTIVE_STACK</div>
-                    <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase text-on-surface-variant">
-                      <span className="border border-outline-variant/20 px-2 py-1">C/ASM</span>
-                      <span className="border border-outline-variant/20 px-2 py-1">WEB</span>
-                      <span className="border border-outline-variant/20 px-2 py-1">AD</span>
-                      <span className="border border-outline-variant/20 px-2 py-1">CLOUD</span>
-                    </div>
-                  </div>
-                  <div className="bg-surface-container-highest/80 border border-outline-variant/20 p-5">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-on-surface-variant mb-3">SESSION_STATE</div>
-                    <div className="space-y-2 font-mono text-xs uppercase">
-                      <div className="flex items-center justify-between">
-                        <span className="text-on-surface-variant/60">status</span>
-                        <span className="text-primary">operational</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-on-surface-variant/60">scope</span>
-                        <span className="text-on-surface">freelance / lead</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-on-surface-variant/60">response</span>
-                        <span className="text-secondary">&lt; 24h</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -206,7 +166,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-primary/5 mix-blend-overlay z-10"></div>
                 <div className="w-full h-full border border-primary/10 relative overflow-hidden grayscale contrast-125 opacity-80">
                   <Image
-                    src="https://picsum.photos/seed/hacker/800/1000"
+                    src="/rstride.jpg"
                     alt="Operator Profile"
                     fill
                     className="object-cover"
@@ -261,7 +221,7 @@ export default function Home() {
                       </div>
                       <div className="flex justify-between border-b border-outline-variant/20 pb-2">
                         <span className="text-on-surface">École 42</span>
-                        <span className="font-mono text-xs text-on-surface-variant/60">Alumni</span>
+                        <span className="font-mono text-xs text-secondary">Alumni</span>
                       </div>
                     </div>
                   </div>

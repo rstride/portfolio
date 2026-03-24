@@ -153,7 +153,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-primary/5 mix-blend-overlay z-10"></div>
                 <div className="w-full h-full border border-primary/10 relative overflow-hidden grayscale contrast-125 opacity-80">
                   <Image
-                    src="/public/42perpi.png"
+                    src="/rstride.jpg"
                     alt="Operator Profile"
                     fill
                     className="object-cover"
@@ -208,7 +208,7 @@ export default function Home() {
                       </div>
                       <div className="flex justify-between border-b border-outline-variant/20 pb-2">
                         <span className="text-on-surface">École 42</span>
-                        <span className="font-mono text-xs text-on-surface-variant/60">Alumni</span>
+                        <span className="font-mono text-xs text-secondary">Alumni</span>
                       </div>
                     </div>
                   </div>
@@ -253,7 +253,7 @@ export default function Home() {
         <div className="relative z-10 hero-frame">
           <div className="max-w-4xl mx-auto">
             <h2 className="font-headline text-4xl md:text-6xl font-bold uppercase mb-8 leading-tight text-on-surface">
-              PRÊT À RENFORCER <br /> VOTRE POSTURE ?
+              PRÊT À RENFORCER <br /> VOTRE CYBERSÉCURITÉ ?
             </h2>
             <p className="text-on-surface-variant text-lg mb-12 max-w-xl mx-auto font-light">
               N&apos;attendez pas qu&apos;une brèche se produise. Trouvons les failles de votre sécurité avant que les acteurs malveillants ne le fassent.

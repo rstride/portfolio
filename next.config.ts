@@ -1,9 +1,7 @@
 import type {NextConfig} from 'next';
 
-const isDevCommand = process.argv.includes('dev');
-
 const nextConfig: NextConfig = {
-  distDir: isDevCommand ? '.next-dev' : '.next',
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   reactStrictMode: true,
   allowedDevOrigins: [
     '51.210.245.136',
