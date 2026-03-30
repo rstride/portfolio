@@ -6,7 +6,7 @@ date: "2026-03-15"
 tags: ["WEB", "GRAPHQL", "SQLI", "POSTGRES"]
 severity: "CRITICAL"
 icon: "Database"
-author: "0x7E3"
+author: "0x7CC"
 ---
 
 Bien que GraphQL ait changé le paradigme du développement d'API, il n'a pas éliminé les vulnérabilités traditionnelles. En fait, la complexité de la résolution des requêtes imbriquées masque souvent des failles d'injection SQL sous-jacentes, en particulier lorsque les développeurs s'appuient sur des résolveurs personnalisés au lieu d'ORM robustes.

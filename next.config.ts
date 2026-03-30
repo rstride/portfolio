@@ -10,9 +10,6 @@ const nextConfig: NextConfig = {
     'rstride.fr',
     'www.rstride.fr',
   ],
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: false,
   },

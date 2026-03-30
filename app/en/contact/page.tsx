@@ -16,11 +16,11 @@ export default function ContactPage() {
             Secure Channel // Establish Connection
           </span>
           <h1 className="text-5xl md:text-7xl font-headline font-bold text-on-surface tracking-tighter leading-none mb-8">
-            INITIATE <br />
-            <span className="text-primary">HANDSHAKE.</span>
+            CONTACT <br />
+            <span className="text-primary">INITIATION.</span>
           </h1>
           <p className="text-on-surface-variant text-lg xl:text-xl leading-relaxed font-light mb-12 max-w-lg">
-            For audit requests, training, or technical collaboration. All communications are end-to-end encrypted.
+            For audit requests, training, or technical collaboration. Messages go through a secure channel and are handled directly.
           </p>
 
           <div className="space-y-5">
@@ -63,16 +63,16 @@ function InfoPanel({
   items: string[];
 }) {
   return (
-    <div className={`border p-5 bg-surface-container-low capability-process-panel ${tone === 'primary' ? 'capability-card-primary' : 'capability-card-secondary'}`}>
-      <div className="flex items-center gap-3 mb-4">
+    <div className={`contact-info-panel border p-5 bg-surface-container-low capability-process-panel ${tone === 'primary' ? 'capability-card-primary' : 'capability-card-secondary'}`}>
+      <div className="contact-info-panel-header flex items-center gap-3">
         <div className="capability-card-icon w-11 h-11">{icon}</div>
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-on-surface-variant">{title}</div>
+          <div className="contact-info-panel-title font-mono text-[10px] uppercase tracking-[0.3em] text-on-surface-variant">{title}</div>
         </div>
       </div>
-      <div className="space-y-3">
+      <div className="contact-info-panel-list space-y-3">
         {items.map((item) => (
-          <div key={item} className="flex items-start gap-3 font-mono text-xs uppercase text-on-surface-variant">
+          <div key={item} className="contact-info-panel-item flex items-start gap-3 font-mono text-xs uppercase text-on-surface-variant">
             <span className={`mt-1 h-1.5 w-1.5 shrink-0 ${tone === 'primary' ? 'bg-primary' : 'bg-secondary'}`}></span>
             <span>{item}</span>
           </div>

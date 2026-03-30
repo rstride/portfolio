@@ -6,7 +6,7 @@ date: "2026-03-15"
 tags: ["WEB", "GRAPHQL", "SQLI", "POSTGRES"]
 severity: "CRITICAL"
 icon: "Database"
-author: "0x7E3"
+author: "0x7CC"
 ---
 
 While GraphQL has shifted the paradigm of API development, it hasn't eliminated traditional vulnerabilities. In fact, the complexity of resolving nested queries often obscures underlying SQL injection flaws, especially when developers rely on custom resolvers instead of robust ORMs.

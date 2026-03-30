@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft, Share2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import * as motion from 'motion/react-client';
 import { getBlogPostBySlug, markdownToHtml } from '@/lib/markdown';
 import { notFound } from 'next/navigation';
@@ -79,17 +79,12 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             {post.meta.title.toUpperCase()}
           </h1>
           
-          <div className="flex items-center justify-between">
-            <div className="flex flex-wrap gap-3">
-              {post.meta.tags.map(tag => (
-                <span key={tag} className="font-mono text-[10px] text-on-surface-variant/80 uppercase bg-surface-container px-3 py-1 border border-outline-variant/20">
-                  #{tag}
-                </span>
-              ))}
-            </div>
-            <button className="p-2 text-on-surface-variant hover:text-primary transition-colors">
-              <Share2 className="w-5 h-5" />
-            </button>
+          <div className="flex flex-wrap gap-3">
+            {post.meta.tags.map(tag => (
+              <span key={tag} className="font-mono text-[10px] text-on-surface-variant/80 uppercase bg-surface-container px-3 py-1 border border-outline-variant/20">
+                #{tag}
+              </span>
+            ))}
           </div>
         </header>
 
@@ -111,7 +106,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             <div>
               <h4 className="font-headline font-bold text-lg text-on-surface mb-2">ABOUT THE AUTHOR</h4>
               <p className="text-sm text-on-surface-variant font-light leading-relaxed">
-                Romain Stride (0x7E3) is a Senior Security Researcher focusing on web application security and exploit development. When not breaking things, he builds secure architectures.
+                Romain Stride (0x7CC) is a Senior Security Researcher focusing on web application security and exploit development. When not breaking things, he builds secure architectures.
               </p>
             </div>
           </div>

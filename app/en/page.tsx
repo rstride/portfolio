@@ -162,7 +162,7 @@ export default function Home() {
         <div className="page-frame">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
             <div className="lg:col-span-5 relative">
-              <div className="aspect-[3/4] bg-surface-container-highest border border-outline-variant/20 relative p-2">
+              <div className="mx-auto max-w-[18rem] sm:max-w-sm md:max-w-md lg:max-w-none aspect-[4/5] sm:aspect-[3/4] bg-surface-container-highest border border-outline-variant/20 relative p-2">
                 <div className="absolute inset-0 bg-primary/5 mix-blend-overlay z-10"></div>
                 <div className="w-full h-full border border-primary/10 relative overflow-hidden grayscale contrast-125 opacity-80">
                   <Image
@@ -173,8 +173,8 @@ export default function Home() {
                     referrerPolicy="no-referrer"
                   />
                 </div>
-                <div className="absolute -bottom-4 -right-4 bg-primary text-on-primary p-4 font-mono text-xs uppercase tracking-widest font-bold z-20 shadow-lg">
-                  OPERATOR_ID: 0x7E3
+                <div className="absolute -bottom-3 right-3 sm:-bottom-4 sm:-right-4 bg-primary text-on-primary px-3 py-2 sm:p-4 font-mono text-[10px] sm:text-xs uppercase tracking-widest font-bold z-20 shadow-lg">
+                  OPERATOR_ID: 0x7CC
                 </div>
               </div>
             </div>

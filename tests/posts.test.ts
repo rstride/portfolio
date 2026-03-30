@@ -1,46 +1,31 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  fileNameToSlug,
-  getExcerpt,
-  getReadingTime,
-  isPublishableFile,
-  isPublished,
-  stripMarkdown,
-} from "@/features/blog/server";
+import { getBlogPostBySlug, getBlogPosts, markdownToHtml } from "@/lib/markdown";
 
-test("isPublishableFile filters copied drafts", () => {
-  assert.equal(isPublishableFile("hello.md"), true);
-  assert.equal(isPublishableFile("hello copy.md"), false);
-  assert.equal(isPublishableFile("hello.txt"), false);
+test("getBlogPosts returns the published article in both locales", () => {
+  const frPosts = getBlogPosts("fr");
+  const enPosts = getBlogPosts("en");
+
+  assert.ok(frPosts.length > 0);
+  assert.ok(enPosts.length > 0);
+  assert.equal(frPosts[0]?.slug, "sqli-modern-api");
+  assert.equal(enPosts[0]?.slug, "sqli-modern-api");
 });
 
-test("fileNameToSlug removes the markdown extension", () => {
-  assert.equal(fileNameToSlug("hello-world.md"), "hello-world");
+test("getBlogPostBySlug resolves the shared article in both locales", () => {
+  const frPost = getBlogPostBySlug("sqli-modern-api", "fr");
+  const enPost = getBlogPostBySlug("sqli-modern-api", "en");
+
+  assert.ok(frPost);
+  assert.ok(enPost);
+  assert.equal(frPost?.slug, "sqli-modern-api");
+  assert.equal(enPost?.slug, "sqli-modern-api");
 });
 
-test("isPublished hides draft posts", () => {
-  assert.equal(isPublished({ title: "Draft", date: "2024-01-01", draft: true }), false);
-  assert.equal(isPublished({ title: "Live", date: "2024-01-01" }), true);
-});
+test("markdownToHtml renders fenced code blocks", async () => {
+  const html = await markdownToHtml("```js\nconst answer = 42;\n```");
 
-test("stripMarkdown removes common formatting noise", () => {
-  const input = "# Title\n\n[link](https://example.com) and `code`";
-  assert.equal(stripMarkdown(input), "Title link and code");
-});
-
-test("getExcerpt prefers explicit excerpt and falls back to stripped content", () => {
-  assert.equal(
-    getExcerpt({ title: "A", date: "2024-01-01", excerpt: "Explicit summary" }, "ignored"),
-    "Explicit summary"
-  );
-  assert.match(
-    getExcerpt({ title: "A", date: "2024-01-01" }, "# Heading\n\nParagraph content"),
-    /Heading Paragraph content/
-  );
-});
-
-test("getReadingTime always returns at least one minute", () => {
-  assert.equal(getReadingTime("short text"), 1);
+  assert.match(html, /<pre/);
+  assert.match(html, /answer/);
 });

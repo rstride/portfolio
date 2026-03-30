@@ -9,6 +9,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-body' });
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://rstride.fr'),
   title: 'Romain Stride // Pentester Portfolio',
   description: 'Offensive Security & Development. Pentester, Security Researcher & Developer.',
   openGraph: {
@@ -18,9 +19,9 @@ export const metadata: Metadata = {
     siteName: 'Romain Stride',
     images: [
       {
-        url: 'https://rstride.fr/og-image.jpg', // Placeholder for actual OG image
-        width: 1200,
-        height: 630,
+        url: '/romain.png',
+        width: 480,
+        height: 480,
         alt: 'Romain Stride - Offensive Security',
       },
     ],
@@ -31,13 +32,13 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Romain Stride // Pentester Portfolio',
     description: 'Offensive Security & Development. Pentester, Security Researcher & Developer.',
-    images: ['https://rstride.fr/og-image.jpg'],
+    images: ['/romain.png'],
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}>
+    <html lang="fr" className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}>
       <body className="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary antialiased min-h-screen flex flex-col">
         <div className="fixed inset-0 dot-grid pointer-events-none z-0"></div>
         <div className="site-ambient">
