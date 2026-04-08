@@ -15,7 +15,6 @@ const IconMap: Record<string, React.ReactNode> = {
 
 export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr' | 'en' }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSeverity, setSelectedSeverity] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const filteredPosts = useMemo(() => {
@@ -24,14 +23,13 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
         searchQuery === '' || 
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (post.content && post.content.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesSeverity = !selectedSeverity || post.severity === selectedSeverity;
+        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesCategory = !selectedCategory || post.tags.includes(selectedCategory);
 
-      return matchesSearch && matchesSeverity && matchesCategory;
+      return matchesSearch && matchesCategory;
     });
-  }, [posts, searchQuery, selectedSeverity, selectedCategory]);
+  }, [posts, searchQuery, selectedCategory]);
 
   const categories = Array.from(new Set(posts.flatMap(post => post.tags)));
 
@@ -64,36 +62,6 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
           </div>
           
           <div className="space-y-6">
-            <div>
-              <h4 className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant mb-3">
-                {locale === 'fr' ? 'SÉVÉRITÉ' : 'SEVERITY'}
-              </h4>
-              <div className="space-y-2">
-                {['CRITICAL', 'HIGH', 'MEDIUM'].map(severity => (
-                  <label key={severity} className="flex items-center gap-3 cursor-pointer group">
-                    <input 
-                      type="radio" 
-                      name="severity" 
-                      className="hidden" 
-                      checked={selectedSeverity === severity}
-                      onChange={() => setSelectedSeverity(selectedSeverity === severity ? null : severity)}
-                      onClick={() => {
-                        if (selectedSeverity === severity) {
-                          setSelectedSeverity(null);
-                        }
-                      }}
-                    />
-                    <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${selectedSeverity === severity ? 'border-primary' : 'border-outline-variant/50 group-hover:border-primary/50'}`}>
-                      {selectedSeverity === severity && <div className="w-2 h-2 bg-primary"></div>}
-                    </div>
-                    <span className={`font-mono text-xs ${selectedSeverity === severity ? 'text-primary' : 'text-on-surface'}`}>
-                      {severity}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
             <div>
               <h4 className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant mb-3">
                 {locale === 'fr' ? 'CATÉGORIES' : 'CATEGORIES'}
@@ -138,7 +106,11 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
             </p>
           </div>
         ) : (
-          filteredPosts.map((post) => (
+          filteredPosts.map((post) => {
+            const badgeValue = (post.difficulty || post.severity || '').toUpperCase();
+            const isCriticalLike = badgeValue === 'CRITICAL' || badgeValue === 'HARD' || badgeValue === 'INSANE';
+
+            return (
             <Link href={locale === 'fr' ? `/blog/${post.slug}` : `/en/blog/${post.slug}`} key={post.id} className="block group">
               <article className="bg-surface-container p-6 md:p-8 border border-outline-variant/10 hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-full bg-outline-variant/20 group-hover:bg-primary transition-colors"></div>
@@ -152,8 +124,8 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
                       <span className="font-mono text-[10px] text-on-surface-variant">
                         {post.date}
                       </span>
-                      <span className={`font-mono text-[10px] px-2 py-1 border ${post.severity === 'CRITICAL' ? 'text-error border-error/30 bg-error/10' : 'text-error/80 border-error/20'}`}>
-                        {post.severity}
+                      <span className={`font-mono text-[10px] px-2 py-1 border ${isCriticalLike ? 'text-error border-error/30 bg-error/10' : 'text-error/80 border-error/20'}`}>
+                        {badgeValue}
                       </span>
                     </div>
                     <h2 className="text-2xl font-headline font-bold text-on-surface group-hover:text-primary transition-colors">
@@ -183,7 +155,8 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
                 </div>
               </article>
             </Link>
-          ))
+            );
+          })
         )}
       </div>
     </div>

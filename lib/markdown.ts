@@ -18,6 +18,7 @@ export interface BlogPostMeta {
   date: string;
   tags: string[];
   severity: string;
+  difficulty?: string;
   icon: string;
   author: string;
   slug: string;

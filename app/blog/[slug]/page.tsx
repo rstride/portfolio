@@ -44,6 +44,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   }
 
   const html = await markdownToHtml(post.content);
+  const badgeValue = (post.meta.difficulty || post.meta.severity || '').toUpperCase();
+  const isCriticalLike = badgeValue === 'CRITICAL' || badgeValue === 'HARD' || badgeValue === 'INSANE';
 
   return (
     <motion.div 
@@ -67,8 +69,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             <span className="font-mono text-xs text-on-surface-variant">
               DATE: {post.meta.date}
             </span>
-            <span className={`font-mono text-xs px-3 py-1.5 border ${post.meta.severity === 'CRITICAL' ? 'text-error border-error/30 bg-error/10' : 'text-error/80 border-error/20'}`}>
-              SEVERITY: {post.meta.severity}
+            <span className={`font-mono text-xs px-3 py-1.5 border ${isCriticalLike ? 'text-error border-error/30 bg-error/10' : 'text-error/80 border-error/20'}`}>
+              DIFFICULTY: {badgeValue}
             </span>
             <span className="font-mono text-xs text-on-surface-variant">
               AUTHOR: {post.meta.author}

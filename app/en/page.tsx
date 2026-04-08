@@ -162,9 +162,9 @@ export default function Home() {
         <div className="page-frame">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
             <div className="lg:col-span-5 relative">
-              <div className="mx-auto max-w-[18rem] sm:max-w-sm md:max-w-md lg:max-w-none aspect-[4/5] sm:aspect-[3/4] bg-surface-container-highest border border-outline-variant/20 relative p-2">
+              <div className="mx-auto max-w-[14rem] sm:max-w-xs md:max-w-sm lg:max-w-sm aspect-[4/5] sm:aspect-[3/4] bg-surface-container-highest border border-outline-variant/20 relative p-2">
                 <div className="absolute inset-0 bg-primary/5 mix-blend-overlay z-10"></div>
-                <div className="w-full h-full border border-primary/10 relative overflow-hidden grayscale contrast-125 opacity-80">
+                <div className="w-full h-full border border-primary/10 relative overflow-hidden contrast-125 opacity-80">
                   <Image
                     src="/rstride.jpg"
                     alt="Operator Profile"
