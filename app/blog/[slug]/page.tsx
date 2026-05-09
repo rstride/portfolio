@@ -112,6 +112,31 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               </p>
             </div>
           </div>
+          <div className="mt-8 bg-surface-container p-8 border border-outline-variant/20">
+            <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-secondary">
+              Prochaine étape
+            </span>
+            <h3 className="mt-4 font-headline text-3xl font-bold uppercase text-on-surface">
+              Besoin d&apos;évaluer une surface similaire ?
+            </h3>
+            <p className="mt-4 text-sm text-on-surface-variant font-light leading-relaxed max-w-2xl">
+              Décrivez le périmètre et les contraintes pour cadrer un audit applicatif, API ou cloud.
+            </p>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <Link
+                href={`/contact?source=blog_article&topic=${post.slug}`}
+                className="bg-primary text-on-primary font-mono text-xs font-bold uppercase px-6 py-3 transition-all terminal-glow active:scale-95 text-center"
+              >
+                Demander un cadrage
+              </Link>
+              <Link
+                href="/services"
+                className="border border-outline-variant/30 text-primary font-mono text-xs font-bold uppercase px-6 py-3 hover:bg-surface-container-highest transition-all active:scale-95 text-center"
+              >
+                Voir les services
+              </Link>
+            </div>
+          </div>
         </footer>
         </article>
       </div>

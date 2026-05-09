@@ -9,18 +9,18 @@ test("getBlogPosts returns the published article in both locales", () => {
 
   assert.ok(frPosts.length > 0);
   assert.ok(enPosts.length > 0);
-  assert.equal(frPosts[0]?.slug, "sqli-modern-api");
-  assert.equal(enPosts[0]?.slug, "sqli-modern-api");
+  assert.equal(frPosts[0]?.slug, "expressway");
+  assert.equal(enPosts[0]?.slug, "expressway");
 });
 
 test("getBlogPostBySlug resolves the shared article in both locales", () => {
-  const frPost = getBlogPostBySlug("sqli-modern-api", "fr");
-  const enPost = getBlogPostBySlug("sqli-modern-api", "en");
+  const frPost = getBlogPostBySlug("expressway", "fr");
+  const enPost = getBlogPostBySlug("expressway", "en");
 
   assert.ok(frPost);
   assert.ok(enPost);
-  assert.equal(frPost?.slug, "sqli-modern-api");
-  assert.equal(enPost?.slug, "sqli-modern-api");
+  assert.equal(frPost?.slug, "expressway");
+  assert.equal(enPost?.slug, "expressway");
 });
 
 test("markdownToHtml renders fenced code blocks", async () => {

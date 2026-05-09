@@ -16,6 +16,22 @@ const IconMap: Record<string, React.ReactNode> = {
 export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr' | 'en' }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const servicesHref = locale === 'fr' ? '/services' : '/en/services';
+  const emptyStateCopy = locale === 'fr' ? {
+    title: 'Aucun article ne correspond à ces filtres',
+    body: 'Réinitialisez la recherche ou consultez les services si votre besoin concerne un audit ou une formation.',
+    reset: 'Réinitialiser les filtres',
+    services: 'Voir les services',
+    searchContext: 'Recherche',
+    categoryContext: 'Catégorie',
+  } : {
+    title: 'No articles match these filters',
+    body: 'Reset the search or review services if your need is an audit or training request.',
+    reset: 'Reset filters',
+    services: 'View services',
+    searchContext: 'Search',
+    categoryContext: 'Category',
+  };
 
   const filteredPosts = useMemo(() => {
     return posts.filter(post => {
@@ -32,6 +48,12 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
   }, [posts, searchQuery, selectedCategory]);
 
   const categories = Array.from(new Set(posts.flatMap(post => post.tags)));
+  const hasActiveFilters = searchQuery.length > 0 || selectedCategory !== null;
+
+  function resetFilters() {
+    setSearchQuery('');
+    setSelectedCategory(null);
+  }
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 xl:gap-16">
@@ -100,10 +122,49 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
         </div>
 
         {filteredPosts.length === 0 ? (
-          <div className="bg-surface-container p-12 text-center border border-outline-variant/20">
-            <p className="font-mono text-on-surface-variant">
-              {locale === 'fr' ? 'Aucun résultat trouvé pour votre recherche.' : 'No results found for your query.'}
-            </p>
+          <div className="bg-surface-container p-8 md:p-12 border border-outline-variant/20">
+            <div className="max-w-2xl">
+              <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-secondary">
+                {locale === 'fr' ? 'État de recherche' : 'Search state'}
+              </span>
+              <h2 className="mt-4 font-headline text-3xl md:text-4xl font-bold uppercase text-on-surface">
+                {emptyStateCopy.title}
+              </h2>
+              <p className="mt-4 text-sm md:text-base text-on-surface-variant font-light leading-relaxed">
+                {emptyStateCopy.body}
+              </p>
+            </div>
+
+            {hasActiveFilters && (
+              <div className="mt-6 flex flex-wrap gap-2">
+                {searchQuery && (
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant border border-outline-variant/30 bg-surface-container-highest px-3 py-2">
+                    {emptyStateCopy.searchContext}: {searchQuery}
+                  </span>
+                )}
+                {selectedCategory && (
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant border border-outline-variant/30 bg-surface-container-highest px-3 py-2">
+                    {emptyStateCopy.categoryContext}: {selectedCategory}
+                  </span>
+                )}
+              </div>
+            )}
+
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="cta-primary inline-flex text-xs px-6 py-3"
+              >
+                {emptyStateCopy.reset}
+              </button>
+              <Link
+                href={servicesHref}
+                className="cta-secondary inline-flex text-xs px-6 py-3"
+              >
+                {emptyStateCopy.services}
+              </Link>
+            </div>
           </div>
         ) : (
           filteredPosts.map((post) => {
@@ -112,8 +173,8 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
 
             return (
             <Link href={locale === 'fr' ? `/blog/${post.slug}` : `/en/blog/${post.slug}`} key={post.id} className="block group">
-              <article className="bg-surface-container p-6 md:p-8 border border-outline-variant/10 hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-outline-variant/20 group-hover:bg-primary transition-colors"></div>
+              <article className="bg-surface-container p-6 md:p-8 border border-outline-variant/10 hover:border-primary/30 group-focus-visible:border-primary/30 transition-all duration-300 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-outline-variant/20 group-hover:bg-primary group-focus-visible:bg-primary transition-colors"></div>
                 
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-4">
                   <div>
@@ -128,11 +189,11 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
                         {badgeValue}
                       </span>
                     </div>
-                    <h2 className="text-2xl font-headline font-bold text-on-surface group-hover:text-primary transition-colors">
+                    <h2 className="text-2xl font-headline font-bold text-on-surface group-hover:text-primary group-focus-visible:text-primary transition-colors">
                       {post.title}
                     </h2>
                   </div>
-                  <div className="hidden md:flex p-3 bg-surface-container-highest border border-outline-variant/20 text-on-surface-variant group-hover:text-primary group-hover:border-primary/30 transition-colors">
+                  <div className="hidden md:flex p-3 bg-surface-container-highest border border-outline-variant/20 text-on-surface-variant group-hover:text-primary group-hover:border-primary/30 group-focus-visible:text-primary group-focus-visible:border-primary/30 transition-colors">
                     {IconMap[post.icon] || IconMap.Default}
                   </div>
                 </div>
@@ -141,7 +202,7 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
                   {post.excerpt}
                 </p>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-4">
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map(tag => (
                       <span key={tag} className="font-mono text-[10px] text-on-surface-variant/60 uppercase before:content-['#'] before:text-primary/50">
@@ -149,7 +210,7 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
                       </span>
                     ))}
                   </div>
-                  <span className="font-mono text-xs text-primary uppercase tracking-widest font-bold opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-4 group-hover:translate-x-0 duration-300">
+                  <span className="shrink-0 font-mono text-xs text-primary uppercase tracking-widest font-bold opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100 transition-opacity transform translate-x-0 md:translate-x-4 md:group-hover:translate-x-0 md:group-focus-visible:translate-x-0 duration-300">
                     READ_LOG &gt;
                   </span>
                 </div>

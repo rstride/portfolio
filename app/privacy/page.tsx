@@ -40,9 +40,9 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-headline font-bold text-on-surface mb-4">4. Sécurité</h2>
+          <h2 className="text-2xl font-headline font-bold text-on-surface mb-4">4. Sécurité des échanges</h2>
           <p>
-            En tant que professionnel de la cybersécurité, je mets un point d&apos;honneur à protéger les communications et les données échangées. Le site est sécurisé par PrismaSec et utilise des protocoles de chiffrement robustes.
+            Les informations envoyées via le formulaire sont utilisées pour répondre à la demande et transmises par e-mail au destinataire configuré. Évitez d&apos;y inclure des secrets, identifiants, jetons d&apos;accès ou données sensibles.
           </p>
         </section>
 

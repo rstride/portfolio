@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk, Inter, JetBrains_Mono } from 'next/font/google';
+import { headers } from 'next/headers';
 import './globals.css';
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
@@ -12,6 +13,13 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://rstride.fr'),
   title: 'Romain Stride // Pentester Portfolio',
   description: 'Offensive Security & Development. Pentester, Security Researcher & Developer.',
+  alternates: {
+    canonical: 'https://rstride.fr',
+    languages: {
+      fr: 'https://rstride.fr',
+      en: 'https://rstride.fr/en',
+    },
+  },
   openGraph: {
     title: 'Romain Stride // Pentester Portfolio',
     description: 'Offensive Security & Development. Pentester, Security Researcher & Developer.',
@@ -36,9 +44,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const headersList = await headers();
+  const pathname = headersList.get('x-pathname') ?? '/';
+  const lang = pathname === '/en' || pathname.startsWith('/en/') ? 'en' : 'fr';
+
   return (
-    <html lang="fr" className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}>
+    <html lang={lang} className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}>
       <body className="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary antialiased min-h-screen flex flex-col">
         <div className="fixed inset-0 dot-grid pointer-events-none z-0"></div>
         <div className="site-ambient">

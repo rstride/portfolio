@@ -40,9 +40,9 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-headline font-bold text-on-surface mb-4">4. Security</h2>
+          <h2 className="text-2xl font-headline font-bold text-on-surface mb-4">4. Exchange security</h2>
           <p>
-            As a cybersecurity professional, I make it a point of honor to protect communications and exchanged data. The site is secured by PrismaSec and uses robust encryption protocols.
+            Information submitted through the form is used to respond to the request and is delivered by email to the configured recipient. Avoid including secrets, credentials, access tokens, or sensitive data.
           </p>
         </section>
 

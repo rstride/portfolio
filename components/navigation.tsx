@@ -11,19 +11,25 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const isEnglish = pathname.startsWith('/en');
+  const mobileOverlayRef = useRef<HTMLDivElement>(null);
+  const hasOpenedMobileMenuRef = useRef(false);
+  const isEnglish = pathname === '/en' || pathname.startsWith('/en/');
 
   const navItems = isEnglish ? [
-    { name: 'ROOT', path: '/en' },
+    { name: 'HOME', path: '/en' },
     { name: 'SERVICES', path: '/en/services' },
-    { name: 'BLOG', path: '/en/blog' },
+    { name: 'ARTICLES', path: '/en/blog' },
     { name: 'CONTACT', path: '/en/contact' },
   ] : [
-    { name: 'ROOT', path: '/' },
+    { name: 'ACCUEIL', path: '/' },
     { name: 'SERVICES', path: '/services' },
-    { name: 'BLOG', path: '/blog' },
+    { name: 'ARTICLES', path: '/blog' },
     { name: 'CONTACT', path: '/contact' },
   ];
+  const primaryCta = isEnglish
+    ? { label: 'Request an audit', path: '/en/contact?source=nav_cta' }
+    : { label: 'Demander un audit', path: '/contact?source=nav_cta' };
+  const languageToggleLabel = isEnglish ? 'Passer en français' : 'Switch to English';
 
   const toggleLanguage = () => {
     setIsMobileMenuOpen(false);
@@ -41,16 +47,57 @@ export function Navigation() {
   useEffect(() => {
     if (!isMobileMenuOpen) {
       document.body.style.overflow = '';
-      menuButtonRef.current?.focus();
+      if (hasOpenedMobileMenuRef.current) {
+        menuButtonRef.current?.focus();
+        hasOpenedMobileMenuRef.current = false;
+      }
       return;
     }
 
+    hasOpenedMobileMenuRef.current = true;
     document.body.style.overflow = 'hidden';
     closeButtonRef.current?.focus();
+
+    const getFocusableElements = () => {
+      const overlay = mobileOverlayRef.current;
+
+      if (!overlay) {
+        return [];
+      }
+
+      return Array.from(
+        overlay.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => !element.hasAttribute('disabled') && element.getAttribute('aria-hidden') !== 'true');
+    };
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsMobileMenuOpen(false);
+        return;
+      }
+
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const focusableElements = getFocusableElements();
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
       }
     };
 
@@ -76,10 +123,11 @@ export function Navigation() {
                 <Link
                   key={item.path}
                   href={item.path}
+                  aria-current={isActive ? 'page' : undefined}
                   className={`transition-colors duration-300 ${
                     isActive 
                       ? 'text-primary font-black border-b-2 border-primary pb-1' 
-                      : 'text-on-surface/60 hover:text-primary'
+                      : 'text-on-surface/60 hover:text-primary focus-visible:text-primary'
                   }`}
                 >
                   {item.name}
@@ -89,10 +137,17 @@ export function Navigation() {
           </div>
 
           <div className="flex items-center gap-4">
+            <Link
+              href={primaryCta.path}
+              className="cta-primary hidden md:inline-flex text-xs tracking-[0.16em] px-5 py-3"
+            >
+              {primaryCta.label}
+            </Link>
             <button 
               onClick={toggleLanguage}
-              className="p-2 text-on-surface/60 hover:text-primary hover:bg-surface-container transition-all duration-300 active:scale-90 flex items-center gap-2"
-              title={isEnglish ? "Passer en Français" : "Switch to English"}
+              className="min-h-11 p-2 text-on-surface/60 hover:text-primary focus-visible:text-primary hover:bg-surface-container transition-all duration-300 active:scale-90 flex items-center gap-2"
+              title={languageToggleLabel}
+              aria-label={languageToggleLabel}
             >
               <Globe className="w-5 h-5" />
               <span className="font-mono text-xs font-bold">{isEnglish ? 'EN' : 'FR'}</span>
@@ -104,7 +159,7 @@ export function Navigation() {
               aria-controls="mobile-navigation-overlay"
               aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-2 text-on-surface/60 hover:text-primary"
+              className="md:hidden min-h-11 p-2 text-on-surface/60 hover:text-primary focus-visible:text-primary"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -113,7 +168,11 @@ export function Navigation() {
       </nav>
 
       {isMobileMenuOpen ? (
-        <div id="mobile-navigation-overlay" className="mobile-nav-overlay md:hidden">
+        <div
+          ref={mobileOverlayRef}
+          id="mobile-navigation-overlay"
+          className="mobile-nav-overlay md:hidden"
+        >
           <div className="mobile-nav-grid"></div>
           <div className="mobile-nav-shell chrome-frame">
             <div className="mobile-nav-header">
@@ -141,6 +200,14 @@ export function Navigation() {
                 <span className="mobile-nav-line"></span>
               </div>
 
+              <Link
+                href={primaryCta.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="mobile-nav-cta"
+              >
+                {primaryCta.label}
+              </Link>
+
               <div className="mobile-nav-links">
                 {navItems.map((item, index) => {
                   const isActive = pathname === item.path || (item.path !== '/' && item.path !== '/en' && pathname.startsWith(item.path));
@@ -149,6 +216,7 @@ export function Navigation() {
                       key={item.path}
                       href={item.path}
                       onClick={() => setIsMobileMenuOpen(false)}
+                      aria-current={isActive ? 'page' : undefined}
                       className={`mobile-nav-link ${isActive ? 'mobile-nav-link-active' : ''}`}
                     >
                       <span className="mobile-nav-link-index">
@@ -164,7 +232,8 @@ export function Navigation() {
                 type="button"
                 onClick={toggleLanguage}
                 className="mobile-nav-language"
-                title={isEnglish ? 'Passer en Français' : 'Switch to English'}
+                title={languageToggleLabel}
+                aria-label={languageToggleLabel}
               >
                 <Globe className="w-5 h-5" />
                 <span>{isEnglish ? 'Switch to French' : 'Basculer en anglais'}</span>

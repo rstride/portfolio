@@ -17,7 +17,7 @@ export function Footer() {
           <a href="https://github.com/rstride" target="_blank" rel="noopener noreferrer" className="text-on-surface/40 hover:text-primary transition-colors">GITHUB</a>
           <a href="https://linkedin.com/in/romainstride" target="_blank" rel="noopener noreferrer" className="text-on-surface/40 hover:text-primary transition-colors">LINKEDIN</a>
           <a href={privacyLink} className="text-on-surface/40 hover:text-primary transition-colors">PRIVACY POLICY</a>
-          <a href="https://prismasec.fr" target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-primary transition-colors">SECURED_BY_PRISMASEC</a>
+          <a href="https://prismasec.fr" target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-primary transition-colors">PRISMASEC</a>
         </div>
       </div>
     </footer>

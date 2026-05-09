@@ -4,6 +4,7 @@ import * as motion from 'motion/react-client';
 
 const auditServices = [
   {
+    slug: 'web-application-pentest',
     title: 'Applications Web',
     tone: 'primary',
     icon: Globe,
@@ -12,6 +13,7 @@ const auditServices = [
     tags: ['OWASP', 'Business Logic', 'Auth Bypass'],
   },
   {
+    slug: 'cloud-devsecops',
     title: 'Cloud & DevSecOps',
     tone: 'secondary',
     icon: Cloud,
@@ -20,6 +22,7 @@ const auditServices = [
     tags: ['AWS', 'Azure', 'Kubernetes'],
   },
   {
+    slug: 'internal-infrastructure',
     title: 'Infrastructure Interne',
     tone: 'tertiary',
     icon: Network,
@@ -31,6 +34,7 @@ const auditServices = [
 
 const trainingPrograms = [
   {
+    slug: 'security-awareness',
     title: 'Security Awareness Program',
     tone: 'secondary',
     icon: BriefcaseBusiness,
@@ -40,6 +44,7 @@ const trainingPrograms = [
     cta: 'Structurer la session',
   },
   {
+    slug: 'technical-operator-track',
     title: 'Technical Operator Track',
     tone: 'primary',
     icon: Code,
@@ -49,6 +54,7 @@ const trainingPrograms = [
     cta: 'Recevoir le programme',
   },
   {
+    slug: 'ctf-simulation-cell',
     title: 'CTF & Simulation Cell',
     tone: 'secondary',
     icon: Flag,
@@ -118,7 +124,7 @@ export default function ServicesPage() {
                     <span key={tag}>{tag}</span>
                   ))}
                 </div>
-                <Link href="/contact" className="services-simple-cta">
+                <Link href={`/contact?service=${service.slug}&source=services`} className="services-simple-cta">
                   <span>Discuter de la mission</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -166,7 +172,7 @@ export default function ServicesPage() {
                     <p>{program.outcome}</p>
                   </div>
                 </div>
-                <Link href="/contact" className="services-simple-cta">
+                <Link href={`/contact?service=${program.slug}&source=services`} className="services-simple-cta">
                   <span>{program.cta}</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>

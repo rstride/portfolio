@@ -20,7 +20,7 @@ export default function ContactPage() {
             <span className="text-primary">CONTACT.</span>
           </h1>
           <p className="text-on-surface-variant text-lg xl:text-xl leading-relaxed font-light mb-12 max-w-lg">
-            Pour toute demande d&apos;audit, de formation ou de collaboration technique. Les messages transitent par un canal securise et sont traites directement.
+            Pour une demande d&apos;audit, de formation ou de collaboration technique. Décrivez le contexte sans partager de secrets, mots de passe, jetons d&apos;accès ou données sensibles.
           </p>
 
           <div className="space-y-5">
@@ -28,19 +28,19 @@ export default function ContactPage() {
               icon={<Orbit className="w-5 h-5 text-primary" />}
               title="ENGAGEMENT_TYPES"
               tone="primary"
-              items={['Pentest applicatif', 'Audit infrastructure', 'Formation securite', 'Architecture / advisory']}
+              items={['Pentest applicatif', 'Audit infrastructure', 'Formation sécurité', 'Architecture / advisory']}
             />
             <InfoPanel
               icon={<Waypoints className="w-5 h-5 text-secondary" />}
               title="SCOPE_VECTOR"
               tone="secondary"
-              items={['Application web / SaaS', 'API / backend', 'Cloud / infrastructure', 'Equipe / atelier']}
+              items={['Application web / SaaS', 'API / backend', 'Cloud / infrastructure', 'Équipe / atelier']}
             />
             <InfoPanel
               icon={<Layers3 className="w-5 h-5 text-primary" />}
               title="PROCESS_CHAIN"
               tone="primary"
-              items={['Qualification du besoin', 'Cadrage du perimetre', 'Execution technique', 'Livrables & restitution']}
+              items={['Qualification du besoin', 'Cadrage du périmètre', 'Exécution technique', 'Livrables & restitution']}
             />
           </div>
         </div>

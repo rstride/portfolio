@@ -119,26 +119,36 @@ export default function Home() {
       <section className="min-h-[85vh] flex flex-col justify-center py-12 xl:py-20">
         <div className="hero-frame">
           <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
-            Portfolio // v3.1
+            Offensive audits // Web · API · Cloud
           </span>
 
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 xl:gap-16 items-end">
             <div className="xl:col-span-7 2xl:col-span-8">
               <h1 className="font-headline text-5xl md:text-7xl lg:text-8xl 2xl:text-[7.5rem] font-bold uppercase tracking-tighter leading-[0.9] text-on-surface mb-8 2xl:mb-10">
-                PENTESTER <span className="text-secondary">&amp;</span> SECURITY <br /> DEVELOPER
+                FIND EXPLOITABLE <br />
+                <span className="text-secondary">WEAKNESSES</span> BEFORE <br />
+                THEY BECOME INCIDENTS
               </h1>
 
               <p className="text-lg md:text-xl text-on-surface-variant leading-relaxed max-w-2xl mb-12 font-light">
-                Freelance pentester and École 42 alumni, specializing in vulnerability research and low-level exploitation. With strong expertise in C and Assembly, I dissect systems to understand their core flaws.
+                Web app, API/cloud audits, and security training that turn technical risk into concrete, prioritized actions your team can use.
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Link href="/en/contact" className="bg-primary text-on-primary font-mono text-sm font-bold uppercase px-8 py-4 transition-all terminal-glow active:scale-95 inline-block">
-                  INITIATE ENGAGEMENT
+                <Link href="/en/contact?source=home_hero" className="cta-primary inline-flex text-sm px-8 py-4">
+                  Request scoping
                 </Link>
-                <Link href="/en/services" className="border border-outline-variant/30 text-primary font-mono text-sm font-bold uppercase px-8 py-4 hover:bg-surface-container transition-all active:scale-95 inline-block">
-                  VIEW CAPABILITIES
+                <Link href="/en/services" className="cta-secondary inline-flex text-sm px-8 py-4">
+                  View services
                 </Link>
+              </div>
+
+              <div className="mt-8 flex max-w-3xl flex-wrap gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
+                {['École 42 Alumni', 'HTB Elite Hacker', 'TryHackMe Guru / PT1', 'CEO @ PrismaSec'].map((proof) => (
+                  <span key={proof} className="border border-outline-variant/30 bg-surface-container-low px-3 py-2">
+                    {proof}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
@@ -260,7 +270,7 @@ export default function Home() {
             </p>
             <div className="bg-surface-container p-1 inline-flex flex-col sm:flex-row items-center gap-4 border border-outline-variant/20">
               <span className="font-mono text-sm text-primary px-6 py-3">contact@rstride.fr</span>
-              <Link href="/en/contact" className="bg-primary text-on-primary font-mono text-sm font-bold uppercase px-8 py-4 transition-all hover:bg-primary-dim active:scale-95 w-full sm:w-auto">
+              <Link href="/en/contact?source=home_final_cta" className="cta-primary inline-flex text-sm px-8 py-4 w-full sm:w-auto">
                 CONTACT ME
               </Link>
             </div>

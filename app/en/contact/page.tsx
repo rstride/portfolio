@@ -20,7 +20,7 @@ export default function ContactPage() {
             <span className="text-primary">INITIATION.</span>
           </h1>
           <p className="text-on-surface-variant text-lg xl:text-xl leading-relaxed font-light mb-12 max-w-lg">
-            For audit requests, training, or technical collaboration. Messages go through a secure channel and are handled directly.
+            For audit requests, training, or technical collaboration. Describe the context without sharing secrets, passwords, access tokens, or sensitive data.
           </p>
 
           <div className="space-y-5">
