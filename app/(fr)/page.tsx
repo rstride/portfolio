@@ -2,6 +2,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Globe, Network, Code, Cloud, Cpu, ShieldAlert, Terminal, GraduationCap } from 'lucide-react';
 import * as motion from 'motion/react-client';
+import { StructuredData } from '@/components/structured-data';
+import { buildPageMetadata, pageSeo, personJsonLd, professionalServiceJsonLd } from '@/lib/seo';
+
+export const metadata = buildPageMetadata({
+  locale: 'fr',
+  ...pageSeo.home.fr,
+});
 
 type CapabilityTone = 'primary' | 'secondary';
 type CapabilitySize = 'featured' | 'standard' | 'compact';
@@ -116,6 +123,8 @@ export default function Home() {
       transition={{ duration: 0.5 }}
       className="flex flex-col"
     >
+      <StructuredData data={personJsonLd()} />
+      <StructuredData data={professionalServiceJsonLd('fr')} />
       <section className="min-h-[85vh] flex flex-col justify-center py-12 xl:py-20">
         <div className="hero-frame">
           <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
@@ -130,7 +139,7 @@ export default function Home() {
               </h1>
 
               <p className="text-lg md:text-xl text-on-surface-variant leading-relaxed max-w-2xl mb-12 font-light">
-                Pentests applicatifs, audits API et cloud, formations sécurité : transformez les risques techniques en actions concrètes, priorisées et directement exploitables par vos équipes.
+                Consultant cybersécurité freelance pour pentests applicatifs, audits API et cloud, formations sécurité et accompagnement offensif : transformez les risques techniques en actions concrètes, priorisées et directement exploitables.
               </p>
 
               <div className="flex flex-wrap gap-4">
@@ -168,7 +177,7 @@ export default function Home() {
                 <div className="w-full h-full border border-primary/10 relative overflow-hidden contrast-125 opacity-80">
                   <Image
                     src="/rstride.jpg"
-                    alt="Operator Profile"
+                    alt="Portrait de Romain Stride, consultant cybersécurité et pentester freelance"
                     fill
                     className="object-cover"
                     referrerPolicy="no-referrer"

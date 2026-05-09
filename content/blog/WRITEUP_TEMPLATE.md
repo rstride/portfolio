@@ -16,7 +16,12 @@ Use this file as a copy/paste base for a new post.
 id: "REQ-YYYY-NNN"
 title: "Titre du writeup"
 excerpt: "Résumé court (1 phrase) affiché dans la liste du blog."
+seoTitle: "Titre SEO court et explicite"
+seoDescription: "Description SEO de 140 à 160 caractères orientée recherche."
+ogImage: "/blog/<slug>-og.jpg"
+ogImageAlt: "Aperçu du write-up <titre>"
 date: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "WEB", "API"]
 category: "WRITEUP"
 platform: "HACKTHEBOX"
@@ -104,6 +109,7 @@ Résumez en 2-4 points actionnables.
 
 - Slug is the same in `fr/` and `en/`
 - Date is ISO format: `YYYY-MM-DD`
+- `seoTitle`, `seoDescription`, `ogImage`, `ogImageAlt`, and `updated` are optional; the site falls back to title, excerpt, and the default portfolio OG image.
 - Excerpt is concise and readable in card view
 - Tags include at least: `WRITEUP`, platform, OS, and difficulty
 - Code blocks specify language (for highlighting)

@@ -15,8 +15,16 @@ export interface BlogPostMeta {
   id: string;
   title: string;
   excerpt: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  ogImage?: string;
+  ogImageAlt?: string;
   date: string;
+  updated?: string;
   tags: string[];
+  category?: string;
+  platform?: string;
+  target_os?: string;
   severity: string;
   difficulty?: string;
   icon: string;

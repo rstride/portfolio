@@ -1,30 +1,16 @@
 import Link from 'next/link';
-import { headers } from 'next/headers';
 import { Terminal } from 'lucide-react';
 
-export default async function NotFound() {
-  const headersList = await headers();
-  const pathname = headersList.get('x-pathname') ?? '/';
-  const isEnglish = pathname === '/en' || pathname.startsWith('/en/');
-  const copy = isEnglish
-    ? {
-        label: 'Error 404 // Not found',
-        title: 'PAGE NOT FOUND',
-        body: 'The requested page does not exist or has moved. Return home or contact me if you were looking for a specific resource.',
-        primary: 'Back home',
-        primaryHref: '/en',
-        secondary: 'Contact',
-        secondaryHref: '/en/contact?source=404',
-      }
-    : {
-        label: 'Erreur 404 // Page introuvable',
-        title: 'PAGE INTROUVABLE',
-        body: 'La page demandée n’existe pas ou a été déplacée. Revenez à l’accueil ou contactez-moi si vous cherchiez une ressource précise.',
-        primary: 'Retour à l’accueil',
-        primaryHref: '/',
-        secondary: 'Contact',
-        secondaryHref: '/contact?source=404',
-      };
+export default function NotFound() {
+  const copy = {
+    label: 'Erreur 404 // Page introuvable',
+    title: 'PAGE INTROUVABLE',
+    body: 'La page demandée n’existe pas ou a été déplacée. Revenez à l’accueil ou contactez-moi si vous cherchiez une ressource précise.',
+    primary: 'Retour à l’accueil',
+    primaryHref: '/',
+    secondary: 'Contact',
+    secondaryHref: '/contact?source=404',
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 text-center">

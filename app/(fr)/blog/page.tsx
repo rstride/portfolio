@@ -1,6 +1,12 @@
 import * as motion from 'motion/react-client';
 import { getBlogPosts } from '@/lib/markdown';
 import { BlogList } from '@/components/blog-list';
+import { buildPageMetadata, pageSeo } from '@/lib/seo';
+
+export const metadata = buildPageMetadata({
+  locale: 'fr',
+  ...pageSeo.blog.fr,
+});
 
 export default function BlogArchive() {
   const posts = getBlogPosts('fr');
@@ -20,7 +26,7 @@ export default function BlogArchive() {
           SECURITY_BLOG .
         </h1>
         <p className="text-on-surface-variant text-lg leading-relaxed font-light max-w-2xl">
-          Write-ups techniques, analyses de vulnérabilités et recherche en sécurité offensive. Documenter l&apos;exploitation pour mieux comprendre la défense.
+          Write-ups cybersécurité offensive, analyses de vulnérabilités web/API/cloud et notes de recherche. Documenter l&apos;exploitation pour mieux comprendre la défense.
         </p>
       </header>
 

@@ -1,4 +1,11 @@
 import * as motion from 'motion/react-client';
+import { buildPageMetadata, pageSeo } from '@/lib/seo';
+
+export const metadata = buildPageMetadata({
+  locale: 'fr',
+  ...pageSeo.privacy.fr,
+  noIndex: true,
+});
 
 export default function PrivacyPage() {
   return (

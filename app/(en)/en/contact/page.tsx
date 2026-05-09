@@ -1,6 +1,13 @@
+import { Suspense } from 'react';
 import { Orbit, Waypoints, Layers3 } from 'lucide-react';
 import * as motion from 'motion/react-client';
 import { ContactForm } from '@/features/contact/contact-form';
+import { buildPageMetadata, pageSeo } from '@/lib/seo';
+
+export const metadata = buildPageMetadata({
+  locale: 'en',
+  ...pageSeo.contact.en,
+});
 
 export default function ContactPage() {
   return (
@@ -16,11 +23,11 @@ export default function ContactPage() {
             Secure Channel // Establish Connection
           </span>
           <h1 className="text-5xl md:text-7xl font-headline font-bold text-on-surface tracking-tighter leading-none mb-8">
-            PRENONS <br />
-            <span className="text-primary">CONTACT.</span>
+            CONTACT <br />
+            <span className="text-primary">INITIATION.</span>
           </h1>
           <p className="text-on-surface-variant text-lg xl:text-xl leading-relaxed font-light mb-12 max-w-lg">
-            Pour une demande d&apos;audit, de formation ou de collaboration technique. Décrivez le contexte sans partager de secrets, mots de passe, jetons d&apos;accès ou données sensibles.
+            For audit requests, training, or technical collaboration. Describe the context without sharing secrets, passwords, access tokens, or sensitive data.
           </p>
 
           <div className="space-y-5">
@@ -28,26 +35,39 @@ export default function ContactPage() {
               icon={<Orbit className="w-5 h-5 text-primary" />}
               title="ENGAGEMENT_TYPES"
               tone="primary"
-              items={['Pentest applicatif', 'Audit infrastructure', 'Formation sécurité', 'Architecture / advisory']}
+              items={['Application pentest', 'Infrastructure audit', 'Security training', 'Architecture / advisory']}
             />
             <InfoPanel
               icon={<Waypoints className="w-5 h-5 text-secondary" />}
               title="SCOPE_VECTOR"
               tone="secondary"
-              items={['Application web / SaaS', 'API / backend', 'Cloud / infrastructure', 'Équipe / atelier']}
+              items={['Web application / SaaS', 'API / backend', 'Cloud / infrastructure', 'Team / workshop']}
             />
             <InfoPanel
               icon={<Layers3 className="w-5 h-5 text-primary" />}
               title="PROCESS_CHAIN"
               tone="primary"
-              items={['Qualification du besoin', 'Cadrage du périmètre', 'Exécution technique', 'Livrables & restitution']}
+              items={['Request qualification', 'Scope framing', 'Technical execution', 'Deliverables & debrief']}
             />
           </div>
         </div>
 
-        <ContactForm locale="fr" />
+        <Suspense fallback={<ContactFormShell />}>
+          <ContactForm locale="en" />
+        </Suspense>
       </div>
     </motion.div>
+  );
+}
+
+function ContactFormShell() {
+  return (
+    <div
+      className="xl:col-span-7 bg-surface-container-low p-8 md:p-12 xl:p-14 border border-outline-variant/20 relative tech-border min-h-[680px]"
+      aria-hidden="true"
+    >
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
+    </div>
   );
 }
 

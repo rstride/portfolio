@@ -1,13 +1,21 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import * as motion from 'motion/react-client';
-import { getBlogPostBySlug, markdownToHtml } from '@/lib/markdown';
+import { getBlogPostBySlug, getBlogPosts, markdownToHtml } from '@/lib/markdown';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
+import { StructuredData } from '@/components/structured-data';
+import { articleJsonLd, breadcrumbJsonLd, buildArticleMetadata } from '@/lib/seo';
+
+export function generateStaticParams() {
+  return getBlogPosts('fr').map((post) => ({
+    slug: post.slug,
+  }));
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const post = getBlogPostBySlug(resolvedParams.slug, 'en');
+  const post = getBlogPostBySlug(resolvedParams.slug, 'fr');
 
   if (!post) {
     return {
@@ -15,35 +23,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
-  return {
-    title: `${post.meta.title} // Romain Stride`,
-    description: post.meta.excerpt,
-    openGraph: {
-      title: post.meta.title,
-      description: post.meta.excerpt,
-      type: 'article',
-      url: `https://rstride.fr/en/blog/${post.slug}`,
-      authors: [post.meta.author],
-      publishedTime: post.meta.date,
-      tags: post.meta.tags,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: post.meta.title,
-      description: post.meta.excerpt,
-    },
-  };
+  return buildArticleMetadata({
+    locale: 'fr',
+    post: { slug: post.slug, ...post.meta },
+  });
 }
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const post = getBlogPostBySlug(resolvedParams.slug, 'en');
+  const post = getBlogPostBySlug(resolvedParams.slug, 'fr');
 
   if (!post) {
     notFound();
   }
 
   const html = await markdownToHtml(post.content);
+  const postMeta = { slug: post.slug, ...post.meta };
   const badgeValue = (post.meta.difficulty || post.meta.severity || '').toUpperCase();
   const isCriticalLike = badgeValue === 'CRITICAL' || badgeValue === 'HARD' || badgeValue === 'INSANE';
 
@@ -54,10 +49,18 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
       transition={{ duration: 0.5 }}
       className="reading-frame frame-stack py-12 xl:py-16"
     >
+      <StructuredData data={articleJsonLd(postMeta, 'fr')} />
+      <StructuredData
+        data={breadcrumbJsonLd('fr', [
+          { name: 'Accueil', path: '/' },
+          { name: 'Blog', path: '/blog' },
+          { name: post.meta.title, path: `/blog/${post.slug}` },
+        ])}
+      />
       <div className="reading-column">
-        <Link href="/en/blog" className="inline-flex items-center gap-2 font-mono text-xs text-on-surface-variant hover:text-primary transition-colors mb-12 uppercase tracking-widest">
+        <Link href="/blog" className="inline-flex items-center gap-2 font-mono text-xs text-on-surface-variant hover:text-primary transition-colors mb-12 uppercase tracking-widest">
           <ArrowLeft className="w-4 h-4" />
-          RETURN_TO_LOGS
+          RETOUR_AUX_LOGS
         </Link>
 
         <article>
@@ -91,7 +94,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         </header>
 
         <div className="article-intro-rail mb-10">
-          <span className="article-intro-kicker">TECHNICAL_DOSSIER</span>
+          <span className="article-intro-kicker">DOSSIER_TECHNIQUE</span>
           <span className="article-intro-line"></span>
         </div>
 
@@ -106,34 +109,34 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               <span className="font-headline font-bold text-xl text-primary">0x</span>
             </div>
             <div>
-              <h4 className="font-headline font-bold text-lg text-on-surface mb-2">ABOUT THE AUTHOR</h4>
+              <h4 className="font-headline font-bold text-lg text-on-surface mb-2">À PROPOS DE L&apos;AUTEUR</h4>
               <p className="text-sm text-on-surface-variant font-light leading-relaxed">
-                Romain Stride (0x7CC) is a Senior Security Researcher focusing on web application security and exploit development. When not breaking things, he builds secure architectures.
+                Romain Stride (0x7E3) est un chercheur senior en sécurité spécialisé dans la sécurité des applications web et le développement d&apos;exploits. Quand il ne casse pas des choses, il construit des architectures sécurisées.
               </p>
             </div>
           </div>
           <div className="mt-8 bg-surface-container p-8 border border-outline-variant/20">
             <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-secondary">
-              Next step
+              Prochaine étape
             </span>
             <h3 className="mt-4 font-headline text-3xl font-bold uppercase text-on-surface">
-              Need to assess a similar surface?
+              Besoin d&apos;évaluer une surface similaire ?
             </h3>
             <p className="mt-4 text-sm text-on-surface-variant font-light leading-relaxed max-w-2xl">
-              Describe the scope and constraints to frame a web app, API, or cloud audit.
+              Décrivez le périmètre et les contraintes pour cadrer un audit applicatif, API ou cloud.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link
-                href={`/en/contact?source=blog_article&topic=${post.slug}`}
+                href={`/contact?source=blog_article&topic=${post.slug}`}
                 className="bg-primary text-on-primary font-mono text-xs font-bold uppercase px-6 py-3 transition-all terminal-glow active:scale-95 text-center"
               >
-                Request scoping
+                Demander un cadrage
               </Link>
               <Link
-                href="/en/services"
+                href="/services"
                 className="border border-outline-variant/30 text-primary font-mono text-xs font-bold uppercase px-6 py-3 hover:bg-surface-container-highest transition-all active:scale-95 text-center"
               >
-                View services
+                Voir les services
               </Link>
             </div>
           </div>
