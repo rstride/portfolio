@@ -119,20 +119,18 @@ export default function Home() {
       <section className="min-h-[85vh] flex flex-col justify-center py-12 xl:py-20">
         <div className="hero-frame">
           <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
-            Audit offensif // Web · API · Cloud
+            Portfolio // v3.2
           </span>
 
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 xl:gap-16 items-end">
             <div className="xl:col-span-7 2xl:col-span-8">
               <h1 className="font-headline text-5xl md:text-7xl lg:text-8xl 2xl:text-[7.5rem] font-bold uppercase tracking-tighter leading-[0.9] text-on-surface mb-8 2xl:mb-10">
-                TROUVER LES FAILLES <br />
-                <span className="text-secondary">EXPLOITABLES</span> AVANT <br />
-                QU&apos;ELLES NE DEVIENNENT <br />
-                DES INCIDENTS
+                CONSULTANT <br />
+                <span className="text-secondary">CYBERSÉCURITÉ</span> <br />
               </h1>
 
               <p className="text-lg md:text-xl text-on-surface-variant leading-relaxed max-w-2xl mb-12 font-light">
-                Pentests applicatifs, audits API/cloud et formations sécurité pour transformer les risques techniques en actions concrètes, priorisées et exploitables par vos équipes.
+                Pentests applicatifs, audits API et cloud, formations sécurité : transformez les risques techniques en actions concrètes, priorisées et directement exploitables par vos équipes.
               </p>
 
               <div className="flex flex-wrap gap-4">
@@ -143,16 +141,21 @@ export default function Home() {
                   Voir les services
                 </Link>
               </div>
-
-              <div className="mt-8 flex max-w-3xl flex-wrap gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
-                {['École 42 Alumni', 'HTB Elite Hacker', 'TryHackMe Guru / PT1', 'CEO @ PrismaSec'].map((proof) => (
-                  <span key={proof} className="border border-outline-variant/30 bg-surface-container-low px-3 py-2">
-                    {proof}
-                  </span>
-                ))}
-              </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="bg-surface-container-low py-28 border-y border-outline-variant/10">
+        <div className="page-frame">
+          <div className="mb-12">
+            <h2 className="font-headline text-3xl md:text-4xl font-bold uppercase tracking-widest text-on-surface flex items-center gap-4">
+              <span className="text-secondary">[</span> CAPACITÉS_CLÉS <span className="text-secondary">]</span>
+            </h2>
+          </div>
+
+          <CapabilityRow title="SÉCURITÉ OFFENSIVE" tone="primary" items={offensiveCapabilities} />
+          <CapabilityRow title="DÉVELOPPEMENT" tone="secondary" items={developmentCapabilities} />
         </div>
       </section>
 
@@ -241,19 +244,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="py-28 border-y border-outline-variant/10">
-        <div className="page-frame">
-          <div className="mb-12">
-            <h2 className="font-headline text-3xl md:text-4xl font-bold uppercase tracking-widest text-on-surface flex items-center gap-4">
-              <span className="text-secondary">[</span> CAPACITÉS_CLÉS <span className="text-secondary">]</span>
-            </h2>
-          </div>
-
-          <CapabilityRow title="SÉCURITÉ OFFENSIVE" tone="primary" items={offensiveCapabilities} />
-          <CapabilityRow title="DÉVELOPPEMENT" tone="secondary" items={developmentCapabilities} />
         </div>
       </section>
 

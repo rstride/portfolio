@@ -119,15 +119,14 @@ export default function Home() {
       <section className="min-h-[85vh] flex flex-col justify-center py-12 xl:py-20">
         <div className="hero-frame">
           <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
-            Offensive audits // Web · API · Cloud
+            Portfolio // v3.2
           </span>
 
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 xl:gap-16 items-end">
             <div className="xl:col-span-7 2xl:col-span-8">
               <h1 className="font-headline text-5xl md:text-7xl lg:text-8xl 2xl:text-[7.5rem] font-bold uppercase tracking-tighter leading-[0.9] text-on-surface mb-8 2xl:mb-10">
-                FIND EXPLOITABLE <br />
-                <span className="text-secondary">WEAKNESSES</span> BEFORE <br />
-                THEY BECOME INCIDENTS
+                CyberSecurity<br />
+                <span className="text-secondary">Consultant</span> <br />
               </h1>
 
               <p className="text-lg md:text-xl text-on-surface-variant leading-relaxed max-w-2xl mb-12 font-light">
@@ -141,14 +140,6 @@ export default function Home() {
                 <Link href="/en/services" className="cta-secondary inline-flex text-sm px-8 py-4">
                   View services
                 </Link>
-              </div>
-
-              <div className="mt-8 flex max-w-3xl flex-wrap gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
-                {['École 42 Alumni', 'HTB Elite Hacker', 'TryHackMe Guru / PT1', 'CEO @ PrismaSec'].map((proof) => (
-                  <span key={proof} className="border border-outline-variant/30 bg-surface-container-low px-3 py-2">
-                    {proof}
-                  </span>
-                ))}
               </div>
             </div>
           </div>

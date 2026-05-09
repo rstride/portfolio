@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || '.next',
   reactStrictMode: true,
   allowedDevOrigins: [
+    '169.254.2.179',
     '51.210.245.136',
     'localhost',
     '127.0.0.1',
