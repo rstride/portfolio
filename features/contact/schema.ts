@@ -21,33 +21,33 @@ export type ContactServiceSlug =
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const contactServiceOptions = {
-  fr: ["Web Application Pentest", "Infrastructure Audit", "Security Training", "Advisory / Architecture"],
+  fr: ["Pentest applicatif", "Audit d'infrastructure", "Formation sécurité", "Conseil / Architecture"],
   en: ["Web Application Pentest", "Infrastructure Audit", "Security Training", "Advisory / Architecture"],
 } satisfies Record<ContactLocale, string[]>;
 
 const contactServiceSlugMap = {
   "web-application-pentest": {
-    fr: "Web Application Pentest",
+    fr: "Pentest applicatif",
     en: "Web Application Pentest",
   },
   "cloud-devsecops": {
-    fr: "Infrastructure Audit",
+    fr: "Audit d'infrastructure",
     en: "Infrastructure Audit",
   },
   "internal-infrastructure": {
-    fr: "Infrastructure Audit",
+    fr: "Audit d'infrastructure",
     en: "Infrastructure Audit",
   },
   "security-awareness": {
-    fr: "Security Training",
+    fr: "Formation sécurité",
     en: "Security Training",
   },
   "technical-operator-track": {
-    fr: "Security Training",
+    fr: "Formation sécurité",
     en: "Security Training",
   },
   "ctf-simulation-cell": {
-    fr: "Security Training",
+    fr: "Formation sécurité",
     en: "Security Training",
   },
 } satisfies Record<ContactServiceSlug, Record<ContactLocale, string>>;

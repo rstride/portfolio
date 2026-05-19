@@ -16,7 +16,9 @@ export function Footer() {
         <div className="flex flex-wrap justify-center gap-6 md:gap-8 font-mono text-[10px] tracking-widest uppercase items-center">
           <a href="https://github.com/rstride" target="_blank" rel="noopener noreferrer" className="text-on-surface/40 hover:text-primary transition-colors">GITHUB</a>
           <a href="https://linkedin.com/in/romainstride" target="_blank" rel="noopener noreferrer" className="text-on-surface/40 hover:text-primary transition-colors">LINKEDIN</a>
-          <a href={privacyLink} className="text-on-surface/40 hover:text-primary transition-colors">PRIVACY POLICY</a>
+          <a href={privacyLink} className="text-on-surface/40 hover:text-primary transition-colors">
+            {isEnglish ? 'PRIVACY POLICY' : 'POLITIQUE DE CONFIDENTIALITÉ'}
+          </a>
           <a href="https://prismasec.fr" target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-primary transition-colors">PRISMASEC</a>
         </div>
       </div>

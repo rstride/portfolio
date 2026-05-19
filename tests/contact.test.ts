@@ -9,7 +9,16 @@ import {
 } from "@/features/contact/schema";
 import { createTransportOptions } from "@/features/contact/server/mail";
 
-const expectedServiceMappings = {
+const expectedFrenchServiceMappings = {
+  "web-application-pentest": "Pentest applicatif",
+  "cloud-devsecops": "Audit d'infrastructure",
+  "internal-infrastructure": "Audit d'infrastructure",
+  "security-awareness": "Formation sécurité",
+  "technical-operator-track": "Formation sécurité",
+  "ctf-simulation-cell": "Formation sécurité",
+} as const;
+
+const expectedEnglishServiceMappings = {
   "web-application-pentest": "Web Application Pentest",
   "cloud-devsecops": "Infrastructure Audit",
   "internal-infrastructure": "Infrastructure Audit",
@@ -78,13 +87,13 @@ test("hasContactFieldErrors detects populated error maps", () => {
 });
 
 test("getContactServiceOption resolves every expected slug in French", () => {
-  for (const [slug, label] of Object.entries(expectedServiceMappings)) {
+  for (const [slug, label] of Object.entries(expectedFrenchServiceMappings)) {
     assert.equal(getContactServiceOption(slug, "fr"), label);
   }
 });
 
 test("getContactServiceOption resolves every expected slug in English", () => {
-  for (const [slug, label] of Object.entries(expectedServiceMappings)) {
+  for (const [slug, label] of Object.entries(expectedEnglishServiceMappings)) {
     assert.equal(getContactServiceOption(slug, "en"), label);
   }
 });

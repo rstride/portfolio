@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { getBlogPostBySlug, getBlogPosts, markdownToHtml } from "@/lib/markdown";
+import { GET as frFeedGet } from "@/app/feed.xml/route";
+import { GET as enFeedGet } from "@/app/(en)/en/feed.xml/route";
 
 test("getBlogPosts returns the published article in both locales", () => {
   const frPosts = getBlogPosts("fr");
@@ -28,4 +30,16 @@ test("markdownToHtml renders fenced code blocks", async () => {
 
   assert.match(html, /<pre/);
   assert.match(html, /answer/);
+});
+
+test("RSS feeds return valid response with correct language and links", async () => {
+  const frResponse = await frFeedGet();
+  const frXml = await frResponse.text();
+  assert.match(frXml, /<language>fr<\/language>/);
+  assert.match(frXml, /https:\/\/rstride\.fr\/blog\/expressway/);
+
+  const enResponse = await enFeedGet();
+  const enXml = await enResponse.text();
+  assert.match(enXml, /<language>en<\/language>/);
+  assert.match(enXml, /https:\/\/rstride\.fr\/en\/blog\/expressway/);
 });
