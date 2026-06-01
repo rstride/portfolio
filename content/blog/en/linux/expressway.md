@@ -1,16 +1,26 @@
 ---
-id: "HTB-2025-002"
-title: "Expressway"
-excerpt: "Hack The Box Expressway write-up: IKE aggressive mode enumeration, offline PSK crack, SSH foothold, and sudo privilege escalation."
-date: "2025-09-20"
-tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "EASY", "VPN", "IPSEC", "IKE", "PRIVESC"]
-category: "WRITEUP"
-platform: "HACKTHEBOX"
-target_os: "LINUX"
-difficulty: "EASY"
-severity: "HIGH"
-icon: "Terminal"
-author: "0x7CC"
+id: HTB-2025-002
+title: Expressway
+excerpt: >-
+  Hack The Box Expressway write-up: IKE aggressive mode enumeration, offline PSK
+  crack, SSH foothold, and sudo privilege escalation.
+date: '2025-09-20'
+tags:
+  - WRITEUP
+  - HACKTHEBOX
+  - LINUX
+  - EASY
+  - VPN
+  - IPSEC
+  - IKE
+  - PRIVESC
+category: WRITEUP
+platform: HACKTHEBOX
+target_os: LINUX
+difficulty: EASY
+severity: HIGH
+icon: Terminal
+author: '0x7CC'
 ---
 
 # Hack The Box — Expressway (Linux) Write-Up: IPsec PSK Crack → SSH Foothold → Sudo PrivEsc (CVE-2025-32463)

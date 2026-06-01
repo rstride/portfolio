@@ -11,8 +11,8 @@ test("getBlogPosts returns the published article in both locales", () => {
 
   assert.ok(frPosts.length > 0);
   assert.ok(enPosts.length > 0);
-  assert.equal(frPosts[0]?.slug, "expressway");
-  assert.equal(enPosts[0]?.slug, "expressway");
+  assert.ok(frPosts.some(p => p.slug === "expressway"));
+  assert.ok(enPosts.some(p => p.slug === "expressway"));
 });
 
 test("getBlogPostBySlug resolves the shared article in both locales", () => {

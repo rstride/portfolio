@@ -54,32 +54,69 @@ export function getBlogPosts(locale: 'fr' | 'en'): BlogPostMeta[] {
   if (!fs.existsSync(localeDir)) {
     return [];
   }
+  // Recursively find all .md files under the locale directory
+  function gatherFiles(dir: string): string[] {
+    const results: string[] = [];
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) results.push(...gatherFiles(full));
+      else if (entry.isFile() && entry.name.endsWith('.md')) results.push(full);
+    }
+    return results;
+  }
 
-  const fileNames = fs.readdirSync(localeDir);
-  const allPostsData = fileNames
-    .filter(fileName => fileName.endsWith('.md'))
-    .map(fileName => {
-      const slug = fileName.replace(/\.md$/, '');
-      const fullPath = path.join(localeDir, fileName);
-      const fileContents = fs.readFileSync(fullPath, 'utf8');
-      const matterResult = matter(fileContents);
+  const files = gatherFiles(localeDir);
+  const allPostsData = files.map(fullPath => {
+    const fileName = path.basename(fullPath);
+    const slug = fileName.replace(/\.md$/, '');
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    const matterResult = matter(fileContents);
 
-      return {
-        slug,
-        content: matterResult.content,
-        ...(matterResult.data as Omit<BlogPostMeta, 'slug' | 'content'>)
-      };
-    });
+    return {
+      slug,
+      content: matterResult.content,
+      ...(matterResult.data as Omit<BlogPostMeta, 'slug' | 'content'>),
+      // preserve raw published flag if present
+      published: (matterResult.data as any).published
+    };
+  });
 
-  return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
+  // Exclude drafts explicitly marked as unpublished
+  const visiblePosts = allPostsData.filter(p => (p as any).published !== false);
+
+  function parseDateValue(d: any) {
+    if (!d) return -Infinity;
+    const v = Date.parse(String(d));
+    return Number.isFinite(v) ? v : -Infinity;
+  }
+
+  return visiblePosts.sort((a, b) => {
+    const ta = parseDateValue(a.date);
+    const tb = parseDateValue(b.date);
+    return tb - ta; // descending
+  });
 }
 
 export function getBlogPostBySlug(slug: string, locale: 'fr' | 'en') {
-  const fullPath = path.join(contentDirectory, locale, `${slug}.md`);
-  
-  if (!fs.existsSync(fullPath)) {
+  const localeDir = path.join(contentDirectory, locale);
+  if (!fs.existsSync(localeDir)) return null;
+
+  // search recursively for the slug file
+  function findFile(dir: string): string | null {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        const found = findFile(full);
+        if (found) return found;
+      } else if (entry.isFile() && entry.name === `${slug}.md`) {
+        return full;
+      }
+    }
     return null;
   }
+
+  const fullPath = findFile(localeDir);
+  if (!fullPath) return null;
 
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   const matterResult = matter(fileContents);

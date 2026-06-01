@@ -48,7 +48,7 @@ test("privacy metadata is noindex follow", () => {
 });
 
 test("blog SEO falls back to title excerpt and default OG image", () => {
-  const [post] = getBlogPosts("en");
+  const post = getBlogPosts("en").find(p => p.slug === "expressway")!;
   const seo = getPostSeo(post);
 
   assert.equal(seo.title, post.title);
