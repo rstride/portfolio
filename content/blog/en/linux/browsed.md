@@ -1,7 +1,7 @@
 ---
 id: HTB-2026-BROWSED
 title: Browsed
-excerpt: Offensive security write-up.
+excerpt: A malicious Chrome extension creates SSRF into Gitea, then Bash arithmetic injection and Python cache poisoning provide root access.
 date: '2026-01-10'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: MEDIUM
 icon: Terminal
 author: '0x7CC'
 ---
-
-# Hack The Box — Browsed (Linux) Write-Up: Extension SSRF → Bash Command Injection → Python Cache Poisoning
 
 ## TL;DR
 On **Browsed**, initial access is achieved by exploiting a headless Chrome extension upload mechanism to obtain a Server-Side Request Forgery (SSRF) primitive. This allows access to an internal Gitea instance hosting a Flask app. Analyzing the source code reveals a Bash arithmetic injection vulnerability leading to remote code execution as user `larry`. Privilege escalation is achieved by poisoning the world-writable `__pycache__` directory of a python script executable via sudo.

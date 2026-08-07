@@ -110,6 +110,8 @@ Résumez en 2-4 points actionnables.
 - Slug is the same in `fr/` and `en/`
 - Date is ISO format: `YYYY-MM-DD`
 - `seoTitle`, `seoDescription`, `ogImage`, `ogImageAlt`, and `updated` are optional; the site falls back to title, excerpt, and the default portfolio OG image.
-- Excerpt is concise and readable in card view
+- `title` is the article's only H1 and is rendered from frontmatter; do not add a `#` heading to the Markdown body.
+- Excerpt is plain text, concise, complete, and readable in card view (no Markdown formatting).
+- Set `published: false` to keep a draft out of every public route, feed, and sitemap.
 - Tags include at least: `WRITEUP`, platform, OS, and difficulty
 - Code blocks specify language (for highlighting)

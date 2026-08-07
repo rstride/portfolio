@@ -1,7 +1,7 @@
 ---
 id: "HTB-2026-OVERWATCH"
 title: "Overwatch"
-excerpt: "Sur **Overwatch**, l'accès initial s'obtient en récupérant des identifiants SQL dans un exécutable sur un partage public, puis en forçant l'authentification d'u"
+excerpt: "Sur Overwatch, des identifiants SQL exposés permettent de capturer un hash NTLM via un serveur lié, puis une injection WCF donne une session LocalSystem."
 date: "2026-02-07"
 tags: ["WRITEUP", "HACKTHEBOX", "WINDOWS", "MEDIUM", "NTLM-CAPTURE", "WCF-SERVICE", "COMMAND-INJECTION"]
 category: "WRITEUP"
@@ -12,8 +12,6 @@ icon: "Terminal"
 author: "0x7CC"
 published: true
 ---
-
-# Hack The Box — Overwatch (Windows) Write-Up : Capture NTLM SQL lié → Injection de commandes WCF
 
 ## TL;DR
 Sur **Overwatch**, l'accès initial s'obtient en récupérant des identifiants SQL dans un exécutable sur un partage public, puis en forçant l'authentification d'un serveur SQL lié pour capturer le hash d'un compte privilégié. L'élévation s'appuie sur une injection de commande dans un service WCF local s'exécutant en tant que LocalSystem.

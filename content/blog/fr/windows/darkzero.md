@@ -1,7 +1,7 @@
 ---
 id: "HTB-2026-DARKZERO"
 title: "DarkZero"
-excerpt: "Sur **DarkZero**, nous réalisons une attaque Active Directory à partir d'un compte utilisateur basique. Nous nous connectons au serveur SQL de la forêt principa"
+excerpt: "Sur DarkZero, une confiance Active Directory cross-forest et un serveur MSSQL lié mènent à une RCE, une élévation SYSTEM et la compromission de la forêt."
 date: "2025-10-04"
 tags: ["WRITEUP", "HACKTHEBOX", "WINDOWS", "HARD", "CROSS-FOREST", "MSSQL-LINK", "CVE-2024-30088"]
 category: "WRITEUP"
@@ -12,8 +12,6 @@ icon: "Terminal"
 author: "0x7CC"
 published: true
 ---
-
-# Hack The Box — DarkZero (Windows) Write-Up : Confiance cross-forest → RCE SQL lié → LPE CVE-2024-30088 → Délégation TGT
 
 ## TL;DR
 Sur **DarkZero**, nous réalisons une attaque Active Directory à partir d'un compte utilisateur basique. Nous nous connectons au serveur SQL de la forêt principale, découvrons un serveur lié vers la forêt distante avec les droits sysadmin, et l'exploitons pour exécuter des commandes. L'élévation de privilèges vers SYSTEM s'effectue via CVE-2024-30088, et la forêt principale est compromise via la délégation TGT.

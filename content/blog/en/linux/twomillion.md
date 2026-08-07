@@ -1,7 +1,7 @@
 ---
 id: HTB-2026-TWOMILLION
 title: TwoMillion
-excerpt: Offensive security write-up.
+excerpt: An invite API bypass leads to fraudulent admin promotion, VPN command injection, and an OverlayFS vulnerability for root access.
 date: '2025-09-20'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: MEDIUM
 icon: Terminal
 author: '0x7CC'
 ---
-
-# Hack The Box — TwoMillion (Linux) Write-Up: Invite API Bypass → Admin Promotion RCE → OverlayFS CVE-2023-0386
 
 ## TL;DR
 On **TwoMillion**, initial access involves bypassing client-side validation in the HTB invite API to register an account, then abusing a broken authorization parameter to promote the account to admin. As admin, we exploit a command injection in the VPN generator to get a shell as `www-data`. Post-exploitation database credentials grant SSH access, and privilege escalation leverages an OverlayFS kernel exploit (CVE-2023-0386) to obtain root.

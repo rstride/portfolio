@@ -23,8 +23,6 @@ icon: Terminal
 author: '0x7CC'
 ---
 
-# Hack The Box — Expressway (Linux) Write-Up: IPsec PSK Crack → SSH Foothold → Sudo PrivEsc (CVE-2025-32463)
-
 ## TL;DR
 On **Expressway**, the external attack surface is primarily UDP (IPsec/IKE). By enumerating IKE Aggressive Mode, it’s possible to recover material for an **offline PSK crack**, reuse that secret to gain an **SSH foothold** as user `ike`, then escalate to root due to a vulnerable **sudo** version affected by **CVE-2025-32463**.
 

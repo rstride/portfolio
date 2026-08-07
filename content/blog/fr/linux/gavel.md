@@ -1,7 +1,7 @@
 ---
 id: "HTB-2026-GAVEL"
 title: "Gavel"
-excerpt: "Sur **Gavel**, l'accès initial commence par la découverte d'un dépôt git exposé révélant une injection SQL. Nous en extrayons les identifiants administrateur. N"
+excerpt: "Sur Gavel, un dépôt Git exposé révèle une injection SQL et des identifiants administrateur, avant une RCE runkit et une élévation de privilèges par binaire SUID."
 date: "2025-11-29"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "SQLI", "RUNKIT", "SUID-EXECUTION"]
 category: "WRITEUP"
@@ -12,8 +12,6 @@ icon: "Terminal"
 author: "0x7CC"
 published: true
 ---
-
-# Hack The Box — Gavel (Linux) Write-Up : Fuite Git PHP → RCE runkit → Élévation SUID
 
 ## TL;DR
 Sur **Gavel**, l'accès initial commence par la découverte d'un dépôt git exposé révélant une injection SQL. Nous en extrayons les identifiants administrateur. Nous exploitons ensuite la fonction PHP `runkit_function_add` de l'interface d'administration pour obtenir une RCE en tant que `www-data`. L'élévation de privilèges s'effectue en exploitant le binaire `gavel-util` pour contourner les restrictions PHP et générer un shell SUID root.

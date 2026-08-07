@@ -1,7 +1,7 @@
 ---
 id: HTB-2025-011
 title: Signed
-excerpt: Offensive security write-up.
+excerpt: Password spraying against the MSSQL service account enables code execution, then its hash is used to forge a Kerberos Silver Ticket.
 date: '2025-10-11'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: MEDIUM
 icon: ShieldAlert
 author: '0x7CC'
 ---
-
-# Hack The Box — Signed (Windows) Write-Up: MSSQL initial access → Silver Ticket Kerberos Forgery
 
 ## TL;DR
 On **Signed**, initial access starts with a password spray to compromise an MSSQL service account. Post-exploitation reveals the Kerberos Service Principal Name (SPN) configuration. Privilege escalation is achieved by forging a Kerberos Silver Ticket to access the Domain Controller with Domain Admin rights.

@@ -1,7 +1,7 @@
 ---
 id: HTB-2026-INTERPRETER
 title: Interpreter
-excerpt: Offensive security write-up.
+excerpt: Unauthenticated XML deserialization in Mirth Connect provides code execution, followed by a double f-string evaluation flaw for privilege escalation.
 date: '2026-02-21'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: MEDIUM
 icon: Terminal
 author: '0x7CC'
 ---
-
-# Hack The Box — Interpreter (Linux) Write-Up: CVE-2023-43208 Mirth Connect RCE → double f-string eval() PrivEsc
 
 ## TL;DR
 On **Interpreter**, initial access is obtained by exploiting an unauthenticated XStream deserialization vulnerability (CVE-2023-43208) in NextGen Mirth Connect 4.4.0, yielding a shell as user `mirth`. Post-exploitation database queries allow us to retrieve a hash for user `sedric`, which is cracked (PBKDF2-HMAC-SHA256) to gain SSH access. Privilege escalation is achieved by exploiting a double-evaluation f-string vulnerability in a local Flask application running as root.

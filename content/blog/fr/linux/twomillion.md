@@ -1,7 +1,7 @@
 ---
 id: "HTB-2026-TWOMILLION"
 title: "TwoMillion"
-excerpt: "Sur **TwoMillion**, l'accès initial passe par la génération d'un code d'invitation via l'API, puis la promotion frauduleuse du compte utilisateur en administrat"
+excerpt: "Sur TwoMillion, un contournement de l'API d'invitation mène à une promotion administrateur, une injection de commandes VPN et une élévation OverlayFS vers root."
 date: "2025-09-20"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "API-BYPASS", "COMMAND-INJECTION", "CVE-2023-0386"]
 category: "WRITEUP"
@@ -12,8 +12,6 @@ icon: "Terminal"
 author: "0x7CC"
 published: true
 ---
-
-# Hack The Box — TwoMillion (Linux) Write-Up : Contournement API Invite → RCE par promotion admin → OverlayFS CVE-2023-0386
 
 ## TL;DR
 Sur **TwoMillion**, l'accès initial passe par la génération d'un code d'invitation via l'API, puis la promotion frauduleuse du compte utilisateur en administrateur. En tant qu'admin, nous injectons des commandes dans la génération de fichiers VPN pour obtenir un shell `www-data`. Nous récupérons les accès SSH d'administration, puis exploitons la vulnérabilité noyau OverlayFS (CVE-2023-0386) pour obtenir root.

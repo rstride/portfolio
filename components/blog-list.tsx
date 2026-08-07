@@ -66,7 +66,11 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
               {locale === 'fr' ? 'RECHERCHE' : 'QUERY'}
             </h3>
           </div>
-          <input 
+          <label htmlFor={`blog-search-${locale}`} className="sr-only">
+            {locale === 'fr' ? 'Rechercher dans les articles' : 'Search articles'}
+          </label>
+          <input
+            id={`blog-search-${locale}`}
             type="text" 
             placeholder={locale === 'fr' ? "Rechercher..." : "Search logs..."}
             value={searchQuery}
@@ -92,7 +96,9 @@ export function BlogList({ posts, locale }: { posts: BlogPostMeta[], locale: 'fr
                 {categories.map(tag => (
                   <button 
                     key={tag} 
+                    type="button"
                     onClick={() => setSelectedCategory(selectedCategory === tag ? null : tag)}
+                    aria-pressed={selectedCategory === tag}
                     className={`px-3 py-1 font-mono text-[10px] uppercase border transition-colors ${
                       selectedCategory === tag 
                         ? 'bg-primary/10 border-primary text-primary' 

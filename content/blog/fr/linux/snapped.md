@@ -1,7 +1,7 @@
 ---
 id: "HTB-2026-SNAPPED"
 title: "Snapped"
-excerpt: "Sur **Snapped**, la découverte du sous-domaine `admin.snapped.htb` révèle Nginx UI. Nous téléchargeons une sauvegarde non authentifiée via `/api/backup` décrypt"
+excerpt: "Sur Snapped, une sauvegarde Nginx UI exposée livre des identifiants SSH, puis une race condition dans snapd permet de déposer un shell SUID root."
 date: "2026-03-23"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "BACKUP-DISCLOSURE", "NGINX-UI", "CVE-2026-3888"]
 category: "WRITEUP"
@@ -12,8 +12,6 @@ icon: "Terminal"
 author: "0x7CC"
 published: true
 ---
-
-# Hack The Box — Snapped (Linux) Write-Up : Divulgation de backup Nginx UI → Race condition snapd CVE-2026-3888
 
 ## TL;DR
 Sur **Snapped**, la découverte du sous-domaine `admin.snapped.htb` révèle Nginx UI. Nous téléchargeons une sauvegarde non authentifiée via `/api/backup` décryptée grâce aux en-têtes de sécurité. Le cracking du hash de `jonathan` fournit un accès SSH. L'élévation s'effectue via une vulnérabilité temporelle de snapd (CVE-2026-3888) pour déposer un shell SUID root.

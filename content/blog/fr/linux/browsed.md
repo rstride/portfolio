@@ -1,7 +1,7 @@
 ---
 id: "HTB-2026-BROWSED"
 title: "Browsed"
-excerpt: "Sur **Browsed**, l'accès initial est obtenu en exploitant un mécanisme d'upload d'extension Chrome headless pour obtenir un SSRF. Cela permet d'accéder à une in"
+excerpt: "Sur Browsed, une extension Chrome malveillante crée un SSRF vers Gitea, puis une injection Bash et un empoisonnement de cache Python conduisent à root."
 date: "2026-01-10"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "SSRF", "COMMAND-INJECTION", "CACHE-POISONING"]
 category: "WRITEUP"
@@ -12,8 +12,6 @@ icon: "Terminal"
 author: "0x7CC"
 published: true
 ---
-
-# Hack The Box — Browsed (Linux) Write-Up : Extension SSRF → Injection de commandes Bash → Poisoning du cache Python
 
 ## TL;DR
 Sur **Browsed**, l'accès initial est obtenu en exploitant un mécanisme d'upload d'extension Chrome headless pour obtenir un SSRF. Cela permet d'accéder à une instance Gitea interne hébergeant une application Flask. L'analyse du code source révèle une injection arithmétique Bash menant à une RCE en tant que `larry`. L'élévation de privilèges s'effectue en empoisonnant le cache Python dans un dossier `__pycache__` accessible en écriture utilisé par un script exécutable via sudo.

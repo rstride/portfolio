@@ -1,7 +1,7 @@
 ---
 id: HTB-2026-CONVERSOR
 title: Conversor
-excerpt: Offensive security write-up.
+excerpt: Path traversal in an upload workflow enables cron-job hijacking, followed by credential reuse and a sudo Needrestart escalation to root.
 date: '2025-10-25'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: LOW
 icon: Terminal
 author: '0x7CC'
 ---
-
-# Hack The Box — Conversor (Linux) Write-Up: Path Traversal → Cron Job Hijack → Sudo Needrestart Exploitation
 
 ## TL;DR
 On **Conversor**, a path traversal vulnerability in the file upload endpoint allows writing arbitrary scripts into a directory executed by a root cron job, yielding code execution as `www-data`. Credential reuse from the local database allows SSH access as user `fismathack`. Finally, privilege escalation is achieved by exploiting a misconfigured sudo entry for `needrestart` to run a custom Perl configuration file containing malicious commands.

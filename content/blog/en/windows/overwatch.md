@@ -1,7 +1,7 @@
 ---
 id: HTB-2026-OVERWATCH
 title: Overwatch
-excerpt: Offensive security write-up.
+excerpt: Exposed SQL credentials enable linked-server NTLM capture, then a WCF command injection provides a LocalSystem session.
 date: '2026-02-07'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: MEDIUM
 icon: Terminal
 author: '0x7CC'
 ---
-
-# Hack The Box — Overwatch (Windows) Write-Up: Linked MSSQL NTLM Capture → WCF Service Command Injection
 
 ## TL;DR
 On **Overwatch**, initial access is obtained by extracting database credentials from a public share, then triggering a linked server authentication to capture the NTLM hash of a privileged account. Privilege escalation leverages a command injection vulnerability in a WCF service running as LocalSystem.

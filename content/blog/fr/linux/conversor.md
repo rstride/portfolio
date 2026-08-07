@@ -1,7 +1,7 @@
 ---
 id: "HTB-2026-CONVERSOR"
 title: "Conversor"
-excerpt: "Sur **Conversor**, une vulnérabilité de path traversal dans l'upload permet d'écrire un script dans un dossier exécuté par un cron root, donnant un accès `www-d"
+excerpt: "Sur Conversor, un path traversal dans l'upload permet de détourner un cron root, puis la réutilisation d'identifiants et sudo Needrestart donnent un accès root."
 date: "2025-10-25"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "EASY", "PATH-TRAVERSAL", "CRON-HIJACK", "NEEDRESTART"]
 category: "WRITEUP"
@@ -12,8 +12,6 @@ icon: "Terminal"
 author: "0x7CC"
 published: true
 ---
-
-# Hack The Box — Conversor (Linux) Write-Up : Path Traversal → Hijack de Cron → Exploitation de Sudo Needrestart
 
 ## TL;DR
 Sur **Conversor**, une vulnérabilité de path traversal dans l'upload permet d'écrire un script dans un dossier exécuté par un cron root, donnant un accès `www-data`. La réutilisation de mots de passe de la base locale permet l'accès SSH pour `fismathack`. Enfin, l'élévation s'effectue via une mauvaise configuration de `needrestart` dans sudo en exécutant un script de configuration Perl malveillant.

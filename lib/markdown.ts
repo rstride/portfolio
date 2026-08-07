@@ -9,7 +9,7 @@ import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import rehypeStringify from 'rehype-stringify';
 
-const contentDirectory = path.join(process.cwd(), 'content/blog');
+export const contentDirectory = path.join('content', 'blog');
 
 export interface BlogPostMeta {
   id: string;
@@ -25,12 +25,49 @@ export interface BlogPostMeta {
   category?: string;
   platform?: string;
   target_os?: string;
-  severity: string;
+  severity?: string;
   difficulty?: string;
   icon: string;
   author: string;
+  published?: boolean;
   slug: string;
   content?: string;
+}
+
+interface LoadedBlogPost extends BlogPostMeta {
+  content: string;
+}
+
+type BlogPostFrontmatter = Omit<BlogPostMeta, 'slug' | 'content'>;
+
+export function normalizeExcerpt(excerpt: string): string {
+  return excerpt
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/[`*_~]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function isPublished(post: Pick<BlogPostFrontmatter, 'published'>): boolean {
+  return post.published !== false;
+}
+
+export function normalizeBlogPost(
+  slug: string,
+  content: string,
+  frontmatter: BlogPostFrontmatter,
+): LoadedBlogPost | null {
+  if (!isPublished(frontmatter)) {
+    return null;
+  }
+
+  return {
+    ...frontmatter,
+    excerpt: normalizeExcerpt(frontmatter.excerpt),
+    slug,
+    content,
+  };
 }
 
 export async function markdownToHtml(markdown: string) {
@@ -72,17 +109,14 @@ export function getBlogPosts(locale: 'fr' | 'en'): BlogPostMeta[] {
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const matterResult = matter(fileContents);
 
-    return {
+    return normalizeBlogPost(
       slug,
-      content: matterResult.content,
-      ...(matterResult.data as Omit<BlogPostMeta, 'slug' | 'content'>),
-      // preserve raw published flag if present
-      published: (matterResult.data as any).published
-    };
+      matterResult.content,
+      matterResult.data as BlogPostFrontmatter,
+    );
   });
 
-  // Exclude drafts explicitly marked as unpublished
-  const visiblePosts = allPostsData.filter(p => (p as any).published !== false);
+  const visiblePosts = allPostsData.filter((post): post is LoadedBlogPost => post !== null);
 
   function parseDateValue(d: any) {
     if (!d) return -Infinity;
@@ -121,9 +155,14 @@ export function getBlogPostBySlug(slug: string, locale: 'fr' | 'en') {
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   const matterResult = matter(fileContents);
 
-  return {
+  const post = normalizeBlogPost(
     slug,
-    meta: matterResult.data as Omit<BlogPostMeta, 'slug'>,
-    content: matterResult.content
-  };
+    matterResult.content,
+    matterResult.data as BlogPostFrontmatter,
+  );
+
+  if (!post) return null;
+
+  const { slug: postSlug, content, ...meta } = post;
+  return { slug: postSlug, meta, content };
 }

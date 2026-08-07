@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "NEXT_DIST_DIR=.next-dev next dev",
-    "build": "NEXT_DIST_DIR=.next next build",
+    "build": "NEXT_DIST_DIR=.next next build --webpack",
     "start": "NEXT_DIST_DIR=.next next start",
     "lint": "eslint app components features lib tests",
     "test": "tsx --test tests/contact.test.ts tests/posts.test.ts tests/services.test.ts tests/seo.test.ts",

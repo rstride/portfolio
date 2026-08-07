@@ -248,6 +248,7 @@ button:disabled,
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
+  contain: paint;
 }
 
 .site-ambient::before,
@@ -1313,10 +1314,21 @@ button:disabled,
 }
 
 @media (max-width: 767px) {
+  .site-ambient-glow {
+    display: none;
+  }
+
   .article-body h2 {
     align-items: flex-start;
     flex-direction: column;
     gap: 0.45rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .frame-stack::before,
+  .frame-stack::after {
+    display: none;
   }
 }
 

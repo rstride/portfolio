@@ -1,7 +1,7 @@
 ---
 id: HTB-2026-EIGHTEEN
 title: Eighteen
-excerpt: Offensive security write-up.
+excerpt: Password spraying provides WinRM access, then the dMSA BadSuccessor technique exposes the administrator NTLM hash.
 date: '2025-11-15'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: LOW
 icon: Terminal
 author: '0x7CC'
 ---
-
-# Hack The Box — Eighteen (Windows) Write-Up: dMSA BadSuccessor Attack
 
 ## TL;DR
 On **Eighteen**, initial access is obtained via password spraying, revealing valid credentials for user `adam.scott`. Privilege escalation exploits **BadSuccessor**, a novel attack vector targeting Delegated Managed Service Accounts (dMSA) on Windows Server 2025, which allows extracting the Domain Administrator's NTLM hash from Kerberos ticket PAC Previous Keys.

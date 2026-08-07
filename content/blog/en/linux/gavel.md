@@ -1,7 +1,7 @@
 ---
 id: HTB-2026-GAVEL
 title: Gavel
-excerpt: Offensive security write-up.
+excerpt: An exposed PHP Git repository reveals SQL injection and administrator credentials, leading to runkit RCE and a SUID privilege escalation.
 date: '2025-11-29'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: MEDIUM
 icon: Terminal
 author: '0x7CC'
 ---
-
-# Hack The Box — Gavel (Linux) Write-Up: php git Leak → runkit RCE → SUID Privilege Escalation
 
 ## TL;DR
 On **Gavel**, initial access starts with an exposed git repository that leaks administrative credentials via SQL Injection. Using the credentials, we log in to the administrative panel and exploit a PHP `runkit_function_add` injection to get remote code execution as `www-data`. Privilege escalation is achieved by abusing a vulnerable custom binary `gavel-util` which executes PHP rules, allowing us to bypass PHP restrictions and spawn a SUID root bash shell.

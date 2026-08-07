@@ -1,7 +1,7 @@
 ---
 id: "HTB-2025-011"
 title: "Signed"
-excerpt: "Sur **Signed**, l'accès initial est obtenu par password spraying sur le compte de service MSSQL. L'élévation s'effectue en extrayant le hash du compte de servic"
+excerpt: "Sur Signed, un password spraying sur le compte MSSQL permet une RCE, puis l'extraction du hash de service sert à forger un Silver Ticket Kerberos."
 date: "2025-10-11"
 tags: ["WRITEUP", "HACKTHEBOX", "WINDOWS", "MSSQL", "KERBEROS", "SILVER-TICKET", "MEDIUM"]
 category: "WRITEUP"
@@ -12,8 +12,6 @@ icon: "ShieldAlert"
 author: "0x7CC"
 published: true
 ---
-
-# Hack The Box — Signed (Windows) Write-Up : Accès initial MSSQL → Forge de Silver Ticket Kerberos
 
 ## TL;DR
 Sur **Signed**, l'accès initial est obtenu par password spraying sur le compte de service MSSQL. L'élévation s'effectue en extrayant le hash du compte de service pour forger un Silver Ticket Kerberos et accéder au contrôleur de domaine avec les droits de Domain Admin.

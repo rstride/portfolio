@@ -1,7 +1,7 @@
 ---
 id: "HTB-2026-INTERPRETER"
 title: "Interpreter"
-excerpt: "Sur **Interpreter**, l'accès initial est obtenu via une désérialisation XML non authentifiée (CVE-2023-43208) dans NextGen Mirth Connect 4.4.0, donnant un shell"
+excerpt: "Sur Interpreter, une désérialisation XML non authentifiée dans Mirth Connect fournit un shell, puis une double évaluation f-string permet l'élévation de privilèges."
 date: "2026-02-21"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "DESERIALIZATION", "CVE-2023-43208", "F-STRING-INJECTION"]
 category: "WRITEUP"
@@ -12,8 +12,6 @@ icon: "Terminal"
 author: "0x7CC"
 published: true
 ---
-
-# Hack The Box — Interpreter (Linux) Write-Up : RCE Mirth Connect CVE-2023-43208 → PrivEsc double f-string eval()
 
 ## TL;DR
 Sur **Interpreter**, l'accès initial est obtenu via une désérialisation XML non authentifiée (CVE-2023-43208) dans NextGen Mirth Connect 4.4.0, donnant un shell en tant que `mirth`. Un dump de base de données permet d'obtenir le hash de `sedric` qui est cracké pour accéder au SSH. L'élévation s'effectue via une vulnérabilité de double évaluation de f-strings Python dans un script Flask local s'exécutant en root.

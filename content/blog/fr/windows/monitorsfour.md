@@ -1,7 +1,7 @@
 ---
 id: "HTB-2026-MONITORSFOUR"
 title: "MonitorsFour"
-excerpt: "Sur **MonitorsFour**, l'accès initial utilise des identifiants crackés pour exploiter une vulnérabilité d'exécution de code à distance (RCE) dans les modèles de"
+excerpt: "Sur MonitorsFour, des identifiants crackés permettent une RCE Cacti, puis l'accès au socket Docker local expose le système de fichiers hôte et le flag root."
 date: "2025-12-06"
 tags: ["WRITEUP", "HACKTHEBOX", "WINDOWS", "EASY", "CACTI", "CVE-2025-24367", "DOCKER-ESCAPE"]
 category: "WRITEUP"
@@ -12,8 +12,6 @@ icon: "Terminal"
 author: "0x7CC"
 published: true
 ---
-
-# Hack The Box — MonitorsFour (Windows) Write-Up : RCE Cacti CVE-2025-24367 → Échappement via socket Docker
 
 ## TL;DR
 Sur **MonitorsFour**, l'accès initial utilise des identifiants crackés pour exploiter une vulnérabilité d'exécution de code à distance (RCE) dans les modèles de graphiques Cacti (CVE-2025-24367). L'élévation s'effectue en exploitant l'accès à l'API Docker locale pour monter le système de fichiers hôte et lire le flag root.

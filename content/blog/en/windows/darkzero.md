@@ -1,7 +1,7 @@
 ---
 id: HTB-2026-DARKZERO
 title: DarkZero
-excerpt: Offensive security write-up.
+excerpt: A cross-forest Active Directory trust and linked MSSQL server lead to remote execution, SYSTEM elevation, and forest compromise.
 date: '2025-10-04'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: HIGH
 icon: Terminal
 author: '0x7CC'
 ---
-
-# Hack The Box — DarkZero (Windows) Write-Up: Cross-Forest Trust → Linked MSSQL RCE → CVE-2024-30088 LPE → TGT Delegation
 
 ## TL;DR
 On **DarkZero**, we perform an assume-breach Active Directory attack starting with low-privileged credentials. We connect to the primary forest's database server, discover a linked server mapping to the remote forest with sysadmin rights, and exploit it to achieve code execution. Privilege escalation to SYSTEM is achieved via CVE-2024-30088, and domain compromise is reached by exploiting cross-forest TGT delegation.

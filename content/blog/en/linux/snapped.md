@@ -1,7 +1,7 @@
 ---
 id: HTB-2026-SNAPPED
 title: Snapped
-excerpt: Offensive security write-up.
+excerpt: An exposed Nginx UI backup leaks SSH credentials, and a snapd race condition is used to create a root SUID shell.
 date: '2026-03-23'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: MEDIUM
 icon: Terminal
 author: '0x7CC'
 ---
-
-# Hack The Box — Snapped (Linux) Write-Up: Nginx UI Backup Disclosure → snapd CVE-2026-3888 Race
 
 ## TL;DR
 On **Snapped**, a virtual host scan reveals an instance of `Nginx UI`. We exploit an unauthenticated backup disclosure vulnerability to download decrypted configuration files containing user hashes. Cracking the hash for user `jonathan` yields SSH access. Privilege escalation is achieved by exploiting a timing-sensitive local privilege escalation vulnerability in snapd (`snap-confine`, CVE-2026-3888) to drop a SUID root bash shell.

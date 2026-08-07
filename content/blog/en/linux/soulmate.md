@@ -1,7 +1,7 @@
 ---
 id: HTB-2026-SOULMATE
 title: Soulmate
-excerpt: Offensive security write-up.
+excerpt: Plaintext Erlang credentials provide SSH access, then tunneling to a local Erlang SSH service yields a root shell.
 date: '2025-09-06'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: MEDIUM
 icon: Terminal
 author: '0x7CC'
 ---
-
-# Hack The Box — Soulmate (Linux) Write-Up: Erlang Configuration Leak → Local Erlang SSH shell RCE
 
 ## TL;DR
 On **Soulmate**, initial access is obtained by exploiting an information leakage vulnerability in an Erlang configuration file that contains cleartext credentials. This allows SSH login as user `ben`. Privilege escalation leverages a local Erlang SSH service listening on localhost port 2222. By establishing a port tunnel and executing commands inside the Erlang shell, we obtain root execution.

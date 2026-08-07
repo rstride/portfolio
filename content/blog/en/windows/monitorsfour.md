@@ -1,7 +1,7 @@
 ---
 id: HTB-2026-MONITORSFOUR
 title: MonitorsFour
-excerpt: Offensive security write-up.
+excerpt: Cracked credentials enable Cacti RCE, and access to the local Docker socket exposes the host filesystem and root flag.
 date: '2025-12-06'
 tags:
   - WRITEUP
@@ -19,8 +19,6 @@ severity: LOW
 icon: Terminal
 author: '0x7CC'
 ---
-
-# Hack The Box — MonitorsFour (Windows) Write-Up: Cacti CVE-2025-24367 RCE → Docker socket escape
 
 ## TL;DR
 On **MonitorsFour**, initial access leverages cracked credentials from a database hash to exploit an authenticated graph template Remote Code Execution vulnerability in Cacti (CVE-2025-24367). Privilege escalation is achieved by exploiting an exposed writable Docker socket to mount the host filesystem and retrieve the root flag.

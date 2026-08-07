@@ -1,7 +1,7 @@
 ---
 id: "HTB-2026-SOULMATE"
 title: "Soulmate"
-excerpt: "Sur **Soulmate**, l'accès initial est obtenu grâce à une fuite d'identifiants en clair dans un fichier de configuration Erlang. Cela permet de se connecter en S"
+excerpt: "Sur Soulmate, des identifiants Erlang exposés donnent un accès SSH, puis un tunnel vers un service SSH Erlang local permet d'obtenir une session root."
 date: "2025-09-06"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "CONFIG-LEAK", "ERLANG", "PORT-TUNNELING"]
 category: "WRITEUP"
@@ -12,8 +12,6 @@ icon: "Terminal"
 author: "0x7CC"
 published: true
 ---
-
-# Hack The Box — Soulmate (Linux) Write-Up : Fuite de configuration Erlang → RCE via Shell SSH Erlang local
 
 ## TL;DR
 Sur **Soulmate**, l'accès initial est obtenu grâce à une fuite d'identifiants en clair dans un fichier de configuration Erlang. Cela permet de se connecter en SSH en tant que `ben`. L'élévation s'appuie sur un service SSH Erlang interne écoutant sur le port 2222 en local. Un tunnel SSH permet d'interagir avec le shell Erlang s'exécutant en root.

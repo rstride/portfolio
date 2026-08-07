@@ -26,6 +26,9 @@ const nextConfig: NextConfig = {
     ],
   },
   output: 'standalone',
+  outputFileTracingIncludes: {
+    '/*': ['./content/blog/**/*'],
+  },
   transpilePackages: ['motion'],
   turbopack: {}
 };
