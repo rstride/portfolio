@@ -11,8 +11,9 @@ import { createTransportOptions } from "@/features/contact/server/mail";
 
 const expectedFrenchServiceMappings = {
   "web-application-pentest": "Pentest applicatif",
-  "cloud-devsecops": "Audit d'infrastructure",
-  "internal-infrastructure": "Audit d'infrastructure",
+  "api-security-assessment": "Audit de sécurité API",
+  "cloud-devsecops": "Audit Cloud & DevSecOps",
+  "internal-infrastructure": "Audit d'infrastructure interne",
   "security-awareness": "Formation sécurité",
   "technical-operator-track": "Formation sécurité",
   "ctf-simulation-cell": "Formation sécurité",
@@ -20,8 +21,9 @@ const expectedFrenchServiceMappings = {
 
 const expectedEnglishServiceMappings = {
   "web-application-pentest": "Web Application Pentest",
-  "cloud-devsecops": "Infrastructure Audit",
-  "internal-infrastructure": "Infrastructure Audit",
+  "api-security-assessment": "API Security Assessment",
+  "cloud-devsecops": "Cloud & DevSecOps Assessment",
+  "internal-infrastructure": "Internal Infrastructure Audit",
   "security-awareness": "Security Training",
   "technical-operator-track": "Security Training",
   "ctf-simulation-cell": "Security Training",

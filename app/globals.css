@@ -955,6 +955,330 @@ button:disabled,
   opacity: 1;
 }
 
+.services-page {
+  padding-bottom: clamp(5rem, 10vw, 10rem);
+}
+
+.services-hero {
+  padding-block: clamp(1.75rem, 4vw, 4.5rem) clamp(3.25rem, 7vw, 6rem);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-outline-variant) 42%, transparent);
+}
+
+.services-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+}
+
+.services-hero-title {
+  max-width: 13ch;
+  color: var(--color-on-surface);
+  font-family: var(--font-headline);
+  font-size: clamp(3.15rem, 6vw, 5.25rem);
+  font-weight: 700;
+  letter-spacing: -0.065em;
+  line-height: 0.88;
+  text-transform: uppercase;
+}
+
+.services-hero-intro {
+  max-width: 46rem;
+  margin-top: 1.5rem;
+  color: var(--color-on-surface-variant);
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  font-weight: 300;
+  line-height: 1.75;
+}
+
+.services-hero-signals {
+  display: grid;
+  gap: 0.7rem;
+  align-content: end;
+  color: var(--color-on-surface-variant);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.services-hero-signals li,
+.service-deliverable-list li,
+.services-closing li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.services-hero-signals svg,
+.service-deliverable-list svg,
+.services-closing li svg {
+  flex: none;
+  margin-top: 0.1rem;
+  color: var(--color-primary);
+}
+
+.services-section {
+  padding-top: clamp(4.5rem, 9vw, 8.5rem);
+}
+
+.services-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.services-heading > p {
+  max-width: 42rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.services-heading .services-section-line {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-primary) 35%, transparent), var(--color-primary));
+}
+
+.services-heading-secondary .services-section-line {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-secondary) 35%, transparent), var(--color-secondary));
+}
+
+.services-heading-tertiary .services-section-line {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-tertiary) 35%, transparent), var(--color-tertiary));
+}
+
+.service-offer-grid,
+.service-process-grid,
+.service-evidence-grid,
+.service-training-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.service-offer-card,
+.service-training-card,
+.service-evidence-card,
+.service-process-step {
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 62%, transparent);
+  background: var(--color-surface-container-low);
+}
+
+.service-offer-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 35rem;
+  padding: 1.5rem;
+  overflow: hidden;
+  color: var(--color-primary);
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.service-offer-card::before {
+  position: absolute;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+  background: linear-gradient(145deg, color-mix(in srgb, currentColor 8%, transparent), transparent 45%);
+}
+
+.service-offer-card > * {
+  position: relative;
+}
+
+.service-offer-card:hover,
+.service-offer-card:focus-within {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, currentColor 52%, var(--color-outline-variant));
+  background: var(--color-surface-container);
+}
+
+.service-tone-primary { color: var(--color-primary); }
+.service-tone-secondary { color: var(--color-secondary); }
+.service-tone-tertiary { color: var(--color-tertiary); }
+
+.service-offer-index {
+  color: currentColor;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.21em;
+}
+
+.service-offer-icon {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-top: 1.35rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, currentColor 45%, transparent);
+}
+
+.service-offer-card h2,
+.service-training-card h3,
+.service-evidence-card h3,
+.service-process-step h3,
+.services-closing h2 {
+  color: var(--color-on-surface);
+  font-family: var(--font-headline);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.service-offer-card h2 {
+  margin-top: 1.5rem;
+  font-size: clamp(1.85rem, 3vw, 2.8rem);
+}
+
+.service-offer-summary {
+  min-height: 5.1rem;
+  margin-top: 1rem;
+  color: var(--color-on-surface-variant);
+  line-height: 1.65;
+}
+
+.service-offer-detail {
+  margin-top: 1.2rem;
+}
+
+.service-offer-detail > span,
+.service-training-card > div > span {
+  display: block;
+  margin-bottom: 0.42rem;
+  color: currentColor;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.service-offer-detail > p,
+.service-training-card p {
+  color: var(--color-on-surface-variant);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.service-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.service-tag-list li {
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  padding: 0.3rem 0.45rem;
+  color: var(--color-on-surface-variant);
+  font-family: var(--font-mono);
+  font-size: 0.59rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.service-deliverable-list {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.service-offer-card .services-simple-cta {
+  margin-top: auto;
+  padding-inline: 0;
+  border-width: 0 0 1px;
+}
+
+.services-process-section {
+  padding-bottom: clamp(4.5rem, 9vw, 8.5rem);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-outline-variant) 42%, transparent);
+}
+
+.service-process-step {
+  min-height: 13rem;
+  padding: 1.35rem;
+}
+
+.service-process-step > span {
+  color: var(--color-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+}
+
+.service-process-step h3 {
+  margin-top: 1.6rem;
+  font-size: 1.65rem;
+}
+
+.service-process-step p,
+.service-evidence-card p {
+  margin-top: 0.8rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.service-evidence-card {
+  min-height: 14rem;
+  padding: 1.5rem;
+}
+
+.service-evidence-card h3 {
+  margin-top: 1.25rem;
+  font-size: 1.55rem;
+}
+
+.service-training-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 21rem;
+  padding: 1.5rem;
+  color: var(--color-primary);
+}
+
+.service-training-card h3 {
+  min-height: 3.3rem;
+  font-size: 1.65rem;
+}
+
+.service-training-card > div {
+  margin-top: 1.1rem;
+}
+
+.services-closing {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  margin-top: clamp(4.5rem, 10vw, 9rem);
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, var(--color-outline-variant));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 10%, var(--color-surface-container-low)), var(--color-surface-container-low) 65%);
+}
+
+.services-closing h2 {
+  max-width: 14ch;
+  margin-top: 1rem;
+  font-size: clamp(2rem, 4.5vw, 4rem);
+}
+
+.services-closing p {
+  max-width: 38rem;
+  margin-top: 1.25rem;
+  color: var(--color-on-surface-variant);
+  line-height: 1.7;
+}
+
+.services-closing ul {
+  display: grid;
+  gap: 0.8rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 .capability-process-panel {
   --panel-scan-left: -35%;
   border-color: color-mix(in srgb, currentColor 18%, var(--color-outline-variant));
@@ -1311,6 +1635,26 @@ button:disabled,
   .services-simple-card {
     padding: 1.6rem;
   }
+
+  .services-hero-layout,
+  .services-closing {
+    grid-template-columns: minmax(0, 1.8fr) minmax(13rem, 0.7fr);
+    align-items: end;
+  }
+
+  .service-offer-grid,
+  .service-process-grid,
+  .service-evidence-grid,
+  .service-training-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .service-offer-card,
+  .service-training-card,
+  .service-evidence-card,
+  .service-process-step {
+    padding: 1.75rem;
+  }
 }
 
 @media (max-width: 767px) {
@@ -1393,6 +1737,29 @@ button:disabled,
 
   .services-simple-card {
     grid-column: span 4 / span 4;
+  }
+
+  .services-heading {
+    grid-template-columns: minmax(16rem, 0.7fr) minmax(0, 1fr);
+    align-items: end;
+  }
+
+  .services-heading > p {
+    justify-self: end;
+  }
+
+  .service-offer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .service-process-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .service-evidence-grid,
+  .service-training-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .capability-card-featured {

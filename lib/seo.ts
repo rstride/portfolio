@@ -44,13 +44,13 @@ export const pageSeo = {
     fr: {
       title: 'Services de pentest et formation cybersécurité | Romain Stride',
       description:
-        'Audits applicatifs, API, cloud, infrastructure interne et formations sécurité conçus pour produire des livrables exploitables par les équipes.',
+        'Pentests applicatifs et API, audits cloud, DevSecOps et infrastructure interne : des livrables priorisés pour transformer les risques en actions.',
       path: '/services',
     },
     en: {
       title: 'Pentest and Cybersecurity Training Services | Romain Stride',
       description:
-        'Web application, API, cloud, internal infrastructure audits, and security training designed to produce actionable deliverables for teams.',
+        'Web application and API pentests, cloud, DevSecOps, and internal infrastructure audits with prioritized deliverables that turn risk into action.',
       path: '/services',
     },
   },

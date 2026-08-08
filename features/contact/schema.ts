@@ -12,6 +12,7 @@ export type ContactLocale = "fr" | "en";
 export type ContactFieldErrors = Partial<Record<"name" | "email" | "service" | "message", string>>;
 export type ContactServiceSlug =
   | "web-application-pentest"
+  | "api-security-assessment"
   | "cloud-devsecops"
   | "internal-infrastructure"
   | "security-awareness"
@@ -21,8 +22,8 @@ export type ContactServiceSlug =
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const contactServiceOptions = {
-  fr: ["Pentest applicatif", "Audit d'infrastructure", "Formation sécurité", "Conseil / Architecture"],
-  en: ["Web Application Pentest", "Infrastructure Audit", "Security Training", "Advisory / Architecture"],
+  fr: ["Pentest applicatif", "Audit de sécurité API", "Audit Cloud & DevSecOps", "Audit d'infrastructure interne", "Formation sécurité", "Conseil / Architecture"],
+  en: ["Web Application Pentest", "API Security Assessment", "Cloud & DevSecOps Assessment", "Internal Infrastructure Audit", "Security Training", "Advisory / Architecture"],
 } satisfies Record<ContactLocale, string[]>;
 
 const contactServiceSlugMap = {
@@ -30,13 +31,17 @@ const contactServiceSlugMap = {
     fr: "Pentest applicatif",
     en: "Web Application Pentest",
   },
+  "api-security-assessment": {
+    fr: "Audit de sécurité API",
+    en: "API Security Assessment",
+  },
   "cloud-devsecops": {
-    fr: "Audit d'infrastructure",
-    en: "Infrastructure Audit",
+    fr: "Audit Cloud & DevSecOps",
+    en: "Cloud & DevSecOps Assessment",
   },
   "internal-infrastructure": {
-    fr: "Audit d'infrastructure",
-    en: "Infrastructure Audit",
+    fr: "Audit d'infrastructure interne",
+    en: "Internal Infrastructure Audit",
   },
   "security-awareness": {
     fr: "Formation sécurité",
