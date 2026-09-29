@@ -18,10 +18,12 @@ test("sitemap includes current localized static routes", () => {
   assert.ok(urls.includes("https://rstride.fr/services"));
   assert.ok(urls.includes("https://rstride.fr/contact"));
   assert.ok(urls.includes("https://rstride.fr/blog"));
+  assert.ok(urls.includes("https://rstride.fr/projects"));
   assert.ok(urls.includes("https://rstride.fr/en"));
   assert.ok(urls.includes("https://rstride.fr/en/services"));
   assert.ok(urls.includes("https://rstride.fr/en/contact"));
   assert.ok(urls.includes("https://rstride.fr/en/blog"));
+  assert.ok(urls.includes("https://rstride.fr/en/projects"));
 });
 
 test("services content has matching localized audit offers and valid contact slugs", () => {

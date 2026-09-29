@@ -30,6 +30,7 @@ export interface BlogPostMeta {
   icon: string;
   author: string;
   published?: boolean;
+  featured?: boolean;
   slug: string;
   content?: string;
 }

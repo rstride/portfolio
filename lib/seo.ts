@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import type { BlogPostMeta } from '@/lib/markdown';
+import type { ProjectCaseStudyMeta } from '@/lib/projects';
 
 export type Locale = 'fr' | 'en';
 
 export const siteUrl = 'https://rstride.fr';
 export const siteName = 'Romain Stride';
-export const defaultOgImage = `${siteUrl}/og-default.svg`;
+export const defaultOgImage = `${siteUrl}/og-default.png`;
 export const defaultOgImageAlt = 'Romain Stride cybersecurity consultant portfolio';
 
 export const locales: Locale[] = ['fr', 'en'];
@@ -30,13 +31,13 @@ export const pageSeo = {
     fr: {
       title: 'Consultant cybersécurité freelance | Romain Stride',
       description:
-        'Pentests applicatifs, audits API et cloud, formations sécurité et write-ups offensifs pour transformer les risques techniques en actions concrètes.',
+        'Pentests web et API pour équipes SaaS : chemins d’attaque exploitables, preuves reproductibles et remédiation priorisée avant mise en production.',
       path: '/',
     },
     en: {
       title: 'Freelance Cybersecurity Consultant | Romain Stride',
       description:
-        'Web application pentests, API and cloud audits, security training, and offensive security write-ups that turn technical risk into concrete action.',
+        'Web and API pentests for SaaS teams, with exploitable attack paths, reproducible evidence, and prioritized remediation before release.',
       path: '/',
     },
   },
@@ -80,6 +81,18 @@ export const pageSeo = {
       description:
         'Contact Romain Stride to scope a web application pentest, API or cloud audit, security training, or technical collaboration.',
       path: '/contact',
+    },
+  },
+  projects: {
+    fr: {
+      title: 'Projets cybersécurité et études de cas | Romain Stride',
+      description: 'Études de cas sur des produits de cybersécurité, leurs choix d’architecture et les contrôles qui rendent les opérations offensives exploitables.',
+      path: '/projects',
+    },
+    en: {
+      title: 'Cybersecurity Projects and Case Studies | Romain Stride',
+      description: 'Case studies covering cybersecurity products, architecture decisions, and controls that make offensive security work actionable.',
+      path: '/projects',
     },
   },
   privacy: {
@@ -235,6 +248,17 @@ export function buildArticleMetadata({
   };
 }
 
+export function buildProjectMetadata({ locale, project }: { locale: Locale; project: ProjectCaseStudyMeta }): Metadata {
+  return buildPageMetadata({
+    locale,
+    path: `/projects/${project.slug}`,
+    title: project.seoTitle || `${project.title} | ${siteName}`,
+    description: project.seoDescription || project.summary,
+    image: project.ogImage || project.coverImage,
+    imageAlt: project.coverAlt,
+  });
+}
+
 export function websiteJsonLd() {
   return {
     '@context': 'https://schema.org',
@@ -316,6 +340,24 @@ export function articleJsonLd(post: BlogPostMeta, locale: Locale) {
     mainEntityOfPage: absoluteUrl(locale, path),
     inLanguage: locale === 'fr' ? 'fr-FR' : 'en-US',
     keywords: post.tags.join(', '),
+  };
+}
+
+export function projectJsonLd(project: ProjectCaseStudyMeta, locale: Locale) {
+  const path = `/projects/${project.slug}`;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    '@id': `${absoluteUrl(locale, path)}#project`,
+    name: project.title,
+    description: project.summary,
+    image: assetUrl(project.coverImage),
+    dateModified: project.updated,
+    creator: { '@id': `${siteUrl}/#person` },
+    url: absoluteUrl(locale, path),
+    inLanguage: locale === 'fr' ? 'fr-FR' : 'en-US',
+    keywords: project.tags.join(', '),
   };
 }
 

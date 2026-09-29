@@ -5,9 +5,11 @@ import {
   getContactFieldErrors,
   getContactServiceOption,
   hasContactFieldErrors,
+  normalizeContactSource,
   normalizeContactPayload,
 } from "@/features/contact/schema";
 import { createTransportOptions } from "@/features/contact/server/mail";
+import { formatContactEmailText } from "@/features/contact/server/send-contact-email";
 
 const expectedFrenchServiceMappings = {
   "web-application-pentest": "Pentest applicatif",
@@ -70,6 +72,7 @@ test("normalizeContactPayload trims strings and lowercases email", () => {
     company: "  Example Inc  ",
     phone: "  +33123456789  ",
     referrer: "  bot-field  ",
+    source: "  project_prismasec  ",
   });
 
   assert.deepEqual(payload, {
@@ -80,7 +83,27 @@ test("normalizeContactPayload trims strings and lowercases email", () => {
     company: "Example Inc",
     phone: "+33123456789",
     referrer: "bot-field",
+    source: "project_prismasec",
   });
+});
+
+test("contact sources are restricted to known CTA values", () => {
+  assert.equal(normalizeContactSource("home_hero"), "home_hero");
+  assert.equal(normalizeContactSource(" project_prismasec "), "project_prismasec");
+  assert.equal(normalizeContactSource("attacker-controlled"), undefined);
+  assert.equal(normalizeContactPayload({ source: "attacker-controlled" }).source, undefined);
+});
+
+test("contact email includes the normalized CTA source without requiring SMTP", () => {
+  const payload = normalizeContactPayload({
+    name: "Romain Stride",
+    email: "contact@example.test",
+    service: "Web Application Pentest",
+    message: "Please assess our SaaS application.",
+    source: "project_prismasec",
+  });
+
+  assert.match(formatContactEmailText(payload), /^Source: project_prismasec$/m);
 });
 
 test("hasContactFieldErrors detects populated error maps", () => {

@@ -40,6 +40,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   const html = await markdownToHtml(post.content);
   const postMeta = { slug: post.slug, ...post.meta };
   const badgeValue = (post.meta.difficulty || post.meta.severity || '').toUpperCase();
+  const contentType = (post.meta.category || 'ARTICLE').toUpperCase();
   const isCriticalLike = badgeValue === 'CRITICAL' || badgeValue === 'HARD' || badgeValue === 'INSANE';
 
   return (
@@ -72,8 +73,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             <span className="font-mono text-xs text-on-surface-variant">
               DATE: {post.meta.date}
             </span>
-            <span className={`font-mono text-xs px-3 py-1.5 border ${isCriticalLike ? 'text-error border-error/30 bg-error/10' : 'text-error/80 border-error/20'}`}>
-              DIFFICULTY: {badgeValue}
+            <span className={`font-mono text-xs px-3 py-1.5 border ${isCriticalLike ? 'text-error border-error/30 bg-error/10' : 'text-secondary border-secondary/20'}`}>
+              {badgeValue ? `DIFFICULTY: ${badgeValue}` : `TYPE: ${contentType}`}
             </span>
             <span className="font-mono text-xs text-on-surface-variant">
               AUTHOR: {post.meta.author}
@@ -111,7 +112,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             <div>
               <h4 className="font-headline font-bold text-lg text-on-surface mb-2">ABOUT THE AUTHOR</h4>
               <p className="text-sm text-on-surface-variant font-light leading-relaxed">
-                Romain Stride (0x7CC) is a Senior Security Researcher focusing on web application security and exploit development. When not breaking things, he builds secure architectures.
+                Romain Stride is a cybersecurity consultant, pentester, and PrismaSec founder working across web and API security, low-level engineering, and secure system design.
               </p>
             </div>
           </div>

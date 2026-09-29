@@ -5,10 +5,13 @@ Personal portfolio and service site for Romain Stride, a freelance cybersecurity
 ## Features
 
 - Bilingual routing: French at `/` and English under `/en`
-- Portfolio pages for services, contact, privacy, and offensive security write-ups
+- Client-focused homepage, service pages, and a bilingual PrismaSec case study
+- Portfolio pages for projects, contact, privacy, guides, research, and offensive security write-ups
 - Markdown blog content with frontmatter, GitHub-flavored Markdown, heading slugs, and syntax highlighting
 - SEO helpers for canonical URLs, hreflang alternates, Open Graph, Twitter cards, robots, sitemap, and RSS feed
 - Contact API with locale-aware validation, honeypot spam handling, and SMTP delivery through Nodemailer
+- Privacy-preserving CTA source attribution included only in contact emails
+- Report-only Content Security Policy, security headers, and RFC 9116 security.txt
 - Responsive navigation with mobile focus handling and language switching
 - Standalone Next.js output and Docker production image
 - Node test coverage for contact validation, service mapping, posts, and SEO behavior
@@ -29,8 +32,9 @@ app/                    Next.js App Router routes, API route, sitemap, robots, R
 components/             Shared UI components
 features/contact/       Contact form, validation, and mail delivery
 lib/                    Markdown, SEO, and utility helpers
-content/blog/fr/        French markdown posts
-content/blog/en/        English markdown posts
+content/blog/fr/        French guides, research, and write-ups
+content/blog/en/        English guides, research, and write-ups
+content/projects/       Localized project case studies
 public/                 Static assets and Open Graph image
 tests/                  Node test suite
 ```
@@ -112,7 +116,7 @@ npm run test
 npm run build
 ```
 
-The current tests cover contact payload normalization and validation, service slug mapping, markdown post loading, and SEO output for sitemap, robots, privacy metadata, and blog fallback metadata.
+The current tests cover contact validation and source normalization, service slug mapping, blog and project content loading, security headers, security.txt, the web manifest, and SEO output for sitemap, robots, localized projects, privacy metadata, and fallback metadata.
 
 ## Docker
 
@@ -133,6 +137,7 @@ The Dockerfile builds a standalone Next.js output and runs `server.js` as the no
 ## Deployment Notes
 
 - Canonical production URLs are defined in `lib/seo.ts` and currently point to `https://rstride.fr`.
+- The CSP intentionally ships in report-only mode first. Promote it to an enforced `Content-Security-Policy` header only after validating the deployed site and contact flow without violations.
 - The sitemap excludes privacy pages and blocks `/api/` through `robots.ts`.
 - Next.js `output: 'standalone'` is enabled for container deployments.
 - The production server listens on `PORT=3000` and `HOSTNAME=0.0.0.0` in Docker.

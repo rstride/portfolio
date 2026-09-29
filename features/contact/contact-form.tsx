@@ -21,7 +21,8 @@ type ContactField =
   | 'message'
   | 'company'
   | 'phone'
-  | 'referrer';
+  | 'referrer'
+  | 'source';
 type RequiredContactField = keyof ContactFieldErrors;
 
 type FormState = Record<ContactField, string>;
@@ -34,6 +35,7 @@ const initialState: FormState = {
   company: '',
   phone: '',
   referrer: '',
+  source: '',
 };
 
 function isRequiredContactField(field: ContactField): field is RequiredContactField {
@@ -126,8 +128,8 @@ const copy = {
 } satisfies Record<Locale, {
   panelTitle: string;
   intro: string;
-  labels: Record<Exclude<ContactField, 'referrer'>, string>;
-  systemLabels: Record<Exclude<ContactField, 'referrer'>, string>;
+  labels: Record<Exclude<ContactField, 'referrer' | 'source'>, string>;
+  systemLabels: Record<Exclude<ContactField, 'referrer' | 'source'>, string>;
   placeholders: {
     name: string;
     email: string;
@@ -153,11 +155,13 @@ export function ContactForm({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const searchParams = useSearchParams();
   const requestedService = getContactServiceOption(searchParams.get('service'), locale);
+  const requestedSource = searchParams.get('source') ?? '';
   const formId = useId();
   const [preselectedService] = useState(requestedService);
   const [values, setValues] = useState<FormState>(() => ({
     ...initialState,
     service: requestedService ?? '',
+    source: requestedSource,
   }));
   const [errors, setErrors] = useState<ContactFieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -269,6 +273,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
       </p>
 
       <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+        <input type="hidden" name="source" value={values.source} />
         <input
           type="text"
           tabIndex={-1}

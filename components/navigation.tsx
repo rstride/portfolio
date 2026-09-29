@@ -18,11 +18,13 @@ export function Navigation() {
   const navItems = isEnglish ? [
     { name: 'HOME', path: '/en' },
     { name: 'SERVICES', path: '/en/services' },
+    { name: 'PROJECTS', path: '/en/projects' },
     { name: 'ARTICLES', path: '/en/blog' },
     { name: 'CONTACT', path: '/en/contact' },
   ] : [
     { name: 'ACCUEIL', path: '/' },
     { name: 'SERVICES', path: '/services' },
+    { name: 'PROJETS', path: '/projects' },
     { name: 'ARTICLES', path: '/blog' },
     { name: 'CONTACT', path: '/contact' },
   ];
@@ -30,6 +32,8 @@ export function Navigation() {
     ? { label: 'Request an audit', path: '/en/contact?source=nav_cta' }
     : { label: 'Demander un audit', path: '/contact?source=nav_cta' };
   const languageToggleLabel = isEnglish ? 'Passer en français' : 'Switch to English';
+  const openMenuLabel = isEnglish ? 'Open navigation menu' : 'Ouvrir le menu de navigation';
+  const closeMenuLabel = isEnglish ? 'Close navigation menu' : 'Fermer le menu de navigation';
 
   const toggleLanguage = () => {
     setIsMobileMenuOpen(false);
@@ -157,7 +161,7 @@ export function Navigation() {
               type="button"
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-navigation-overlay"
-              aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-label={isMobileMenuOpen ? closeMenuLabel : openMenuLabel}
               onClick={() => setIsMobileMenuOpen(true)}
               className="md:hidden min-h-11 p-2 text-on-surface/60 hover:text-primary focus-visible:text-primary"
             >
@@ -188,7 +192,7 @@ export function Navigation() {
                 type="button"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="mobile-nav-close"
-                aria-label="Close navigation menu"
+                aria-label={closeMenuLabel}
               >
                 <X className="w-5 h-5" />
               </button>

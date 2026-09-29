@@ -77,8 +77,12 @@ test("published posts follow the shared content contract", () => {
       if (metadata.published === false) continue;
       slugs.push(slug);
 
-      for (const field of ["id", "title", "excerpt", "date", "tags", "difficulty", "icon", "author"]) {
+      for (const field of ["id", "title", "excerpt", "date", "tags", "category", "icon", "author"]) {
         assert.ok(metadata[field], `${fullPath} is missing ${field}`);
+      }
+
+      if (metadata.category === "WRITEUP") {
+        assert.ok(metadata.difficulty, `${fullPath} is missing difficulty`);
       }
 
       assert.match(String(metadata.date), /^\d{4}-\d{2}-\d{2}$/);
@@ -99,6 +103,14 @@ test("published posts follow the shared content contract", () => {
   }
 
   assert.deepEqual(postsByLocale.get("fr"), postsByLocale.get("en"));
+});
+
+test("featured authority articles exist in both locales", () => {
+  const expected = ["autorisation-api-multitenant", "preparer-saas-pentest", "rapport-remediation-retest"];
+  for (const locale of ["fr", "en"] as const) {
+    const featured = getBlogPosts(locale).filter((post) => post.featured).map((post) => post.slug).sort();
+    assert.deepEqual(featured, expected);
+  }
 });
 
 test("the archive search and filter controls expose accessible state", () => {

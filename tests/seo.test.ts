@@ -55,4 +55,5 @@ test("blog SEO falls back to title excerpt and default OG image", () => {
   assert.equal(seo.description, post.excerpt);
   assert.equal(seo.image, defaultOgImage);
   assert.equal(absoluteUrl("en", `/blog/${post.slug}`), "https://rstride.fr/en/blog/expressway");
+  assert.equal(defaultOgImage, "https://rstride.fr/og-default.png");
 });

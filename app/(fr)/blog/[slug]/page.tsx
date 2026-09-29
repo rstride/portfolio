@@ -40,6 +40,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   const html = await markdownToHtml(post.content);
   const postMeta = { slug: post.slug, ...post.meta };
   const badgeValue = (post.meta.difficulty || post.meta.severity || '').toUpperCase();
+  const contentType = (post.meta.category || 'ARTICLE').toUpperCase();
   const isCriticalLike = badgeValue === 'CRITICAL' || badgeValue === 'HARD' || badgeValue === 'INSANE';
 
   return (
@@ -72,8 +73,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             <span className="font-mono text-xs text-on-surface-variant">
               DATE: {post.meta.date}
             </span>
-            <span className={`font-mono text-xs px-3 py-1.5 border ${isCriticalLike ? 'text-error border-error/30 bg-error/10' : 'text-error/80 border-error/20'}`}>
-              DIFFICULTY: {badgeValue}
+            <span className={`font-mono text-xs px-3 py-1.5 border ${isCriticalLike ? 'text-error border-error/30 bg-error/10' : 'text-secondary border-secondary/20'}`}>
+              {badgeValue ? `DIFFICULTÉ : ${badgeValue}` : `TYPE : ${contentType}`}
             </span>
             <span className="font-mono text-xs text-on-surface-variant">
               AUTHOR: {post.meta.author}
@@ -111,7 +112,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             <div>
               <h4 className="font-headline font-bold text-lg text-on-surface mb-2">À PROPOS DE L&apos;AUTEUR</h4>
               <p className="text-sm text-on-surface-variant font-light leading-relaxed">
-                Romain Stride (0x7E3) est un chercheur senior en sécurité spécialisé dans la sécurité des applications web et le développement d&apos;exploits. Quand il ne casse pas des choses, il construit des architectures sécurisées.
+                Romain Stride est consultant cybersécurité, pentester et fondateur de PrismaSec. Il travaille sur la sécurité des applications web et API, l&apos;ingénierie bas niveau et la conception de systèmes sécurisés.
               </p>
             </div>
           </div>

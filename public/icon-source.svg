@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Romain Stride monogram</title>
+  <rect width="512" height="512" rx="84" fill="#0c0e12"/>
+  <path d="M62 62h100v14H76v86H62zm288 0h100v100h-14V76h-86zM62 350h14v86h86v14H62zm374 0h14v100H350v-14h86z" fill="#00cffc"/>
+  <path d="M130 256h252" stroke="#9cff93" stroke-width="10" opacity=".28"/>
+  <text x="256" y="300" text-anchor="middle" fill="#9cff93" font-family="Arial, Helvetica, sans-serif" font-size="144" font-weight="800" letter-spacing="-10">RS</text>
+  <circle cx="388" cy="126" r="13" fill="#ac89ff"/>
+</svg>

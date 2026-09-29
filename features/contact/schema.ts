@@ -6,6 +6,7 @@ export type ContactPayload = {
   company?: string;
   phone?: string;
   referrer?: string;
+  source?: ContactSource;
 };
 
 export type ContactLocale = "fr" | "en";
@@ -18,6 +19,22 @@ export type ContactServiceSlug =
   | "security-awareness"
   | "technical-operator-track"
   | "ctf-simulation-cell";
+
+export const contactSources = [
+  "nav_cta",
+  "home_hero",
+  "home_project",
+  "home_final_cta",
+  "services_hero",
+  "services_offer",
+  "services_training",
+  "services_closing",
+  "projects_index",
+  "project_prismasec",
+  "blog_article",
+] as const;
+
+export type ContactSource = (typeof contactSources)[number];
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -80,6 +97,11 @@ function trimValue(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+export function normalizeContactSource(value: unknown): ContactSource | undefined {
+  const normalized = trimValue(value);
+  return contactSources.find((source) => source === normalized);
+}
+
 export function getContactServiceOption(
   slug: unknown,
   locale: ContactLocale = "fr",
@@ -104,6 +126,7 @@ export function normalizeContactPayload(input: unknown): ContactPayload {
     company: trimValue(payload.company),
     phone: trimValue(payload.phone),
     referrer: trimValue(payload.referrer),
+    source: normalizeContactSource(payload.source),
   };
 }
 
