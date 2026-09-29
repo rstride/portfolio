@@ -5,8 +5,9 @@ Personal portfolio and service site for Romain Stride, a freelance cybersecurity
 ## Features
 
 - Bilingual routing: French at `/` and English under `/en`
-- Client-focused homepage, service pages, and a bilingual PrismaSec case study
-- Portfolio pages for projects, contact, privacy, guides, research, and offensive security write-ups
+- Client-focused homepage and service pages giving security audits and training equal visibility
+- Contact, privacy, guides, research, and offensive security write-ups
+- Retired project URLs permanently redirect to the localized blog; project content and assets are preserved
 - Markdown blog content with frontmatter, GitHub-flavored Markdown, heading slugs, and syntax highlighting
 - SEO helpers for canonical URLs, hreflang alternates, Open Graph, Twitter cards, robots, sitemap, and RSS feed
 - Contact API with locale-aware validation, honeypot spam handling, and SMTP delivery through Nodemailer
@@ -34,7 +35,7 @@ features/contact/       Contact form, validation, and mail delivery
 lib/                    Markdown, SEO, and utility helpers
 content/blog/fr/        French guides, research, and write-ups
 content/blog/en/        English guides, research, and write-ups
-content/projects/       Localized project case studies
+content/projects/       Archived localized project case studies
 public/                 Static assets and Open Graph image
 tests/                  Node test suite
 ```
@@ -116,7 +117,7 @@ npm run test
 npm run build
 ```
 
-The current tests cover contact validation and source normalization, service slug mapping, blog and project content loading, security headers, security.txt, the web manifest, and SEO output for sitemap, robots, localized projects, privacy metadata, and fallback metadata.
+The current tests cover contact validation and source normalization, service slug mapping, blog and project content loading, security headers, security.txt, the web manifest, and SEO output for sitemap, robots, project retirement redirects, privacy metadata, and fallback metadata.
 
 ## Docker
 

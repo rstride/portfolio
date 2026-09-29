@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import type { BlogPostMeta } from '@/lib/markdown';
-import type { ProjectCaseStudyMeta } from '@/lib/projects';
 
 export type Locale = 'fr' | 'en';
 
@@ -31,13 +30,13 @@ export const pageSeo = {
     fr: {
       title: 'Consultant cybersécurité freelance | Romain Stride',
       description:
-        'Pentests web et API pour équipes SaaS : chemins d’attaque exploitables, preuves reproductibles et remédiation priorisée avant mise en production.',
+        'Audits de sécurité web, API, cloud et réseaux, sensibilisation et formations techniques pour identifier vos risques et renforcer les compétences de vos équipes.',
       path: '/',
     },
     en: {
       title: 'Freelance Cybersecurity Consultant | Romain Stride',
       description:
-        'Web and API pentests for SaaS teams, with exploitable attack paths, reproducible evidence, and prioritized remediation before release.',
+        'Web, API, cloud, and network security audits, awareness sessions, and technical training to understand your risks and build your team’s skills.',
       path: '/',
     },
   },
@@ -45,13 +44,13 @@ export const pageSeo = {
     fr: {
       title: 'Services de pentest et formation cybersécurité | Romain Stride',
       description:
-        'Pentests applicatifs et API, audits cloud, DevSecOps et infrastructure interne : des livrables priorisés pour transformer les risques en actions.',
+        'Audits de sécurité des applications, API, cloud et réseaux. Sensibilisation, formations techniques et ateliers pratiques adaptés à vos équipes.',
       path: '/services',
     },
     en: {
       title: 'Pentest and Cybersecurity Training Services | Romain Stride',
       description:
-        'Web application and API pentests, cloud, DevSecOps, and internal infrastructure audits with prioritized deliverables that turn risk into action.',
+        'Application, API, cloud, and network security audits. Security awareness, technical training, and hands-on workshops suited to your teams.',
       path: '/services',
     },
   },
@@ -81,18 +80,6 @@ export const pageSeo = {
       description:
         'Contact Romain Stride to scope a web application pentest, API or cloud audit, security training, or technical collaboration.',
       path: '/contact',
-    },
-  },
-  projects: {
-    fr: {
-      title: 'Projets cybersécurité et études de cas | Romain Stride',
-      description: 'Études de cas sur des produits de cybersécurité, leurs choix d’architecture et les contrôles qui rendent les opérations offensives exploitables.',
-      path: '/projects',
-    },
-    en: {
-      title: 'Cybersecurity Projects and Case Studies | Romain Stride',
-      description: 'Case studies covering cybersecurity products, architecture decisions, and controls that make offensive security work actionable.',
-      path: '/projects',
     },
   },
   privacy: {
@@ -248,17 +235,6 @@ export function buildArticleMetadata({
   };
 }
 
-export function buildProjectMetadata({ locale, project }: { locale: Locale; project: ProjectCaseStudyMeta }): Metadata {
-  return buildPageMetadata({
-    locale,
-    path: `/projects/${project.slug}`,
-    title: project.seoTitle || `${project.title} | ${siteName}`,
-    description: project.seoDescription || project.summary,
-    image: project.ogImage || project.coverImage,
-    imageAlt: project.coverAlt,
-  });
-}
-
 export function websiteJsonLd() {
   return {
     '@context': 'https://schema.org',
@@ -340,24 +316,6 @@ export function articleJsonLd(post: BlogPostMeta, locale: Locale) {
     mainEntityOfPage: absoluteUrl(locale, path),
     inLanguage: locale === 'fr' ? 'fr-FR' : 'en-US',
     keywords: post.tags.join(', '),
-  };
-}
-
-export function projectJsonLd(project: ProjectCaseStudyMeta, locale: Locale) {
-  const path = `/projects/${project.slug}`;
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'CreativeWork',
-    '@id': `${absoluteUrl(locale, path)}#project`,
-    name: project.title,
-    description: project.summary,
-    image: assetUrl(project.coverImage),
-    dateModified: project.updated,
-    creator: { '@id': `${siteUrl}/#person` },
-    url: absoluteUrl(locale, path),
-    inLanguage: locale === 'fr' ? 'fr-FR' : 'en-US',
-    keywords: project.tags.join(', '),
   };
 }
 

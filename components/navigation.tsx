@@ -18,19 +18,17 @@ export function Navigation() {
   const navItems = isEnglish ? [
     { name: 'HOME', path: '/en' },
     { name: 'SERVICES', path: '/en/services' },
-    { name: 'PROJECTS', path: '/en/projects' },
     { name: 'ARTICLES', path: '/en/blog' },
     { name: 'CONTACT', path: '/en/contact' },
   ] : [
     { name: 'ACCUEIL', path: '/' },
     { name: 'SERVICES', path: '/services' },
-    { name: 'PROJETS', path: '/projects' },
     { name: 'ARTICLES', path: '/blog' },
     { name: 'CONTACT', path: '/contact' },
   ];
   const primaryCta = isEnglish
-    ? { label: 'Request an audit', path: '/en/contact?source=nav_cta' }
-    : { label: 'Demander un audit', path: '/contact?source=nav_cta' };
+    ? { label: 'Discuss your needs', path: '/en/contact?source=nav_cta' }
+    : { label: 'Parlons de vos besoins', path: '/contact?source=nav_cta' };
   const languageToggleLabel = isEnglish ? 'Passer en français' : 'Switch to English';
   const openMenuLabel = isEnglish ? 'Open navigation menu' : 'Ouvrir le menu de navigation';
   const closeMenuLabel = isEnglish ? 'Close navigation menu' : 'Fermer le menu de navigation';
@@ -116,11 +114,11 @@ export function Navigation() {
     <>
       <nav className="fixed top-0 z-50 bg-[#0c0e12]/90 backdrop-blur-md border-b border-outline-variant/20 w-full py-4">
         <div className="chrome-frame flex justify-between items-center gap-6">
-          <Link href={isEnglish ? "/en" : "/"} className="text-xl font-bold tracking-tighter text-primary font-headline uppercase">
+          <Link href={isEnglish ? "/en" : "/"} className="text-xl font-bold tracking-tighter text-primary font-headline uppercase whitespace-nowrap">
             ROMAIN_STRIDE //
           </Link>
           
-          <div className="hidden md:flex items-center gap-8 font-headline uppercase tracking-widest text-sm">
+          <div className="hidden xl:flex items-center gap-8 font-headline uppercase tracking-widest text-sm">
             {navItems.map((item) => {
               const isActive = pathname === item.path || (item.path !== '/' && item.path !== '/en' && pathname.startsWith(item.path));
               return (
@@ -143,7 +141,7 @@ export function Navigation() {
           <div className="flex items-center gap-4">
             <Link
               href={primaryCta.path}
-              className="cta-primary hidden md:inline-flex text-xs tracking-[0.16em] px-5 py-3"
+              className="cta-primary hidden xl:inline-flex whitespace-nowrap text-xs tracking-[0.16em] px-5 py-3"
             >
               {primaryCta.label}
             </Link>
@@ -163,7 +161,7 @@ export function Navigation() {
               aria-controls="mobile-navigation-overlay"
               aria-label={isMobileMenuOpen ? closeMenuLabel : openMenuLabel}
               onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden min-h-11 p-2 text-on-surface/60 hover:text-primary focus-visible:text-primary"
+              className="xl:hidden min-h-11 p-2 text-on-surface/60 hover:text-primary focus-visible:text-primary"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -175,14 +173,14 @@ export function Navigation() {
         <div
           ref={mobileOverlayRef}
           id="mobile-navigation-overlay"
-          className="mobile-nav-overlay md:hidden"
+          className="mobile-nav-overlay xl:hidden"
         >
           <div className="mobile-nav-grid"></div>
           <div className="mobile-nav-shell chrome-frame">
             <div className="mobile-nav-header">
               <Link
                 href={isEnglish ? '/en' : '/'}
-                className="text-xl font-bold tracking-tighter text-primary font-headline uppercase"
+                className="text-xl font-bold tracking-tighter text-primary font-headline uppercase whitespace-nowrap"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 ROMAIN_STRIDE //

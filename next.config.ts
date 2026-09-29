@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || '.next',
   reactStrictMode: true,
   poweredByHeader: false,
+  async redirects() {
+    return [
+      { source: '/projects/:path*', destination: '/blog', permanent: true },
+      { source: '/en/projects/:path*', destination: '/en/blog', permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

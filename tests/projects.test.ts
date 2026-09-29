@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import nextConfig from '../next.config';
 import sitemap from '@/app/sitemap';
 import { getProjectCaseStudies, getProjectCaseStudyBySlug } from '@/lib/projects';
-import { buildProjectMetadata } from '@/lib/seo';
 
-test('project case studies have matching localized slugs', () => {
+test('archived project content still has matching localized slugs', () => {
   const french = getProjectCaseStudies('fr');
   const english = getProjectCaseStudies('en');
 
@@ -15,22 +15,25 @@ test('project case studies have matching localized slugs', () => {
   assert.equal(english[0]?.role, 'Founder, CEO & Lead Engineer');
 });
 
-test('project lookup rejects missing and unsafe slugs', () => {
+test('archived project lookup rejects missing and unsafe slugs', () => {
   assert.equal(getProjectCaseStudyBySlug('fr', 'missing'), null);
   assert.equal(getProjectCaseStudyBySlug('fr', '../prismasec'), null);
   assert.ok(getProjectCaseStudyBySlug('fr', 'prismasec'));
 });
 
-test('project metadata and sitemap expose bilingual canonical routes', () => {
-  const project = getProjectCaseStudyBySlug('en', 'prismasec')!;
-  const metadata = buildProjectMetadata({ locale: 'en', project });
-  const entries = sitemap();
-  const french = entries.find(({ url }) => url === 'https://rstride.fr/projects/prismasec');
-  const english = entries.find(({ url }) => url === 'https://rstride.fr/en/projects/prismasec');
+test('retired project routes redirect permanently to the localized blog', async () => {
+  const redirects = await nextConfig.redirects!();
 
-  assert.equal(metadata.alternates?.canonical, 'https://rstride.fr/en/projects/prismasec');
-  assert.equal(metadata.alternates?.languages?.fr, 'https://rstride.fr/projects/prismasec');
-  assert.match(JSON.stringify(metadata.openGraph), /\/projects\/prismasec-og\.png/);
-  assert.equal(french?.alternates?.languages?.en, 'https://rstride.fr/en/projects/prismasec');
-  assert.equal(english?.alternates?.languages?.fr, 'https://rstride.fr/projects/prismasec');
+  assert.deepEqual(redirects, [
+    { source: '/projects/:path*', destination: '/blog', permanent: true },
+    { source: '/en/projects/:path*', destination: '/en/blog', permanent: true },
+  ]);
+});
+
+test('sitemap excludes all retired project pages and alternates', () => {
+  const entries = sitemap();
+
+  assert.ok(entries.every((entry) => !new URL(entry.url).pathname.split('/').includes('projects')));
+  assert.ok(entries.every((entry) => Object.values(entry.alternates?.languages ?? {})
+    .every((url) => !new URL(url).pathname.split('/').includes('projects'))));
 });
