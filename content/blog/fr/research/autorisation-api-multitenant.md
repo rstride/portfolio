@@ -21,7 +21,7 @@ Cette matrice transforme une liste de routes en invariants testables. Par exempl
 
 ## Utiliser plusieurs identités simultanément
 
-Deux tenants et trois niveaux de privilège constituent une base utile : utilisateur A, administrateur A et utilisateur B. Conservez des sessions distinctes et capturez les identifiants créés dans chaque contexte.
+Deux tenants et trois identités de test constituent une base utile : utilisateur A, administrateur A et utilisateur B. Conservez des sessions distinctes et capturez les identifiants créés dans chaque contexte.
 
 Rejouez ensuite les opérations en changeant une seule dimension à la fois : identifiant d’objet, tenant explicite, rôle, méthode HTTP, représentation du corps ou étape du workflow.
 
@@ -39,7 +39,7 @@ Le contrôle doit porter sur la relation entre l’identité, l’organisation e
 
 ## Valider les invariants négatifs
 
-Un bon test ne vérifie pas seulement qu’une action autorisée réussit. Il prouve qu’une action interdite échoue sans divulguer l’existence, le contenu ou les métadonnées de l’objet.
+Un bon test ne vérifie pas seulement qu’une action autorisée réussit. Il vérifie qu’une action interdite échoue sans divulguer le contenu ni les métadonnées de l’objet. Si son existence est sensible, la réponse ne doit pas non plus la révéler.
 
 Automatisez ces invariants dans les tests de contrat : même identifiant, identités différentes, résultat refusé. Les corrections deviennent alors durables plutôt que limitées à un endpoint.
 
@@ -55,3 +55,5 @@ Automatisez ces invariants dans les tests de contrat : même identifiant, identi
 - Différences entre API REST et GraphQL
 
 L’objectif n’est pas de multiplier les requêtes au hasard, mais de démontrer que les règles d’isolation restent vraies à travers tout le cycle de vie des objets.
+
+Pour aller plus loin : [OWASP API1:2023 — Broken Object Level Authorization](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/).

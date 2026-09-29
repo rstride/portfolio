@@ -21,7 +21,7 @@ This turns a route list into testable invariants. For example: “an administrat
 
 ## Use multiple identities at the same time
 
-Two tenants and three privilege levels make a useful baseline: user A, administrator A, and user B. Keep their sessions separate and capture identifiers created in each context.
+Two tenants and three test identities make a useful baseline: user A, administrator A, and user B. Keep their sessions separate and capture identifiers created in each context.
 
 Replay operations while changing one dimension at a time: object identifier, explicit tenant value, role, HTTP method, body representation, or workflow stage.
 
@@ -39,7 +39,7 @@ Authorization must evaluate the relationship between the identity, organization,
 
 ## Validate negative invariants
 
-A strong test does more than prove an allowed action succeeds. It proves that a forbidden action fails without disclosing the object’s existence, contents, or metadata.
+A strong test does more than prove an allowed action succeeds. It checks that a forbidden action fails without revealing contents or metadata. Where object existence is sensitive, check that the response does not reveal that either.
 
 Turn those invariants into contract tests: same identifier, different identities, denied result. The fix then becomes durable instead of being limited to one endpoint.
 
@@ -55,3 +55,5 @@ Turn those invariants into contract tests: same identifier, different identities
 - REST and GraphQL behavior differences
 
 The goal is not random request volume. It is evidence that isolation rules remain true throughout an object’s lifecycle.
+
+Further reading: [OWASP API1:2023 — Broken Object Level Authorization](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/).
