@@ -35,5 +35,5 @@ test('sitemap excludes all retired project pages and alternates', () => {
 
   assert.ok(entries.every((entry) => !new URL(entry.url).pathname.split('/').includes('projects')));
   assert.ok(entries.every((entry) => Object.values(entry.alternates?.languages ?? {})
-    .every((url) => !new URL(url).pathname.split('/').includes('projects'))));
+    .every((url) => url !== undefined && !new URL(url).pathname.split('/').includes('projects'))));
 });
