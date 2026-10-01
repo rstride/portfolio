@@ -6,7 +6,7 @@ export const homeContent = {
     titleLead: 'RENFORCEZ VOTRE',
     titleAccent: 'SÉCURITÉ ET VOS ÉQUIPES.',
     intro: 'J’évalue la sécurité de vos applications, de votre cloud et de vos réseaux. Je forme aussi vos équipes, de la sensibilisation aux exercices techniques.',
-    primaryCta: 'Parlons de vos besoins', secondaryCta: 'Découvrir mes services', proofLabel: 'Signaux vérifiables',
+    primaryCta: 'Parlons de vos besoins', secondaryCta: 'Découvrir mes services',
     servicesKicker: 'Mes services', servicesTitle: 'Évaluez vos systèmes. Formez vos équipes.',
     servicesText: 'Deux façons de renforcer votre sécurité : identifier les failles de vos systèmes ou développer les compétences de vos équipes.',
     allServices: 'Voir tous les services', processKicker: 'Mon accompagnement', processTitle: 'Des objectifs clairs, du premier échange au bilan.',
@@ -20,7 +20,7 @@ export const homeContent = {
   en: {
     kicker: 'Security audits & training // France and remote', titleLead: 'STRENGTHEN YOUR', titleAccent: 'SECURITY AND YOUR TEAM.',
     intro: 'I assess the security of your applications, cloud, and networks. I also train your teams, from security awareness to hands-on technical exercises.',
-    primaryCta: 'Discuss your needs', secondaryCta: 'Explore my services', proofLabel: 'Verifiable signals',
+    primaryCta: 'Discuss your needs', secondaryCta: 'Explore my services',
     servicesKicker: 'My services', servicesTitle: 'Assess your systems. Train your teams.',
     servicesText: 'Two ways to strengthen your security: identify weaknesses in your systems or build your team’s skills.',
     allServices: 'View all services', processKicker: 'Working together', processTitle: 'Clear objectives, from first conversation to review.',

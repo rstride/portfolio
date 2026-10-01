@@ -1,8 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 32 32" role="img" aria-labelledby="title">
   <title id="title">Romain Stride monogram</title>
-  <rect width="512" height="512" rx="84" fill="#0c0e12"/>
-  <path d="M62 62h100v14H76v86H62zm288 0h100v100h-14V76h-86zM62 350h14v86h86v14H62zm374 0h14v100H350v-14h86z" fill="#00cffc"/>
-  <path d="M130 256h252" stroke="#9cff93" stroke-width="10" opacity=".28"/>
-  <text x="256" y="300" text-anchor="middle" fill="#9cff93" font-family="Arial, Helvetica, sans-serif" font-size="144" font-weight="800" letter-spacing="-10">RS</text>
-  <circle cx="388" cy="126" r="13" fill="#ac89ff"/>
+  <path d="M4 0h24l4 4v24l-4 4H4l-4-4V4z" fill="#0c0e12"/>
+  <path fill="#9cff93" fill-rule="evenodd" d="M5 7h6l4 4v5l-3 3 4 6h-4l-4-6v6H5zm3 3v6h2.5l1.5-1.5v-3L10.5 10z"/>
+  <path fill="#00cffc" d="M20 7h7v3h-6l-1 1v2l1 1h3l3 3v5l-3 3h-7v-3h6l1-1v-2l-1-1h-3l-3-3v-5z"/>
 </svg>
