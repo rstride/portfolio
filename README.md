@@ -128,7 +128,7 @@ npm run build
 
 The build runs the TypeScript 7 check before compiling. Next.js and ESLint still use the TypeScript 6 API through Microsoft's `@typescript/typescript6` compatibility alias; `@typescript/native` supplies the TypeScript 7 executable. Both checks remain enabled.
 
-ESLint stays on 9.39.5 because the current Next.js React, accessibility, and import plugins do not support ESLint 10. The remaining development audit findings come from the unpatched `braces` dependency in the lint tooling. The production dependency audit is clean.
+ESLint stays on 9.39.5 because the current Next.js React, accessibility, and import plugins do not support ESLint 10. The remaining development audit findings come from the unpatched `braces` dependency in the lint tooling. The production dependency graph also reports the unpatched `sprintf-js` advisory through the YAML CLI. The application does not use that CLI, and its dependencies are excluded from the standalone image.
 
 The `sharp` and `postcss` overrides keep Next.js on their patched releases. npm 12 install-script approvals are recorded in `package.json` for the native tooling used by the build and tests.
 
