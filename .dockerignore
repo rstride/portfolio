@@ -1,8 +1,10 @@
 node_modules
 .next
+.next-dev
+*.tsbuildinfo
 .git
 .gitignore
-*.md
+/README.md
 tests/
 __tests__/
 .env*

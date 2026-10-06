@@ -44,13 +44,19 @@ tests/                  Node test suite
 
 Prerequisites:
 
-- Node.js 24 is recommended to match the Docker image
-- npm
+- Node.js 26.10.0 (shared by `.nvmrc`, `.node-version`, CI, and Docker)
+- npm 12.2.0 (recorded in `package.json` and installed by CI and Docker)
+
+If you use nvm, run `nvm install` and `nvm use` in this directory. Then align npm:
+
+```bash
+npm install -g npm@12.2.0
+```
 
 Install dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 Run the development server:
@@ -83,6 +89,8 @@ EMAIL_RSTRIDE_PASS=your-smtp-password
 
 `EMAIL_PORT=465` enables a secure SMTP transport. Other ports use the standard non-secure transport expected by Nodemailer.
 
+The production deployment's `EMAIL_USER` and `EMAIL_PASS` aliases are also supported, with optional `EMAIL_FROM` and `EMAIL_TO`. Dedicated `EMAIL_RSTRIDE` and `EMAIL_RSTRIDE_PASS` settings take precedence when present.
+
 The contact route also attempts to load environment values from the parent directory, which is useful when running this portfolio inside a larger deployment workspace.
 
 ## Available Scripts
@@ -92,6 +100,7 @@ npm run dev      # Start Next.js in development mode using .next-dev
 npm run build    # Build the standalone production app
 npm run start    # Start the production server from .next
 npm run lint     # Run ESLint on app, components, features, lib, and tests
+npm run typecheck # Generate Next.js route types and check with TypeScript 7
 npm run test     # Run the Node test suite
 npm run clean    # Remove local Next.js build output
 ```
@@ -117,6 +126,12 @@ npm run test
 npm run build
 ```
 
+The build runs the TypeScript 7 check before compiling. Next.js and ESLint still use the TypeScript 6 API through Microsoft's `@typescript/typescript6` compatibility alias; `@typescript/native` supplies the TypeScript 7 executable. Both checks remain enabled.
+
+ESLint stays on 9.39.5 because the current Next.js React, accessibility, and import plugins do not support ESLint 10. The remaining development audit findings come from the unpatched `braces` dependency in the lint tooling. The production dependency audit is clean.
+
+The `sharp` and `postcss` overrides keep Next.js on their patched releases. npm 12 install-script approvals are recorded in `package.json` for the native tooling used by the build and tests.
+
 The current tests cover contact validation and source normalization, service slug mapping, blog and project content loading, security headers, security.txt, the web manifest, and SEO output for sitemap, robots, project retirement redirects, privacy metadata, and fallback metadata.
 
 ## Docker
@@ -137,6 +152,7 @@ The Dockerfile builds a standalone Next.js output and runs `server.js` as the no
 
 ## Deployment Notes
 
+- Pushing `main` runs the release workflow: verification, signed GHCR image publication, then an immutable image-digest update in `rstride/PrismaPlatform`. `PLATFORM_REPO_SSH_KEY` is an Actions secret containing a write-enabled SSH deploy key scoped to that deployment repository.
 - Canonical production URLs are defined in `lib/seo.ts` and currently point to `https://rstride.fr`.
 - The CSP intentionally ships in report-only mode first. Promote it to an enforced `Content-Security-Policy` header only after validating the deployed site and contact flow without violations.
 - The sitemap excludes privacy pages and blocks `/api/` through `robots.ts`.

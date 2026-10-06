@@ -8,7 +8,7 @@ import {
   normalizeContactSource,
   normalizeContactPayload,
 } from "@/features/contact/schema";
-import { createTransportOptions } from "@/features/contact/server/mail";
+import { createTransportOptions, resolveContactMailConfig } from "@/features/contact/server/mail";
 import { formatContactEmailText } from "@/features/contact/server/send-contact-email";
 
 const expectedFrenchServiceMappings = {
@@ -147,4 +147,47 @@ test("createTransportOptions maps smtp config without mutation", () => {
       pass: "pass",
     },
   });
+});
+
+test("production SMTP aliases resolve the contact mailbox", () => {
+  const config = resolveContactMailConfig({
+    EMAIL_HOST: "smtp.example.test",
+    EMAIL_USER: "portfolio@example.test",
+    EMAIL_PASS: "test-password",
+    EMAIL_TO: "contact@example.test",
+  });
+
+  assert.deepEqual(config, {
+    host: "smtp.example.test",
+    port: 587,
+    user: "portfolio@example.test",
+    pass: "test-password",
+    secure: false,
+    from: "portfolio@example.test",
+    to: "contact@example.test",
+  });
+});
+
+test("dedicated portfolio SMTP credentials take precedence over aliases", () => {
+  const config = resolveContactMailConfig({
+    EMAIL_HOST: "smtp.example.test",
+    EMAIL_PORT: "465",
+    EMAIL_RSTRIDE: "portfolio@example.test",
+    EMAIL_RSTRIDE_PASS: "portfolio-password",
+    EMAIL_USER: "other@example.test",
+    EMAIL_PASS: "other-password",
+    EMAIL_FROM: "other-from@example.test",
+    EMAIL_TO: "other-to@example.test",
+  });
+
+  assert.equal(config.user, "portfolio@example.test");
+  assert.equal(config.pass, "portfolio-password");
+  assert.equal(config.from, "portfolio@example.test");
+  assert.equal(config.to, "portfolio@example.test");
+  assert.equal(config.secure, true);
+});
+
+test("contact SMTP configuration rejects missing credentials", () => {
+  assert.throws(() => resolveContactMailConfig({ EMAIL_HOST: "smtp.example.test" }),
+    /Missing portfolio SMTP configuration/);
 });

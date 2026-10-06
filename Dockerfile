@@ -1,9 +1,9 @@
 # ───────────────────────────────────────────────────────────────────────────────
 # 1) BUILD STAGE: install all deps, compile TS, build Next.js
 # ───────────────────────────────────────────────────────────────────────────────
-ARG NPM_VERSION=11.14.1
+ARG NPM_VERSION=12.2.0
 
-FROM node:24-alpine AS builder
+FROM node:26.10.0-alpine@sha256:0b36e8c136b94cd4fcf02188228e76c31ad5872eef3fec8cbd2eee500cfd9e80 AS builder
 
 ARG NPM_VERSION
 
@@ -23,7 +23,7 @@ RUN npm run build
 # ───────────────────────────────────────────────────────────────────────────────
 # 2) PRODUCTION STAGE: standalone output (minimal footprint)
 # ───────────────────────────────────────────────────────────────────────────────
-FROM node:24-alpine AS production
+FROM node:26.10.0-alpine@sha256:0b36e8c136b94cd4fcf02188228e76c31ad5872eef3fec8cbd2eee500cfd9e80 AS production
 
 ARG NPM_VERSION
 

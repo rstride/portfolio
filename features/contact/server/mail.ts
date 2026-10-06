@@ -35,15 +35,13 @@ export function createTransportOptions(config: ContactMailConfig) {
   };
 }
 
-export function getRstrideMailConfig(): ContactMailConfig {
-  ensureSharedEnvLoaded();
-
-  const host = process.env.EMAIL_HOST;
-  const port = Number(process.env.EMAIL_PORT || '587');
-  const user = process.env.EMAIL_RSTRIDE;
-  const pass = process.env.EMAIL_RSTRIDE_PASS;
-  const from = process.env.EMAIL_RSTRIDE;
-  const to = process.env.EMAIL_RSTRIDE;
+export function resolveContactMailConfig(env: Record<string, string | undefined>): ContactMailConfig {
+  const host = env.EMAIL_HOST;
+  const port = Number(env.EMAIL_PORT || '587');
+  const user = env.EMAIL_RSTRIDE || env.EMAIL_USER;
+  const pass = env.EMAIL_RSTRIDE_PASS || env.EMAIL_PASS;
+  const from = env.EMAIL_RSTRIDE || env.EMAIL_FROM || user;
+  const to = env.EMAIL_RSTRIDE || env.EMAIL_TO || user;
   const secure = port === 465;
 
   if (!host || !user || !pass || !from || !to || Number.isNaN(port)) {
@@ -59,4 +57,9 @@ export function getRstrideMailConfig(): ContactMailConfig {
     from,
     to,
   };
+}
+
+export function getRstrideMailConfig(): ContactMailConfig {
+  ensureSharedEnvLoaded();
+  return resolveContactMailConfig(process.env);
 }
