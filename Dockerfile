@@ -29,7 +29,8 @@ ARG NPM_VERSION
 
 WORKDIR /app
 
-RUN npm install -g "npm@${NPM_VERSION}"
+RUN apk upgrade --no-cache \
+    && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 # Copy standalone build (includes all dependencies)
 COPY --from=builder /app/.next/standalone ./
