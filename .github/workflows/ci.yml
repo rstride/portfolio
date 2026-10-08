@@ -30,6 +30,7 @@ jobs:
         if: success()
         with:
           name: verification-plan
+          overwrite: true
           path: verification.json
           if-no-files-found: error
           retention-days: 90
@@ -67,6 +68,7 @@ jobs:
         if: always() && hashFiles('test-results.log') != ''
         with:
           name: unit-test-log
+          overwrite: true
           path: test-results.log
           retention-days: 14
       - run: npm run build
@@ -79,6 +81,7 @@ jobs:
         if: always() && hashFiles('dependency-scan.json') != ''
         with:
           name: dependency-scan
+          overwrite: true
           path: dependency-scan.json
           if-no-files-found: error
           retention-days: 90
@@ -105,6 +108,7 @@ jobs:
         if: success()
         with:
           name: verification
+          overwrite: true
           path: verification.json
           if-no-files-found: error
           retention-days: 90

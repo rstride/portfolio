@@ -28,6 +28,7 @@ jobs:
         if: success()
         with:
           name: publication-plan
+          overwrite: true
           path: verification.json
           if-no-files-found: error
           retention-days: 90
@@ -83,6 +84,7 @@ jobs:
         if: always() && hashFiles('portfolio-image-scan.json') != ''
         with:
           name: portfolio-image-scan
+          overwrite: true
           path: portfolio-image-scan.json
           if-no-files-found: error
           retention-days: 90

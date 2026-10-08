@@ -131,6 +131,13 @@ def publish_plan():
     git('fetch', 'origin', current)
     eligible = {c: changed and fingerprint(c, current) == proof['fingerprints'][c]
                 for c, changed in proof['changed'].items()}
+    published = gh(f'repos/{repo}/actions/runs/{os.environ["GITHUB_RUN_ID"]}/artifacts')['artifacts']
+    if any(a['name'] == 'release' and not a['expired'] for a in published):
+        existing = artifact(repo, int(os.environ['GITHUB_RUN_ID']), 'release')
+        if existing['sha'] != proof['sha'] or existing['verification_run_id'] != proof['run_id'] or existing['repository'] != repo:
+            raise ValueError('Existing publication evidence names a different candidate')
+        eligible = dict.fromkeys(eligible, False)
+        print('This run already published an immutable candidate; reusing its receipt without rebuilding')
     Path('verification.json').write_text(json.dumps(proof, indent=2) + '\n')
     with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
         for c, value in eligible.items():
