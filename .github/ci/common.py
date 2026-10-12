@@ -35,7 +35,8 @@ def git(*args):
         environment = {**os.environ, 'GIT_CONFIG_COUNT': '1',
             'GIT_CONFIG_KEY_0': 'http.https://github.com/.extraheader',
             'GIT_CONFIG_VALUE_0': 'AUTHORIZATION: basic ' + credential,
-            'GIT_TRACE': '0', 'GIT_TRACE_CURL': '0', 'GIT_CURL_VERBOSE': '0'}
+            'GIT_TRACE': '0', 'GIT_TRACE_CURL': '0', 'GIT_TRACE_REDACT': '1'}
+        environment.pop('GIT_CURL_VERBOSE', None)
     return subprocess.check_output(['git', '-C', str(ROOT), *args], text=True, env=environment).strip()
 
 

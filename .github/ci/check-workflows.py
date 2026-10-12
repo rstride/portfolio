@@ -54,6 +54,14 @@ def validate(root=ROOT):
             if job.get('permissions', {}).get('packages') != 'write' or job.get('permissions', {}).get('id-token') != 'write':
                 errors.append(f'Publish/{name}: native package publication and signing permissions required')
     if 'ctem-runtime' in release['jobs']:
+        for component in ('platform', 'ctem'):
+            steps = release['jobs'][component]['steps']
+            builds = [s for s in steps if s.get('uses', '').startswith('docker/build-push-action@')]
+            setups = [s for s in steps if s.get('uses', '').startswith('docker/setup-buildx-action@')]
+            if len(builds) != 1 or builds[0].get('with', {}).get('builder') != 'prisma-ci':
+                errors.append(f'{component}: publication must explicitly use the persistent CI builder')
+            if len(setups) != 1 or setups[0].get('with', {}).get('driver') != 'docker-container':
+                errors.append(f'{component}: registry cache requires the container BuildKit driver')
         mode = release['jobs']['ctem-runtime']
         if set(mode['needs']) != {'candidate', 'ctem'} or mode['runs-on'] != 'ubuntu-24.04' or mode.get('permissions', {}).get('packages') != 'read':
             errors.append('CTEM modes must validate the built candidate on a hosted runner')
