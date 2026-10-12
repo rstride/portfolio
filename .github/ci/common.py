@@ -1,5 +1,6 @@
 """Standalone CI contract; keep the identical copy in the three source repositories."""
 import argparse
+import base64
 import hashlib
 import io
 import json
@@ -25,7 +26,17 @@ def gh(endpoint, method='GET', data=None, raw=False):
 
 
 def git(*args):
-    return subprocess.check_output(['git', '-C', str(ROOT), *args], text=True).strip()
+    environment = None
+    if args and args[0] == 'fetch':
+        token = os.environ.get('GH_TOKEN')
+        if not token:
+            raise RuntimeError('Private repository fetch requires the job-scoped GH_TOKEN')
+        credential = base64.b64encode(('x-access-token:' + token).encode()).decode()
+        environment = {**os.environ, 'GIT_CONFIG_COUNT': '1',
+            'GIT_CONFIG_KEY_0': 'http.https://github.com/.extraheader',
+            'GIT_CONFIG_VALUE_0': 'AUTHORIZATION: basic ' + credential,
+            'GIT_TRACE': '0', 'GIT_TRACE_CURL': '0', 'GIT_CURL_VERBOSE': '0'}
+    return subprocess.check_output(['git', '-C', str(ROOT), *args], text=True, env=environment).strip()
 
 
 def fingerprint(component, revision='HEAD'):
