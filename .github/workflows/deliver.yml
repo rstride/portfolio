@@ -1,0 +1,48 @@
+name: Deliver
+on:
+  workflow_run:
+    workflows: [Publish]
+    branches: [main]
+    types: [completed]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  queue:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'workflow_run' && github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check publication contains images
+        id: evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          count="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" --jq '[.artifacts[] | select(.name == "release" and .expired == false)] | length')"
+          echo "present=$([[ "$count" == 1 ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: Require delivery App credentials
+        if: steps.evidence.outputs.present == 'true'
+        env:
+          APP_ID: ${{ vars.DELIVERY_APP_ID }}
+          APP_KEY: ${{ secrets.DELIVERY_APP_PRIVATE_KEY }}
+        run: |
+          test -n "$APP_ID" && test -n "$APP_KEY" || { echo '::error::Install the delivery GitHub App and configure DELIVERY_APP_ID / DELIVERY_APP_PRIVATE_KEY; see docs/ci-cd.md'; exit 1; }
+      - uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349
+        if: steps.evidence.outputs.present == 'true'
+        id: app
+        with:
+          app-id: ${{ vars.DELIVERY_APP_ID }}
+          private-key: ${{ secrets.DELIVERY_APP_PRIVATE_KEY }}
+          owner: rstride
+          repositories: PrismaPlatform, PrismaWebsite, portfolio
+          permission-contents: write
+          permission-actions: read
+      - if: steps.evidence.outputs.present == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+        run: python3 .github/ci/common.py dispatch

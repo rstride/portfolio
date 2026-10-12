@@ -152,7 +152,7 @@ The Dockerfile builds a standalone Next.js output and runs `server.js` as the no
 
 ## Deployment Notes
 
-- Pushing `main` runs the release workflow: verification, signed GHCR image publication, then an immutable image-digest update in `rstride/PrismaPlatform`. `PLATFORM_REPO_SSH_KEY` is an Actions secret containing a write-enabled SSH deploy key scoped to that deployment repository.
+- Pushing `main` runs Verify, then exact-source Publish and App-backed Deliver. PrismaPlatform tests an image-only GitOps PR and observes production separately. See [CI/CD setup](docs/ci-cd.md); the legacy SSH promotion writer is removed.
 - Canonical production URLs are defined in `lib/seo.ts` and currently point to `https://rstride.fr`.
 - The CSP intentionally ships in report-only mode first. Promote it to an enforced `Content-Security-Policy` header only after validating the deployed site and contact flow without violations.
 - The sitemap excludes privacy pages and blocks `/api/` through `robots.ts`.

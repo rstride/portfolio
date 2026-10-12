@@ -1,0 +1,12 @@
+{
+  "components": {
+    "portfolio": {
+      "context": ".",
+      "image": "ghcr.io/rstride/prismasite-portfolio",
+      "paths": [
+        "."
+      ]
+    }
+  },
+  "shared_paths": []
+}
