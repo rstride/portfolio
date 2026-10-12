@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "release": {
+    "fingerprints": {
+      "portfolio": "98e8692287b329230cfb1a65cc03ee91ea08aa3bd51a0c581aa68ce3e6ce141e"
+    },
+    "images": {
+      "portfolio": "ghcr.io/rstride/prismasite-portfolio@sha256:b31c6460836b56de2c42a88df92c5de617fae5bd89f635e126526bcdec32ff6d"
+    },
+    "publication_run_id": 38303850409,
+    "repository": "rstride/portfolio",
+    "sha": "c3a90c3b5ab196d8df27d726b1b3a21c1cef0dca",
+    "verification_run_id": 38303653359,
+    "version": 1
+  },
+  "verification": {
+    "version": 1,
+    "repository": "rstride/portfolio",
+    "sha": "c3a90c3b5ab196d8df27d726b1b3a21c1cef0dca",
+    "run_id": 38303653359,
+    "fingerprints": {
+      "portfolio": "98e8692287b329230cfb1a65cc03ee91ea08aa3bd51a0c581aa68ce3e6ce141e"
+    },
+    "changed": {
+      "portfolio": true
+    }
+  },
+  "publication_attempt": 1,
+  "verification_attempt": 1
+}
