@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
+      reuse: ${{ steps.plan.outputs.reuse }}
       portfolio: ${{ steps.plan.outputs.portfolio }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -93,6 +94,9 @@ jobs:
           cosign-release: v3.1.3
       - run: cosign sign --yes "${{ steps.ref.outputs.image }}"
   publication-result:
+    permissions:
+      contents: write
+      actions: read
     needs: [candidate, portfolio]
     if: always() && needs.candidate.result == 'success' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && contains(needs.*.result, 'success')
     runs-on: ubuntu-24.04
@@ -107,14 +111,16 @@ jobs:
         with:
           name: publication-plan
       - name: Compose release evidence
-        if: needs.portfolio.result == 'success'
+        if: needs.portfolio.result == 'success' || needs.candidate.outputs.reuse == 'true'
         env:
+          GH_TOKEN: ${{ github.token }}
           RELEASE_IMAGES: '{"portfolio": "${{ needs.portfolio.outputs.image }}"}'
         run: python3 .github/ci/common.py release
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: success() && (needs.portfolio.result == 'success')
+        if: success() && (needs.portfolio.result == 'success' || needs.candidate.outputs.reuse == 'true')
         with:
           name: release
+          overwrite: true
           path: release.json
           if-no-files-found: error
           retention-days: 90

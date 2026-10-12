@@ -47,6 +47,12 @@ def validate(root=ROOT):
         errors.append('Publish must follow completed main verification')
     if 'success' not in release['jobs']['candidate'].get('if', ''):
         errors.append('Publish must require successful verification')
+    receipt_job = release['jobs']['publication-result']
+    if receipt_job.get('permissions') != {'contents': 'write', 'actions': 'read'}:
+        errors.append('Only publication finalization requires source-repository receipt writes and evidence reads')
+    for name, job in release['jobs'].items():
+        if name != 'publication-result' and job.get('permissions', {}).get('contents') == 'write':
+            errors.append(f'Publish/{name}: image and eligibility jobs must not write source')
     for name, job in release['jobs'].items():
         if name not in ('candidate', 'publication-result', 'ctem-runtime'):
             if job.get('needs') != 'candidate' or not job.get('if'):

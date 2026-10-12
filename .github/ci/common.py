@@ -57,6 +57,10 @@ def fingerprint(component, revision='HEAD'):
 
 
 def artifact(repo, run_id, name):
+    if name == 'release':
+        saved = publication_receipt(repo, run_id)
+        if saved:
+            return saved['release']
     items = gh(f'repos/{repo}/actions/runs/{run_id}/artifacts')['artifacts']
     matches = [a for a in items if a['name'] == name and not a['expired']]
     if len(matches) != 1:
@@ -69,6 +73,50 @@ def artifact(repo, run_id, name):
         if entry.file_size > 65536:
             raise ValueError('Oversized release metadata')
         return json.loads(archive.read(entry))
+
+
+def publication_receipt(repo, run_id):
+    branch = f'publication-receipts/{int(run_id)}'
+    refs = gh(f'repos/{repo}/git/matching-refs/heads/{branch}')
+    if not any(ref['ref'] == 'refs/heads/' + branch for ref in refs):
+        return None
+    blob = gh(f'repos/{repo}/contents/receipt.json?ref={branch}')
+    if blob.get('size', 65537) > 65536:
+        raise ValueError('Oversized publication receipt')
+    receipt = json.loads(base64.b64decode(blob['content']))
+    if (receipt.get('version') != 1 or receipt['release']['repository'] != repo
+            or receipt['release']['publication_run_id'] != int(run_id)
+            or receipt['verification']['repository'] != repo
+            or receipt['verification']['sha'] != receipt['release']['sha']
+            or receipt['verification']['run_id'] != receipt['release']['verification_run_id']
+            or type(receipt['publication_attempt']) is not int or receipt['publication_attempt'] < 1
+            or type(receipt['verification_attempt']) is not int or receipt['verification_attempt'] < 1):
+        raise ValueError('Publication receipt identity mismatch')
+    return receipt
+
+
+def persist_publication_receipt(repo, receipt):
+    run_id = receipt['release']['publication_run_id']
+    existing = publication_receipt(repo, run_id)
+    if existing:
+        if existing['release'] != receipt['release'] or existing['verification'] != receipt['verification']:
+            raise ValueError('Cannot replace an immutable publication receipt')
+        return
+    tree = gh(f'repos/{repo}/git/trees', 'POST', {'tree': [{'path': 'receipt.json',
+        'mode': '100644', 'type': 'blob', 'content': json.dumps(receipt, indent=2) + '\n'}]})['sha']
+    commit = gh(f'repos/{repo}/git/commits', 'POST', {'message': f'ci: immutable publication receipt {run_id}',
+        'tree': tree, 'parents': []})['sha']
+    try:
+        gh(f'repos/{repo}/git/refs', 'POST', {'ref': f'refs/heads/publication-receipts/{run_id}', 'sha': commit})
+    except RuntimeError as error:
+        ambiguous = 'Reference already exists' in str(error) or any(f'HTTP {code}' in str(error) for code in (500, 502, 503, 504))
+        if not ambiguous:
+            raise
+        confirmed = publication_receipt(repo, run_id)
+        if confirmed is None:
+            raise
+        if confirmed != receipt:
+            raise ValueError('Concurrent publication receipt differs') from error
 
 
 def baseline(repo, sha):
@@ -134,7 +182,8 @@ def publish_plan():
     repo = os.environ['GITHUB_REPOSITORY']
     if run['conclusion'] != 'success' or run['event'] not in ('push', 'workflow_dispatch') or run['head_branch'] != 'main':
         raise ValueError('Publication requires successful main-push verification')
-    proof = artifact(repo, run['id'], 'verification')
+    saved = publication_receipt(repo, int(os.environ['GITHUB_RUN_ID']))
+    proof = saved['verification'] if saved else artifact(repo, run['id'], 'verification')
     if proof['sha'] != run['head_sha'] or proof['repository'] != repo or proof['run_id'] != run['id']:
         raise ValueError('Verification artifact does not match triggering run')
     if git('rev-parse', 'HEAD') != proof['sha']:
@@ -143,9 +192,8 @@ def publish_plan():
     git('fetch', 'origin', current)
     eligible = {c: changed and fingerprint(c, current) == proof['fingerprints'][c]
                 for c, changed in proof['changed'].items()}
-    published = gh(f'repos/{repo}/actions/runs/{os.environ["GITHUB_RUN_ID"]}/artifacts')['artifacts']
-    if any(a['name'] == 'release' and not a['expired'] for a in published):
-        existing = artifact(repo, int(os.environ['GITHUB_RUN_ID']), 'release')
+    if saved:
+        existing = saved['release']
         if existing['sha'] != proof['sha'] or existing['verification_run_id'] != proof['run_id'] or existing['repository'] != repo:
             raise ValueError('Existing publication evidence names a different candidate')
         eligible = dict.fromkeys(eligible, False)
@@ -154,6 +202,7 @@ def publish_plan():
     with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
         for c, value in eligible.items():
             output.write(f'{c}={str(value).lower()}\n')
+        output.write(f'reuse={str(bool(saved)).lower()}\n')
         output.write(f'publish={str(any(eligible.values())).lower()}\n')
 
 
@@ -161,15 +210,21 @@ def release_manifest():
     proof = json.loads(Path('verification.json').read_text())
     images = json.loads(os.environ['RELEASE_IMAGES'])
     images = {k: v for k, v in images.items() if v}
-    if not images:
+    saved = publication_receipt(proof['repository'], int(os.environ['GITHUB_RUN_ID']))
+    if not images and not saved:
         raise ValueError('No images were published')
-    value = {'version': 1, 'repository': proof['repository'], 'sha': proof['sha'],
+    value = saved['release'] if saved else {'version': 1, 'repository': proof['repository'], 'sha': proof['sha'],
              'verification_run_id': proof['run_id'], 'publication_run_id': int(os.environ['GITHUB_RUN_ID']),
              'fingerprints': {c: proof['fingerprints'][c] for c in images}, 'images': images}
+    trigger = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())['workflow_run']
+    receipt = saved or {'version': 1, 'release': value, 'verification': proof,
+        'publication_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+        'verification_attempt': int(trigger['run_attempt'])}
+    persist_publication_receipt(proof['repository'], receipt)
     Path('release.json').write_text(json.dumps(value, indent=2) + '\n')
     with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
         output.write('## Published\n\nVerified source: `' + proof['sha'] + '`\n\n')
-        for component, image in images.items():
+        for component, image in value['images'].items():
             output.write(f'- {component}: `{image}` (scanned, smoked and signed)\n')
 
 

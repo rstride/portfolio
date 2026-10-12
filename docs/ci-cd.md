@@ -8,6 +8,13 @@ builds once, scans/smokes the digest, signs it, and retains provenance/SBOMs.
 **Deliver** sends release-ready evidence to PrismaPlatform using a short-lived
 GitHub App token. Docs-only pushes do not publish images.
 
+Publication finalization keeps an immutable `publication-receipts/<run-id>` Git
+ref with the digest and verification proof. Actions artifacts disappear on
+reruns; this durable receipt restores them and skips rebuilding. Only the
+finalizer has native source-repository Contents write permission. Retain these
+refs for deployed and rollback releases; transient reports retain their normal
+artifact expiry.
+
 Configure `DELIVERY_APP_ID` and `DELIVERY_APP_PRIVATE_KEY` after installing the one
 private delivery App on all three repositories. The key belongs in Actions Secrets,
 never chat or Git. GHCR publication uses this repository's native `GITHUB_TOKEN`.
