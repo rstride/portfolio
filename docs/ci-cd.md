@@ -41,3 +41,10 @@ validation. The platform browser gate is enforced after five complete green runs
 Successful browser and deployment observations wake the central durable queue;
 a scheduled heartbeat is a fallback. Documentation pushes run lightweight
 verification and do not rebuild or promote an image.
+
+The queued main-push release completed automatically after activation: publication
+[38306490939](https://github.com/rstride/portfolio/actions/runs/38306490939),
+tested App [PR 59](https://github.com/rstride/PrismaPlatform/pull/59), and healthy
+production observation [38388055242](https://github.com/rstride/PrismaPlatform/actions/runs/38388055242).
+No per-release recovery dispatch was used. The subsequent documentation push
+verified successfully and skipped image publication.
