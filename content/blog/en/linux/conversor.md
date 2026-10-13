@@ -1,8 +1,9 @@
 ---
 id: HTB-2026-CONVERSOR
 title: Conversor
-excerpt: Path traversal in an upload workflow enables cron-job hijacking, followed by credential reuse and a sudo Needrestart escalation to root.
+excerpt: "Upload-path traversal, scheduled execution, credential reuse, and needrestart: following the execution identity across each trust boundary."
 date: '2025-10-25'
+updated: "2026-10-13"
 tags:
   - WRITEUP
   - HACKTHEBOX
@@ -20,95 +21,51 @@ icon: Terminal
 author: '0x7CC'
 ---
 
-## TL;DR
-On **Conversor**, a path traversal vulnerability in the file upload endpoint allows writing arbitrary scripts into a directory executed by a root cron job, yielding code execution as `www-data`. Credential reuse from the local database allows SSH access as user `fismathack`. Finally, privilege escalation is achieved by exploiting a misconfigured sudo entry for `needrestart` to run a custom Perl configuration file containing malicious commands.
+## Attack chain and evidence
 
----
+Conversor links an unsafe upload destination to scheduled Python execution, then database credential reuse and a permissive sudo rule. The existing lab account records shells as `www-data`, then `fismathack`, then root. It does not include a complete upload request or the scheduler configuration; the examples below explain the mechanism rather than reproduce a captured session.
 
-## Target
-- Host: `conversor.htb`
-- IP: `10.129.7.27`
+A root-owned cron file does not establish that its command runs as root. The relevant evidence is the job's user field, any privilege drop in the command, and the identity of the resulting process. The recorded `www-data` shell supports execution as that account, not an immediate root foothold.
 
----
+## Enumeration: follow the source to the filesystem
 
-## Recon: Directory enumeration exposes source code
-
-### Nmap Scan
-- **Port 22/tcp**: SSH
-- **Port 80/tcp**: HTTP (redirects to `http://conversor.htb`)
-
-Directory enumeration on port 80 reveals an exposed archive containing the application source code: `source_code.tar.gz`.
-
----
-
-## Initial Foothold: Path Traversal and Cron Hijack
-
-Analyzing the extracted `app.py` reveals a path traversal vulnerability in the `/convert` upload endpoint. The filename parameter is not sanitized:
+The recorded target is `conversor.htb`, serving HTTP and SSH. An exposed `source_code.tar.gz` gives access to `app.py`. Source disclosure is useful because it connects an input field to the actual write operation:
 
 ```python
-# Vulnerable file upload path handling
 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 ```
 
-We also identify a root-owned cron job that executes all Python scripts in the `/var/www/conversor.htb/scripts/` directory every minute. By using path traversal (`filename='../scripts/pwn.py'`), we upload a reverse shell payload that executes automatically, giving us a shell as `www-data`.
+Joining paths does not confine them. If `filename` is client-controlled, `../scripts/pwn.py` can reach a sibling directory; an absolute path can also override the base path. To establish exploitation, record the upload base, normalized destination, write permissions, and the process consuming that file. The excerpt alone does not prove all of those conditions.
 
----
+## Scheduled execution and the user transition
 
-## User Access: Database extraction & credential reuse
+The lab account identifies `/var/www/conversor.htb/scripts/` as a directory consumed periodically. An uploaded Python file only becomes code execution if the application can write there and the scheduler executes it. In an authorized replay, a harmless marker containing the process identity provides better evidence than merely finding the file.
 
-We locate a local database file `users.db`. Dumping the database yields the MD5 hash for the user `fismathack`:
-- Hash: `5b5c3ac3a1c897c94caad48e6c71fdec`
-- Cracked password: `Keepmesafeandwarm`
+After obtaining application execution, the account describes reading `users.db`, recovering the `fismathack` password from an MD5 hash, and reusing it for SSH. These are separate controls: database readability, password resistance to guessing, and cross-service password reuse. MD5 recovery does not automatically establish that SSH accepts the password.
 
-We log in via SSH using these credentials to obtain the user flag.
+## Privilege escalation: executable configuration
 
----
+The recorded sudo rule permits `/usr/sbin/needrestart` without a password. Its `-c` option selects a configuration file; the configuration uses Perl syntax. This is a delegation issue involving attacker-controlled configuration, not a version-specific exploit demonstrated here. See the [needrestart manual](https://manpages.debian.org/bookworm/needrestart/needrestart.1.en.html).
 
-## Privilege Escalation: Sudo Needrestart Exploitation
-
-Running `sudo -l` reveals:
-```bash
-(ALL : ALL) NOPASSWD: /usr/sbin/needrestart
-```
-
-The `needrestart` utility checks which daemons need to be restarted. It supports a `-c` flag to specify a configuration file, which is loaded and evaluated as Perl code. We write a malicious configuration file `pwn.conf` containing Perl code to copy and elevate bash:
+For a controlled validation, `/home/fismathack/probe.conf` is an illustrative file containing only:
 
 ```perl
-system("cp /bin/bash /tmp/rootbash && chmod 4755 /tmp/rootbash");
+system('/usr/bin/id');
 ```
 
-We run the tool with our config file:
+With the recorded rule still in place, the illustrative invocation is:
+
 ```bash
-sudo needrestart -c /home/fismathack/pwn.conf
+sudo /usr/sbin/needrestart -c /home/fismathack/probe.conf
 ```
 
-This triggers the Perl code execution as root. We execute `/tmp/rootbash -p` to access root and read the flag.
+An identity printed by the configuration establishes its execution context. A successful utility exit alone does not.
 
----
+## Fix the boundaries and verify them
 
-## Defensive notes / remediation
+- Generate server-side upload names and keep uploads outside executable directories. If preserving names, apply basename sanitization and destination containment checks; account for symlinks. Werkzeug documents [secure_filename and its limitations](https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.utils.secure_filename).
+- Make scheduled code and its parent directories writable only by deployment administrators. Verify the actual scheduler account and attempt traversal with a harmless file in a test environment.
+- Replace the unrestricted sudo delegation with a reviewed operation using fixed, trusted configuration. Confirm the user cannot select another config or modify any loaded dependency.
+- Rotate reused credentials and migrate password storage to a supported password-hashing scheme.
 
-### Fix
-- Use `secure_filename` from Werkzeug to sanitize uploaded file names.
-- Restrict write access to directories that run cron scripts.
-- Do not allow users to pass arbitrary config files to tools executed via sudo.
-
-### Monitoring / detection ideas
-- Monitor filesystem write events inside critical system script directories.
-- Alert on sudo executions of `needrestart` containing the `-c` command-line parameter.
-
----
-
-## Lessons learned
-- Path traversal vulnerabilities in file uploads can easily lead to RCE if system scripts are writable.
-- Executing system management utilities with sudo should be done with tight controls over command-line arguments.
-
----
-
-## Appendix: Timeline summary
-1. Recon -> Locate port 80 and download source code archive.
-2. Exploit -> Leverage path traversal to write a script in the cron directory.
-3. User Access -> Dump SQLite DB, crack password, SSH as `fismathack`.
-4. Privilege Escalation -> Leverage `needrestart -c` Perl execution to gain root.
-
----
+Monitor unexpected writes to the scheduled-script directory and sudo invocations selecting nonstandard configuration files. The useful signal is a write followed by execution under another identity, not a filename alone.

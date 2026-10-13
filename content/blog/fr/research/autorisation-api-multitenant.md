@@ -1,8 +1,9 @@
 ---
 id: RESEARCH-2026-002
 title: "Tester l’autorisation d’une API multi-tenant au-delà des checklists"
-excerpt: "Une méthode centrée sur les objets, les transitions et les invariants pour détecter les ruptures d’isolation que les tests endpoint par endpoint manquent souvent."
+excerpt: "Une matrice tenants et rôles, des requêtes, des transitions et du pseudocode de non-régression pour évaluer l’isolation d’une API multi-tenant."
 date: "2026-09-22"
+updated: "2026-10-13"
 tags: ["RESEARCH", "API", "MULTI-TENANT", "AUTHORIZATION", "BOLA"]
 category: "RESEARCH"
 icon: "Code"
@@ -11,49 +12,98 @@ featured: true
 published: true
 ---
 
-Les failles d’autorisation multi-tenant apparaissent rarement sous la forme d’un unique endpoint manifestement public. Elles émergent plutôt d’une incohérence entre plusieurs opérations, rôles ou états d’un même objet.
+L’autorisation multi-tenant relie une identité authentifiée, ses appartenances actuelles, un objet et une action. Tester une requête réussie par endpoint laisse cette relation largement inexplorée.
 
-## Modéliser avant de tester
+Cet article développe un exemple synthétique, pas un constat client ni une découverte de vulnérabilité inédite. Domaines, identités, objets et réponses sont fictifs. La méthode transforme la politique produit en contrôles positifs et négatifs utilisables après correction.
 
-Commencez par une matrice : organisations, utilisateurs, rôles, types d’objets et actions. Pour chaque action, notez qui peut créer, lire, modifier, supprimer, partager, exporter ou administrer l’objet.
+## Commencer par une politique explicite
 
-Cette matrice transforme une liste de routes en invariants testables. Par exemple : « un administrateur de l’organisation A ne peut jamais rattacher un rapport de B à son propre espace ».
+Notre service stocke des rapports pour A et B. Un membre peut lire les rapports de son organisation et modifier ses propres brouillons. Un administrateur peut publier et exporter les rapports de son organisation. Aucun rôle ne peut accéder à l’autre organisation. L’exemple ne prévoit ni liens publics ni exceptions de support.
 
-## Utiliser plusieurs identités simultanément
+Préparer des sessions indépendantes pour `member_A`, `admin_A` et `member_B`, avec ces données :
 
-Deux tenants et trois identités de test constituent une base utile : utilisateur A, administrateur A et utilisateur B. Conservez des sessions distinctes et capturez les identifiants créés dans chaque contexte.
+| Objet | Contexte |
+| --- | --- |
+| `report_A1` | A ; propriétaire `member_A` ; draft |
+| `report_A2` | A ; propriétaire `admin_A` ; published |
+| `report_B1` | B ; propriétaire `member_B` ; draft |
 
-Rejouez ensuite les opérations en changeant une seule dimension à la fois : identifiant d’objet, tenant explicite, rôle, méthode HTTP, représentation du corps ou étape du workflow.
+La matrice attendue est :
 
-## Tester les transitions, pas uniquement les lectures
+| Acteur | Actions A1 permises | Lire B1 |
+| --- | --- | --- |
+| `member_A` | lire, modifier | refusé |
+| `admin_A` | lire, publier, exporter | refusé |
+| `member_B` | aucune | autorisé |
 
-Une lecture correctement protégée ne garantit pas la sécurité des opérations secondaires. Les routes d’export, de duplication, d’invitation, de commentaire, de téléchargement, de recherche ou d’action en masse réutilisent parfois des contrôles différents.
+Les actions A1 non listées sont refusées.
 
-Les transitions d’état sont particulièrement importantes : brouillon vers publié, membre vers administrateur, actif non vérifié vers vérifié, ou constat ouvert vers corrigé.
+Le refus de modification pour l’admin est volontaire : notre politique réserve l’édition au propriétaire. Adapter la matrice au contrat produit, sans supposer qu’« admin » autorise toute action.
 
-## Rechercher les sources d’autorité concurrentes
+## Établir une requête légitime puis varier une dimension
 
-Une API peut recevoir le tenant dans le jeton, le chemin, le corps et la base de données. Si ces sources ne sont pas résolues selon une règle unique, un attaquant peut provoquer une confusion de contexte.
+La requête suivante est illustrative. `<TOKEN_MEMBER_A>` représente un jeton de test valide pour `member_A` dans A :
 
-Le contrôle doit porter sur la relation entre l’identité, l’organisation et l’objet chargé côté serveur. Masquer un champ dans l’interface ou vérifier seulement un identifiant transmis par le client ne suffit pas.
+```http
+GET /api/organizations/A/reports/report_A1 HTTP/1.1
+Host: api.example.test
+Authorization: Bearer <TOKEN_MEMBER_A>
+```
 
-## Valider les invariants négatifs
+Le résultat attendu est `200` avec les données d’A1. Conserver le jeton et changer seulement l’objet :
 
-Un bon test ne vérifie pas seulement qu’une action autorisée réussit. Il vérifie qu’une action interdite échoue sans divulguer le contenu ni les métadonnées de l’objet. Si son existence est sensible, la réponse ne doit pas non plus la révéler.
+```http
+GET /api/organizations/A/reports/report_B1 HTTP/1.1
+Host: api.example.test
+Authorization: Bearer <TOKEN_MEMBER_A>
+```
 
-Automatisez ces invariants dans les tests de contrat : même identifiant, identités différentes, résultat refusé. Les corrections deviennent alors durables plutôt que limitées à un endpoint.
+Cet exemple choisit `404`, sans donnée ni métadonnée de B1. Un `403` peut aussi correspondre à une politique ; l’invariant est le refus sans divulgation involontaire. Changer ensuite l’organisation du chemin vers B en conservant le jeton, puis tester B1 comme `admin_A`. Le rôle admin ne doit pas supprimer la frontière de tenant.
 
-## Points de contrôle
+Des IDs prévisibles ne sont pas nécessaires : deux comptes légitimes fournissent des IDs connus. La [description BOLA d’OWASP](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/) désigne le défaut de contrôle sur l’objet, pas le simple format de son identifiant.
 
-- Identifiants prévisibles et opaques
-- Opérations secondaires et bulk
-- Filtres, recherche et exports
-- Webhooks, tâches asynchrones et fichiers
-- Changements de rôle et invitations
-- Caches partagés
-- Routes administratives et support
-- Différences entre API REST et GraphQL
+## Tester les sources de contexte contradictoires
 
-L’objectif n’est pas de multiplier les requêtes au hasard, mais de démontrer que les règles d’isolation restent vraies à travers tout le cycle de vie des objets.
+Une organisation peut apparaître dans le chemin, le jeton, un en-tête et le corps. Documenter le sens prévu de chaque source. Résoudre appartenance et propriété côté serveur avant d’agir ; vérifier seulement que l’appelant appartient au tenant A du chemin n’autorise pas un objet chargé depuis B.
 
-Pour aller plus loin : [OWASP API1:2023 — Broken Object Level Authorization](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/).
+Pour les écritures, utiliser des données jetables et comparer avant/après. Soumettre un tenant contradictoire dans le corps, une référence d’objet étranger et un lot mélangeant les tenants. Ici, le traitement bulk est atomique : un objet étranger provoque un refus sans modification d’aucun élément. Tester ce contrat sans le déduire du code HTTP.
+
+## Suivre les transitions et traitements différés
+
+Une lecture protégée ne prouve pas l’isolation de la publication, duplication, export ou téléchargement. Parcourir le cycle de vie :
+
+- `member_A` modifie son brouillon mais ne peut le publier.
+- `admin_A` publie A1 ; son propriétaire ne peut plus le modifier comme brouillon.
+- Retirer `member_A` de A révoque les lectures suivantes, même avec un jeton non expiré.
+- Le worker d’export doit revérifier les droits avant de produire l’artefact si l’appartenance change après la mise en file. Le téléchargement applique sa propre politique.
+- Une invitation révoquée ne doit pas créer d’appartenance lors du rejeu de son ancien lien.
+
+Observer workers et artefacts, pas seulement la réponse initiale. Les caches partagés doivent préserver la même isolation identité/tenant lors d’un hit et d’un miss.
+
+## Transformer la politique en non-régression
+
+Ceci est du pseudocode : `fixtures`, `client` et `store` représentent les helpers de test applicatifs, pas une bibliothèque exécutable. Chaque cas part de données neuves. `object_snapshot` comprend état métier et version ; les événements d’audit sont contrôlés séparément. `read_cases` fournit acteur, organisation du chemin, ID et code attendu selon la matrice. `leaks_object_data_or_metadata` examine corps et en-têtes pour détecter contenu, noms et identifiants de l’objet étranger.
+
+```python
+for actor, organization, object_id, expected in read_cases:
+    response = client(actor).get_report(organization, object_id)
+    assert response.status == expected
+    if expected == 200:
+        assert response.json["id"] == object_id
+    else:
+        assert not leaks_object_data_or_metadata(response)
+
+before = store.object_snapshot("report_A1")
+response = client("member_A").publish("A", "report_A1")
+assert response.status == 403
+assert store.object_snapshot("report_A1") == before
+assert not store.has_publish_job("report_A1")
+```
+
+Inclure les contrôles positifs : une route cassée ou une dépendance indisponible ne doit pas passer pour une bonne isolation. La [fiche d’autorisation OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html) recommande des contrôles cohérents et des tests de comportement.
+
+## Définir ce que le résultat démontre
+
+Relever acteur, appartenances effectives, provenance de l’objet, requête, réponse, effets de bord, build et date. Une requête refusée avec un export déjà en file constitue un échec ; une route corrigée ne démontre pas l’isolation de tout l’objet.
+
+Pour préparer les accès, utiliser la [checklist de pentest SaaS](/blog/preparer-saas-pentest). Pour documenter une défaillance et sa clôture, voir [le guide constat-remédiation-retest](/blog/rapport-remediation-retest). Le livrable utile est un ensemble d’observations reliées à la politique, avec les parties non testées.

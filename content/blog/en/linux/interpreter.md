@@ -1,8 +1,9 @@
 ---
 id: HTB-2026-INTERPRETER
 title: Interpreter
-excerpt: Unauthenticated XML deserialization in Mirth Connect provides code execution, followed by a double f-string evaluation flaw for privilege escalation.
+excerpt: "Mirth Connect deserialization, password reuse, and a second evaluation of Python f-strings: explain the transitions and remove the eval boundary."
 date: '2026-02-21'
+updated: "2026-10-13"
 tags:
   - WRITEUP
   - HACKTHEBOX
@@ -20,90 +21,50 @@ icon: Terminal
 author: '0x7CC'
 ---
 
-## TL;DR
-On **Interpreter**, initial access is obtained by exploiting an unauthenticated XStream deserialization vulnerability (CVE-2023-43208) in NextGen Mirth Connect 4.4.0, yielding a shell as user `mirth`. Post-exploitation database queries allow us to retrieve a hash for user `sedric`, which is cracked (PBKDF2-HMAC-SHA256) to gain SSH access. Privilege escalation is achieved by exploiting a double-evaluation f-string vulnerability in a local Flask application running as root.
+## Chain and prerequisites
 
----
+Interpreter's account records Mirth Connect 4.4.0, execution as `mirth`, database access, recovery of a `sedric` password, SSH access, and a root-running notification service evaluating user input.
 
-## Target
-- Host: `interpreter.htb`
-- IP: `10.129.16.252`
+The initial exploit XML and stored hash record are absent. Endpoint, gadget, salt, encoding, and iteration count are not independently established here. Do not copy the reported PBKDF2 parameters into a cracking command without inspecting the actual record.
 
----
+## Mirth Connect: version and process context
 
-## Recon: Open ports and Mirth Connect discovery
+The target is `interpreter.htb`; the account identifies the version through an administrator JNLP file. An exposed version is a lead. Verify the installed application, patch state, and reachable deserialization path.
 
-An initial network scan reveals:
-- **Port 22/tcp**: SSH
-- **Port 80/443/tcp**: HTTP/HTTPS hosting NextGen Mirth Connect Administrator
-- **Port 6661/tcp**: Mirth Connect internal communications
+CVE-2023-43208 concerns unauthenticated execution before Mirth Connect 4.4.1 after an incomplete earlier fix. The [vendor release notes](https://github.com/nextgenhealthcare/connect/wiki/4.4.1---What's-New) provide the patch reference; the [discoverer's description](https://docs.horizon3ai.com/knowledge_base/weaknesses/H3-2023-0027/) identifies execution in the service-user context.
 
-Analyzing the JNLP file from the web administrator portal confirms the version is NextGen Mirth Connect 4.4.0, which is vulnerable to unauthenticated XML deserialization.
+The reported `mirth` shell is not automatically root. Reading /usr/local/mirthconnect/conf/mirth.properties crosses a separate filesystem boundary. Database credentials can permit reading hashes without establishing another user's SSH access.
 
----
+## Password recovery and reuse
 
-## Initial Foothold: XStream Deserialization (CVE-2023-43208)
+The account reports querying `PERSON`, recovering `sedric`'s password, and reusing it for SSH. Strong hashing increases guessing cost, not the strength of a weak password. Record the serialized format and parameters before choosing a tool mode; separately demonstrate acceptance by the second service.
 
-The version of Mirth Connect is vulnerable to CVE-2023-43208, a bypass of the XStream deserialization fix. The endpoint accepts raw XML payloads without authentication.
+Recovered secrets are omitted because their values do not explain the privilege transition.
 
-Using XStream deserialization gadget chains, we trigger a shell execution that connects back to our listener. We obtain a shell as user `mirth`.
+## The second f-string turns data into syntax
 
----
-
-## User Access: Database extraction & PBKDF2 hash cracking
-
-We investigate the application properties at `/usr/local/mirthconnect/conf/mirth.properties`. We retrieve the database credentials for MariaDB: `MirthPass123!`.
-
-Connecting to the database, we query the `PERSON` table and extract the hash for the user `sedric`. The hash is stretched using PBKDF2-HMAC-SHA256 with 600,000 iterations. We crack the hash using John/Hashcat to reveal the password: `snowflake1`. We connect via SSH as `sedric`.
-
----
-
-## Privilege Escalation: Python f-string Double Evaluation
-
-Local enumeration reveals a Flask application running as root on local port 54321: `/usr/local/bin/notif.py`. It parses incoming patient records and evaluates them dynamically using double f-string formatting inside `eval()`:
+The retained excerpt from `/usr/local/bin/notif.py`, described as root-running behind a local service, is:
 
 ```python
 template = f"Patient {first} {last} ({gender}), {{datetime.now().year - year_of_birth}} years old"
-try:
-    return eval(f"f'''{template}'''")
+return eval(f"f'''{template}'''")
 ```
 
-Because of this double evaluation, wrapping Python code inside curly braces `{}` triggers execution. The script enforces a regex to restrict characters, blocking spaces and semi-colons.
+The first formatting inserts untrusted strings; `eval` then parses them as a new f-string. Braces that were data become Python expressions. Blocking spaces or semicolons does not remove this design flaw. Python warns about user-supplied input through [eval](https://docs.python.org/3/library/functions.html#eval).
 
-We bypass this filter by base64-encoding our command and invoking it via `__import__("os").popen()`:
+The original encoded shell payload and complete filter are not retained as a verified bypass. Root execution is reported; replay additionally requires the schema, service reachability, filter, and runtime identity. Loopback does not make local-user input trustworthy.
+
+## Remove evaluation and verify
+
+This illustrative replacement validates a birth year separately, computes age as data, and formats once:
 
 ```python
-# Payload
-{__import__("os").popen(__import__("base64").b64decode("aW5zdGFsbCAtbyByb290IC1tIDQ3NTUgL2Jpbi9iYXNoIC90bXAvLnNo").decode()).read()}
+age = datetime.now().year - year_of_birth
+message = f"Patient {first} {last} ({gender}), {age} years old"
 ```
 
-We send the XML payload to local port 54321, spawning a SUID root bash shell at `/tmp/.sh`. We run it to obtain root access.
+`datetime` is imported and `year_of_birth` has passed type/range checks. This removes evaluation without implementing all validation or authorization.
 
----
+Upgrade to a maintained Mirth release containing the fix, limit database and config-file access, rotate exposed credentials, and remove root rights from the notification service.
 
-## Defensive notes / remediation
-
-### Fix
-- Upgrade NextGen Mirth Connect to a patched version (4.4.1+).
-- Do not use `eval()` with f-strings to format strings containing user input.
-- Avoid exposing critical administrative services on loopback ports without authentication.
-
-### Monitoring / detection ideas
-- Monitor XML payloads for XStream signature gadgets (like `java.lang.ProcessBuilder`).
-- Watch for executions of SUID binaries spawned in temporary folders.
-
----
-
-## Lessons learned
-- Secure password hashing (PBKDF2 with high iterations) is still vulnerable if weak passwords are used.
-- Python `eval()` combined with dynamic formatting leads to trivial command injection.
-
----
-
-## Appendix: Timeline summary
-1. Recon -> Identify exposed Mirth Connect 4.4.0.
-2. Foothold -> Execute exploit for CVE-2023-43208 to get shell as `mirth`.
-3. User -> Dump MariaDB database, crack PBKDF2 hash, SSH as `sedric`.
-4. Privilege Escalation -> Leverage f-string double evaluation on port 54321 to get root.
-
----
+In a controlled test, submit literal `{1+1}` in a name: it must remain data or be rejected, never become `2`. Verify normal notifications, denied unauthorized callers, and an unprivileged process identity. Monitor unexpected child processes from these services and temporary SUID creation, correlated with requests rather than a string pattern alone.

@@ -1,8 +1,9 @@
 ---
 id: "HTB-2026-INTERPRETER"
 title: "Interpreter"
-excerpt: "Sur Interpreter, une désérialisation XML non authentifiée dans Mirth Connect fournit un shell, puis une double évaluation f-string permet l'élévation de privilèges."
+excerpt: "Désérialisation Mirth Connect, réutilisation de mot de passe et seconde évaluation de f-strings Python : expliquer les transitions et retirer eval."
 date: "2026-02-21"
+updated: "2026-10-13"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "DESERIALIZATION", "CVE-2023-43208", "F-STRING-INJECTION"]
 category: "WRITEUP"
 platform: "HACKTHEBOX"
@@ -13,62 +14,50 @@ author: "0x7CC"
 published: true
 ---
 
-## TL;DR
-Sur **Interpreter**, l'accès initial est obtenu via une désérialisation XML non authentifiée (CVE-2023-43208) dans NextGen Mirth Connect 4.4.0, donnant un shell en tant que `mirth`. Un dump de base de données permet d'obtenir le hash de `sedric` qui est cracké pour accéder au SSH. L'élévation s'effectue via une vulnérabilité de double évaluation de f-strings Python dans un script Flask local s'exécutant en root.
+## Chaîne et prérequis
 
----
+Le récit d’Interpreter rapporte Mirth Connect 4.4.0, une exécution `mirth`, la base de données, le mot de passe retrouvé de `sedric`, SSH puis un service de notification root évaluant l’entrée.
 
-## Cible
-- Host : `interpreter.htb`
-- IP : `10.129.16.252`
+Le XML initial et l’enregistrement du hash sont absents. Endpoint, gadget, sel, encodage et itérations ne sont pas établis indépendamment. Ne pas copier les paramètres PBKDF2 rapportés dans une commande sans examiner la valeur réelle.
 
----
+## Mirth Connect : version et contexte
 
-## Recon : Ports ouverts et détection de Mirth Connect
-Le scan réseau montre :
-- **Port 22/tcp** : SSH
-- **Port 80/443/tcp** : Mirth Connect Administrator (4.4.0)
+La cible est `interpreter.htb` ; le récit identifie la version dans un JNLP d’administration. Une version exposée oriente les recherches. Vérifier application installée, correctifs et route de désérialisation.
 
-La version 4.4.0 de NextGen Connect est vulnérable aux attaques de désérialisation XML XStream.
+CVE-2023-43208 concerne une exécution non authentifiée avant Mirth Connect 4.4.1 après une correction antérieure incomplète. Les [notes de l’éditeur](https://github.com/nextgenhealthcare/connect/wiki/4.4.1---What's-New) donnent la référence de patch ; la [description du découvreur](https://docs.horizon3ai.com/knowledge_base/weaknesses/H3-2023-0027/) situe l’exécution sous le compte de service.
 
----
+Le shell `mirth` rapporté n’est pas automatiquement root. Lire /usr/local/mirthconnect/conf/mirth.properties franchit une frontière de permissions distincte. Les identifiants SQL peuvent donner accès aux hashes sans établir le SSH d’un autre utilisateur.
 
-## Accès Initial : Désérialisation XStream (CVE-2023-43208)
-Nous envoyons une charge XML malveillante exploitant XStream vers les servlets non authentifiées. Cela nous renvoie un shell sous l'utilisateur de service `mirth`.
+## Récupération et réutilisation
 
----
+Le récit rapporte la lecture de `PERSON`, le mot de passe retrouvé de `sedric` et sa réutilisation SSH. Un bon hachage augmente le coût des essais sans renforcer un mot de passe faible. Relever format sérialisé et paramètres avant le mode d’outil ; démontrer séparément l’acceptation sur le second service.
 
-## Accès Utilisateur : Extraction et cracking du hash PBKDF2
-Nous trouvons les identifiants MariaDB dans `mirth.properties`. Dans la base de données, nous récupérons le hash PBKDF2 de `sedric` (étiré à 600 000 itérations).
+Les secrets sont retirés car leurs valeurs n’expliquent pas la transition de privilèges.
 
-Le crackage révèle le mot de passe : `snowflake1`. Nous nous connectons en SSH.
+## La seconde f-string transforme les données en syntaxe
 
----
+L’extrait conservé de `/usr/local/bin/notif.py`, décrit comme root derrière un service local, est :
 
-## Élévation de privilèges : Double évaluation f-string Python
-Un script local `notif.py` écoute sur le port 54321 en root. Il évalue les données via `eval(f"f'''{template}'''")`.
-
-Nous contournons le filtre regex (qui bloque les espaces et les virgules) en encodant notre payload en base64 :
 ```python
-{__import__("os").popen(__import__("base64").b64decode("aW5zdGFsbCAtbyByb290IC1tIDQ3NTUgL2Jpbi9iYXNoIC90bXAvLnNo").decode()).read()}
+template = f"Patient {first} {last} ({gender}), {{datetime.now().year - year_of_birth}} years old"
+return eval(f"f'''{template}'''")
 ```
 
-L'envoi de cette charge génère un binaire SUID `/tmp/.sh` appartenant à root.
+Le premier formatage insère des chaînes non fiables ; `eval` les analyse ensuite comme une nouvelle f-string. Les accolades deviennent des expressions. Bloquer espaces ou points-virgules ne supprime pas ce défaut. Python avertit du risque d’entrées utilisateur avec [eval](https://docs.python.org/3/library/functions.html#eval).
 
----
+Le payload encodé et le filtre complet ne sont pas conservés comme contournement vérifié. Root est rapporté ; un rejeu nécessite aussi schéma, connectivité, filtre et identité réelle. Loopback ne rend pas fiable l’entrée d’un utilisateur local.
 
-## Notes défensives / remédiation
+## Retirer l’évaluation et vérifier
 
-### Correctif
-- Mettre à jour NextGen Connect vers une version patchée.
-- Ne jamais utiliser `eval()` avec des entrées utilisateur.
+Cet exemple valide l’année séparément, calcule l’âge comme donnée et formate une seule fois :
 
----
+```python
+age = datetime.now().year - year_of_birth
+message = f"Patient {first} {last} ({gender}), {age} years old"
+```
 
-## Annexe : Résumé de la timeline
-1. Détection de Mirth Connect 4.4.0.
-2. Exploitation de CVE-2023-43208 et shell `mirth`.
-3. Extraction de la base, cracking et connexion SSH `sedric`.
-4. Exploitation de la double évaluation Python sur le port 54321 pour root.
+`datetime` est importé et `year_of_birth` a passé les contrôles de type et plage. L’exemple supprime l’évaluation sans implémenter toute la validation ou l’autorisation.
 
----
+Mettre Mirth à une version maintenue corrigée, limiter accès SQL et configuration, renouveler les secrets et retirer root au service de notification.
+
+En test, soumettre `{1+1}` dans un nom : la valeur doit rester une donnée ou être rejetée, jamais devenir `2`. Vérifier notifications normales, refus des appelants non autorisés et identité non privilégiée. Surveiller processus enfants inhabituels et créations SUID temporaires en les corrélant aux requêtes plutôt qu’à un motif isolé.

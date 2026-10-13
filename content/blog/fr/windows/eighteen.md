@@ -1,8 +1,9 @@
 ---
 id: "HTB-2026-EIGHTEEN"
 title: "Eighteen"
-excerpt: "Sur Eighteen, un password spraying donne un accès WinRM, puis l'attaque dMSA BadSuccessor permet d'extraire le hash NTLM de l'administrateur."
+excerpt: "BadSuccessor sur Windows Server 2025 : distinguer accès au compte, création dMSA, héritage des droits et comportement du KDC corrigé."
 date: "2025-11-15"
+updated: "2026-10-13"
 tags: ["WRITEUP", "HACKTHEBOX", "WINDOWS", "EASY", "DMSA", "BADSUCCESSOR", "KERBEROS-PAC"]
 category: "WRITEUP"
 platform: "HACKTHEBOX"
@@ -13,58 +14,43 @@ author: "0x7CC"
 published: true
 ---
 
-## TL;DR
-Sur **Eighteen**, l'accès initial est obtenu via password spraying sur l'utilisateur `adam.scott`. L'élévation de privilèges exploite **BadSuccessor**, un vecteur d'attaque ciblant les Delegated Managed Service Accounts (dMSA) sur Windows Server 2025. Cela permet d'extraire le hash NTLM de l'administrateur depuis les clés précédentes du PAC Kerberos.
+## Chaîne et preuves
 
----
+Le récit d’Eighteen rapporte des identifiants `adam.scott`, un accès WinRM, des droits de création dans une OU staff et une extraction de clés du prédécesseur via un delegated Managed Service Account (dMSA) contrôlé.
 
-## Cible
-- Host : `eighteen.htb`
-- IP : `10.129.7.99`
+Les transcripts d’authentification et d’ACL sont incomplets. Un succès SMB ne démontre pas l’autorisation WinRM ; la liste des ports HTTP et SQL omet aussi la découverte nécessaire à cette session. Cet article prend la session ultérieure comme un résultat rapporté et se concentre sur la frontière dMSA.
 
----
+## Énumérer les droits effectifs et les correctifs
 
-## Recon : Énumération Active Directory
-Le scan de ports montre :
-- **Port 80/tcp** : HTTP (IIS)
-- **Port 1433/tcp** : MSSQL
+La [recherche initiale BadSuccessor](https://www.akamai.com/blog/security-research/abusing-dmsa-for-privilege-escalation-in-active-directory) décrit l’abus d’un dMSA contrôlé pour hériter des droits d’un prédécesseur. Des permissions spécifiques ou générales de création d’enfants sur une OU peuvent permettre de créer ce dMSA. Le support par un DC Windows Server 2025 est nécessaire ; SQL Server 2022 ne détermine pas la version du DC.
 
-L'énumération avec Kerbrute révèle l'utilisateur `adam.scott`.
+Cet inventaire PowerShell illustratif nécessite le module ActiveDirectory et une connexion autorisée au domaine :
 
----
-
-## Accès Initial : WinRM
-Nous effectuons un spray de mots de passe et trouvons les accès pour `adam.scott` (`iloveyou1`).
-
-Nous nous connectons via Evil-WinRM.
-
----
-
-## Élévation de privilèges : Attaque BadSuccessor sur dMSA
-Windows Server 2025 supporte les comptes dMSA liés par l'attribut `msDS-ManagedAccountPrecededByLink`.
-
-En ayant les permissions de création dans l'OU, nous lions un nouveau dMSA à l'Administrateur, demandons un ticket Kerberos, et extrayons le hash NTLM de l'administrateur contenu dans les clés de chiffrement précédentes :
-
-```text
-[*] Previous keys:
-[*] EncryptionTypes.rc4_hmac:0b133be956bfaddf9cea56701affddec
+```powershell
+Get-ADDomainController -Filter * |
+    Select-Object HostName, OperatingSystem, OperatingSystemVersion
 ```
 
-Ce hash nous permet de réaliser un DCSync et de lire le flag root.
+Il relève les versions déclarées des DC, sans établir leurs correctifs ni les droits de l’appelant. Examiner séparément les ACL effectives de l’OU et des objets, puis les mises à jour du DC traitant l’authentification.
 
----
+## Distinguer changements LDAP, tickets et clés
 
-## Notes défensives / remédiation
+Le chemin initial nécessite le contrôle d’un dMSA, la définition du prédécesseur et de l’état de migration, puis les conditions permettant de s’authentifier comme ce dMSA. Créer l’objet ne suffit pas.
 
-### Correctif
-- Restreindre les privilèges d'écriture sur les OUs Active Directory.
-- Désactiver le support de RC4 dans la configuration de sécurité Kerberos.
+Le texte initial confondait les privilèges présents dans le Privilege Attribute Certificate (PAC) et les clés du prédécesseur retournées dans le package de clés dMSA. Hériter des droits et obtenir des clés sont deux résultats distincts. Une clé RC4 peut correspondre à un hash NT ; cela ne signifie pas que toute entrée est un hash NTLM.
 
----
+Le lab rapporte une sortie de clés sans expliquer l’identité machine demandeuse ni la préparation du script. L’invocation incomplète de `getST.py` et la valeur de clé sont retirées. Une reproduction exige la version de l’outil, le principal demandeur, ses droits d’accès au dMSA, le DC choisi et la preuve d’acceptation, secrets masqués.
 
-## Annexe : Résumé de la timeline
-1. Énumération Kerbrute et password spraying.
-2. Connexion WinRM en tant qu'adam.scott.
-3. Exploitation BadSuccessor dMSA et récupération du hash de l'Administrateur.
+## Le correctif change les prérequis
 
----
+[L’analyse du correctif CVE-2025-53779 par Akamai](https://www.akamai.com/blog/security-research/badsuccessor-is-dead-analyzing-badsuccessor-patch) rapporte le rejet, par le KDC corrigé, du lien unilatéral initial. Le chemin post-correctif testé nécessite une relation réciproque et le contrôle du compte prédécesseur. « Windows Server 2025 » ne suffit donc pas pour conclure que l’élévation initiale fonctionne.
+
+Désactiver RC4 ne constitue pas une correction complète : supprimer une représentation de clé ne résout pas l’héritage de privilèges non autorisé. De même, un DCSync nécessite des droits de réplication dans le contexte obtenu et une preuve propre ; afficher des clés du prédécesseur ne le démontre pas.
+
+## Remédiation, détection et retest
+
+Installer les mises à jour applicables aux DC et limiter les droits d’écriture sur les OU, dMSA et comptes prédécesseurs. Examiner qui peut créer des comptes gérés et qui peut obtenir ou utiliser leurs identifiants.
+
+Dans un annuaire de test isolé, vérifier qu’un créateur non privilégié ne peut plus s’authentifier via l’ancien lien unilatéral et que les modifications réciproques non autorisées échouent. Garder une migration légitime comme contrôle positif.
+
+Avec une stratégie d’audit et des SACL adaptées, examiner la création des dMSA et les modifications des liens des deux côtés, en corrélant acteur, objet et authentification. Identifier l’objet réellement modifié plutôt que rechercher uniquement les changements d’Administrator. Un nouvel objet peut influencer les droits d’un principal existant ; l’état des correctifs détermine les conditions de cette attaque.

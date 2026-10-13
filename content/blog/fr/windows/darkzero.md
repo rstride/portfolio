@@ -1,8 +1,9 @@
 ---
 id: "HTB-2026-DARKZERO"
 title: "DarkZero"
-excerpt: "Sur DarkZero, une confiance Active Directory cross-forest et un serveur MSSQL lié mènent à une RCE, une élévation SYSTEM et la compromission de la forêt."
+excerpt: "Suivre un lien MSSQL jusqu’à l’exécution Windows et l’élévation SYSTEM locale, en précisant les limites de l’affirmation de compromission inter-forêts."
 date: "2025-10-04"
+updated: "2026-10-13"
 tags: ["WRITEUP", "HACKTHEBOX", "WINDOWS", "HARD", "CROSS-FOREST", "MSSQL-LINK", "CVE-2024-30088"]
 category: "WRITEUP"
 platform: "HACKTHEBOX"
@@ -13,61 +14,48 @@ author: "0x7CC"
 published: true
 ---
 
-## TL;DR
-Sur **DarkZero**, nous réalisons une attaque Active Directory à partir d'un compte utilisateur basique. Nous nous connectons au serveur SQL de la forêt principale, découvrons un serveur lié vers la forêt distante avec les droits sysadmin, et l'exploitons pour exécuter des commandes. L'élévation de privilèges vers SYSTEM s'effectue via CVE-2024-30088, et la forêt principale est compromise via la délégation TGT.
+## Chaîne et conditions initiales
 
----
+DarkZero est un lab assume-breach : des identifiants `john.w` sont fournis au départ. Le récit existant décrit un lien `SQL07` vers `DC02` dans une seconde forêt, un accès administratif SQL via ce lien, une exécution comme `svc_sql` puis une élévation locale SYSTEM.
 
-## Cible
-- Host : `darkzero.htb` / `darkzero-ext`
-- IP : `10.129.4.91`
+Il affirme aussi une délégation de TGT inter-forêts et une compromission de forêt sans documenter les paramètres de confiance nécessaires, le ticket délégué ni l’authentification finale. Ces résultats ne sont pas établis ici. Le sujet étayé est la frontière de confiance SQL, suivie d’une élévation Windows locale.
 
----
+## Énumérer le login distant, pas seulement le lien
 
-## Recon : Découverte du serveur SQL lié
-Nous débutons avec les identifiants :
-- Utilisateur : `john.w`
-
-Nous nous connectons à l'instance locale MSSQL de `DC01`. L'énumération montre un lien vers `DC02` (`darkzero.ext`) nommé `SQL07` avec les droits sysadmin.
-
----
-
-## Accès Initial : RCE sur le serveur lié
-Nous activons `xp_cmdshell` sur `DC02` via la liaison de serveurs SQL :
+Dans une session SQL authentifiée, ces requêtes illustratives en lecture seule identifient le lien et le contexte SQL distant :
 
 ```sql
-EXEC ('sp_configure ''show advanced options'', 1; reconfigure;') AT [SQL07];
-EXEC ('sp_configure ''xp_cmdshell'', 1; reconfigure;') AT [SQL07];
+SELECT name, data_source, is_rpc_out_enabled FROM sys.servers;
+EXEC ('SELECT SYSTEM_USER AS login_name,
+       IS_SRVROLEMEMBER(''sysadmin'') AS is_sysadmin;') AT [SQL07];
 ```
 
-Nous exécutons un reverse shell et obtenons une session en tant que `darkzero-ext\svc_sql`.
+`SQL07` est le nom rapporté dans le lab. La seconde requête nécessite RPC OUT et un mapping utilisable ; son échec ne prouve pas l’impossibilité de toute requête liée. Relever le login local, son mapping, le login distant et le résultat du contrôle de rôle.
 
----
+Une connexion inter-forêts peut utiliser un login distant fixe, sans délégation d’identifiants Windows. Voir la [documentation Microsoft des mappings](https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-addlinkedsrvlogin-transact-sql). L’existence d’un lien ne prouve pas des droits administratifs.
 
-## Élévation de privilèges : Noyau Windows LPE (CVE-2024-30088)
-Le serveur `DC02` tourne sous Windows Server 2022 et est vulnérable à CVE-2024-30088.
+## Des droits SQL à l’exécution Windows
 
-Nous exécutons l'exploit local pour intercepter le token de Winlogon :
-```text
-msf > use exploit/windows/local/cve_2024_30088_authz_basep
+Le récit décrit l’activation distante de `xp_cmdshell` et une exécution comme `darkzero-ext\svc_sql`. Cette étape passe des permissions de base de données au compte système du service. Le rôle SQL `sysadmin` et l’identité Windows SYSTEM sont distincts.
+
+Si l’exécution est déjà activée et autorisée, cette vérification illustrative relève l’identité :
+
+```sql
+EXEC ('EXEC master..xp_cmdshell ''whoami'';') AT [SQL07];
 ```
-Nous obtenons un shell `NT AUTHORITY\SYSTEM` et extrayons le hash de l'administrateur.
 
----
+Elle contrôle l’identité Windows au lieu de la déduire du login SQL. Microsoft décrit les [contextes de service et proxy de xp_cmdshell](https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/xp-cmdshell-transact-sql). Le récit initial ne contient pas l’invocation complète du stager ; aucun transcript n’est reconstruit ici.
 
-## Notes défensives / remédiation
+## Élévation locale et frontière du domaine
 
-### Correctif
-- Auditer les configurations des serveurs SQL liés et éviter de déléguer des privilèges sysadmin.
-- Désactiver `xp_cmdshell`.
-- Appliquer les correctifs de sécurité pour CVE-2024-30088.
+Le lab rapporte une élévation via CVE-2024-30088. Vérifier le build Windows exact, les mises à jour cumulatives, l’architecture et les prérequis de l’exploit ; « Windows Server 2022 » ne suffit pas pour conclure. La référence de correction est la [fiche de mise à jour Microsoft](https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-30088).
 
----
+Le récit rapporte `NT AUTHORITY\SYSTEM`, sans établir une opération ultérieure à l’échelle de la forêt. La mention d’un dump SAM local sur un hôte nommé `DC02` doit aussi être clarifiée : les secrets du domaine et la SAM locale d’un serveur membre ordinaire sont des sources de preuve différentes.
 
-## Annexe : Résumé de la timeline
-1. Accès SQL avec les identifiants utilisateur.
-2. RCE via le serveur SQL lié `SQL07`.
-3. Élévation SYSTEM via CVE-2024-30088.
-4. DCSync et compromission finale du domaine.
+## Remédiation et critères de clôture
 
----
+Supprimer les mappings trop larges et n’autoriser que les opérations distantes nécessaires. Restreindre RPC OUT si inutile. Exécuter SQL sous un compte dédié peu privilégié, désactiver l’exécution système inutile et corriger le build Windows concerné.
+
+Vérifier que le login initial ne rejoint plus un contexte administratif distant, tout en conservant les requêtes légitimes. Tester séparément les contextes SQL local et distant. Confirmer la mise à jour après redémarrage. Examiner les trusts et la délégation dans une évaluation distincte : le patch ne démontre pas l’isolation des forêts.
+
+Surveiller les mappings distants, les activations d’exécution de commandes et les processus enfants inhabituels de SQL Server. Relier la session SQL au processus Windows explique mieux le chemin qu’une capture de shell seule.

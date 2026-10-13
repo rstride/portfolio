@@ -1,8 +1,9 @@
 ---
 id: HTB-2026-OVERWATCH
 title: Overwatch
-excerpt: Exposed SQL credentials enable linked-server NTLM capture, then a WCF command injection provides a LocalSystem session.
+excerpt: "Public tooling exposes SQL credentials; linked-server authentication and a WCF script-concatenation flaw illustrate two distinct trust boundaries."
 date: '2026-02-07'
+updated: "2026-10-13"
 tags:
   - WRITEUP
   - HACKTHEBOX
@@ -20,93 +21,53 @@ icon: Terminal
 author: '0x7CC'
 ---
 
-## TL;DR
-On **Overwatch**, initial access is obtained by extracting database credentials from a public share, then triggering a linked server authentication to capture the NTLM hash of a privileged account. Privilege escalation leverages a command injection vulnerability in a WCF service running as LocalSystem.
+## Chain and evidence limits
 
----
+The existing Overwatch account describes a readable SMB share `software$`, credentials recovered from `overwatch.exe`, access to SQL on port 6520, and a WCF management service on port 8000. It reports a later session as `sqlmgmt` and abuse of `KillProcess` to gain administrative rights.
 
-## Target
-- Host: `overwatch.htb`
-- IP: `10.129.16.252`
+The middle step needs qualification: the account does not explain how a linked-server query was directed to the capture listener or how captured authentication became the password used for WinRM. Those are required steps, not consequences of running Responder alone.
 
----
+## Credentials and outbound authentication
 
-## Recon: Open ports and public share discovery
+Reading a shared executable or its configuration can reveal a connection string. Possession of the resulting SQL credential supports a database login only if the server accepts it; it does not yet establish OS access.
 
-### Nmap Scan
-- **Port 445/tcp**: SMB (guest share readable)
-- **Port 6520/tcp**: MSSQL
-- **Port 8000/tcp**: WCF service
-
-We inspect the public SMB share `software$` and locate the compiled binary `overwatch.exe` and its configuration file.
-
----
-
-## Initial Foothold: Linked server NTLM capture
-
-We extract hardcoded database credentials from the binary: `sqlsvc : TI0LKcfHzZw1Vv`.
-
-After connecting to the SQL server, we observe a linked server named `SQL07`. We run Responder on our attack machine and trigger a linked server query:
+The retained query illustrates the operation described in the account:
 
 ```sql
 EXEC ('SELECT 1') AT [SQL07];
 ```
 
-The query triggers NTLM authentication, allowing us to capture the cleartext credentials for the user `sqlmgmt`:
-- Username: `sqlmgmt`
-- Password: `bIhBbzMMnB82yx`
+`SQL07` is the recorded linked-server name. The statement requires a suitable mapping and RPC OUT. Outbound authentication depends on the actual destination, protocol, and authentication configuration. Microsoft explains [linked-server execution](https://learn.microsoft.com/en-us/sql/relational-databases/linked-servers/linked-servers-database-engine); the query itself does not demonstrate attacker control of its destination.
 
-We use these credentials to log in via WinRM and read the user flag.
+NTLM capture normally obtains challenge-response material, not a plaintext password or the account's raw NT hash. Offline recovery requires password guessing; relay requires a compatible accepting service and its own security prerequisites. These are separate branches. See [Microsoft's NTLM protocol overview](https://learn.microsoft.com/en-us/windows/win32/secauthn/microsoft-ntlm). The account reports working `sqlmgmt` credentials but leaves their derivation unproven.
 
----
+## WCF input becomes PowerShell code
 
-## Privilege Escalation: WCF Service Command Injection
-
-Inside the server, we analyze the decompiled WCF service binary `overwatch.exe` running on port 8000. The `KillProcess` method executes a PowerShell command without sanitizing the input:
+With the later host access taken as a recorded condition, the account provides this vulnerable implementation excerpt:
 
 ```csharp
-public string KillProcess(string processName)
-{
-    string scriptContents = "Stop-Process -Name " + processName + " -Force";
-    pipeline.Commands.AddScript(scriptContents);
-}
+string scriptContents = "Stop-Process -Name " + processName + " -Force";
+pipeline.Commands.AddScript(scriptContents);
 ```
 
-We write a PowerShell exploit script to call the WCF service and inject a command to add our user to the local Administrators group:
+The untrusted process name is parsed as part of a script. A separator can introduce another statement rather than identify a process. Exploitation also requires reachability of the method, acceptable authentication, and a privileged service identity.
 
-```powershell
-$URI = "http://localhost:8000/MonitorService?wsdl"
-$proxy = New-WebServiceProxy -Uri $URI -Namespace "WCF"
-$payload = "test; net localgroup administrators overwatch\sqlmgmt /add #"
-$proxy.KillProcess($payload)
+The account reports execution as LocalSystem and a change to local Administrators membership. Adding membership is not the same observation as receiving a SYSTEM shell; a new login token must acquire the relevant rights. The complete service contract and request are absent, so the original proxy invocation is not presented as a verified replay.
+
+## Correct the operation, then retest
+
+Use typed commands and parameters instead of script concatenation. This illustrative replacement still needs application-specific authorization and process-selection rules:
+
+```csharp
+using var ps = System.Management.Automation.PowerShell.Create();
+ps.AddCommand("Stop-Process")
+  .AddParameter("Name", processName)
+  .AddParameter("Force");
+ps.Invoke();
 ```
 
-The command executes as LocalSystem. We reconnect via WinRM with administrative rights and read the root flag.
+[PowerShell's AddCommand API](https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.powershell.addcommand) separates the command from its parameters. Parameterization removes this parsing boundary; it does not authorize killing arbitrary processes.
 
----
+Rotate exposed SQL credentials, remove them from distributed binaries, restrict share access and SQL egress, and run the management service with only necessary rights. In a test environment, send a name containing a separator and assert that it cannot launch a second operation. Verify that unauthorized callers are denied and approved process management still works.
 
-## Defensive notes / remediation
-
-### Fix
-- Remove hardcoded database credentials from application binaries.
-- Restrict SQL Server outbound traffic to prevent NTLM capture from linked servers.
-- Sanitize inputs in WCF service methods before executing system scripts.
-
-### Monitoring / detection ideas
-- Alert on outbound SMB/NTLM traffic originating from the database service.
-- Monitor execution of PowerShell scripts with command concatenation indicators.
-
----
-
-## Lessons learned
-- Shared administrative tools frequently contain high-value hardcoded credentials.
-- Concatenating parameters into system processes running as LocalSystem leads to trivial privilege escalation.
-
----
-
-## Appendix: Timeline summary
-1. Recon -> Extract credentials from binary in public share.
-2. Foothold -> Query linked server to capture NTLM hash, log in as `sqlmgmt`.
-3. Privilege Escalation -> Inject command via local WCF service to gain administrative rights.
-
----
+Monitor outbound database authentication, management-service operations, and local group changes. Correlate them with caller identity; do not describe all captured NTLM material as a recovered password.

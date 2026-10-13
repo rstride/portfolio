@@ -1,8 +1,9 @@
 ---
 id: HTB-2025-011
 title: Signed
-excerpt: Password spraying against the MSSQL service account enables code execution, then its hash is used to forge a Kerberos Silver Ticket.
+excerpt: "MSSQL access and Kerberos service-ticket forgery: separating service-account compromise from unsupported domain-controller access claims."
 date: '2025-10-11'
+updated: "2026-10-13"
 tags:
   - WRITEUP
   - HACKTHEBOX
@@ -20,70 +21,40 @@ icon: ShieldAlert
 author: '0x7CC'
 ---
 
-## TL;DR
-On **Signed**, initial access starts with a password spray to compromise an MSSQL service account. Post-exploitation reveals the Kerberos Service Principal Name (SPN) configuration. Privilege escalation is achieved by forging a Kerberos Silver Ticket to access the Domain Controller with Domain Admin rights.
+## Supported chain and limits
 
----
+The existing Signed account describes obtaining an MSSQL service-account credential, database command execution, and subsequent Kerberos ticket forgery. It does not supply the service-key extraction, account-to-SPN mapping, or a successful ticket-validation trace. Those gaps prevent a complete claim of Domain Admin access.
 
-## Target
-- Host: `signed.htb`
-- IP: `10.129.11.109`
+The important boundary is between compromising one service account and compromising another service's ticket key. An MSSQL account's NTLM hash is not automatically the key for CIFS on a domain controller. The original CIFS forgery command is omitted because its required key ownership was never established.
 
----
+## Establish the database context first
 
-## Recon: Sprayed credentials and MSSQL access
+The target is `signed.htb`, with MSSQL on TCP 1433. The account describes password spraying but does not provide its candidate set or authentication transcript. Treat valid credentials as the starting condition; do not infer domain-wide rights from a successful database login.
 
-### Ports Scan
-- **Port 1433/tcp**: Microsoft SQL Server
+These read-only queries are illustrative checks inside an authenticated SQL session:
 
-We perform a password spray and identify valid credentials for the MSSQL service account. We log in to the database server.
-
----
-
-## Initial Foothold: MSSQL exploitation
-
-Once connected, we query domain objects and execute commands via `xp_cmdshell` to gain shell access to the database host. We dump Kerberos tickets and locate service keys.
-
----
-
-## Privilege Escalation: Kerberos Silver Ticket Forgery
-
-We identify that the database service is configured with a Service Principal Name (SPN). By extracting the service account's NTLM password hash from the local system, we can forge Kerberos Silver Tickets.
-
-A Silver Ticket allows us to forge service tickets for specific services (like CIFS or LDAP) on the Domain Controller without communicating with the Key Distribution Center (KDC).
-
-We forge a ticket for the CIFS service:
-
-```bash
-mimikatz # kerberos::golden /domain:signed.htb /sid:S-1-5-21-... /rc4:database_hash /user:Administrator /service:cifs /target:dc.signed.htb
+```sql
+SELECT SYSTEM_USER AS login_name,
+       IS_SRVROLEMEMBER('sysadmin') AS is_sysadmin;
+SELECT name, value_in_use
+FROM sys.configurations
+WHERE name = 'xp_cmdshell';
 ```
 
-The forged ticket is injected into memory, granting us administrative access to the Domain Controller filesystem. We retrieve the flags.
+They identify the current SQL login's server-role membership and the configured command-execution feature. They do not establish the Windows process identity, prove that the login may enable the feature, or extract a service-account secret. Record those facts separately. Microsoft documents [xp_cmdshell permissions and execution context](https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/xp-cmdshell-transact-sql).
 
----
+## Understand the Silver Ticket prerequisites
 
-## Defensive notes / remediation
+A Silver Ticket is a forged service ticket. The attacker needs the target service's long-term key for a usable encryption type, the correct service principal and realm, and identity data accepted by the service. Validation of the authorization data and the deployment's hardening also matter.
 
-### Fix
-- Ensure service accounts use strong, randomly generated passwords.
-- Limit permissions of accounts configured with Service Principal Names.
-- Implement Kerberos armoring and monitor ticket requests for anomalous structures.
+Microsoft explains that a service ticket is protected with the server's key in its [session-ticket documentation](https://learn.microsoft.com/en-us/windows/win32/secauthn/session-tickets). Therefore, forging a ticket for an MSSQL SPN and forging a CIFS ticket are different claims unless the relevant SPNs use the same compromised account key.
 
-### Monitoring / detection ideas
-- Alert on Kerberos ticket requests with unusual lifetimes or encryption algorithms.
-- Monitor usage of forged tickets on network file shares.
+An SPN inventory is necessary, but listing an SPN does not recover its key. Likewise, possessing a ticket does not show the server accepted it. A rigorous account would record the owning account, key provenance without exposing the key, chosen service, accepted authentication, and resulting permissions.
 
----
+## Impact and remediation
 
-## Lessons learned
-- Service account compromises frequently lead to Kerberos delegation and ticket forgery attacks.
-- Strong password hygiene is vital for accounts associated with SPNs.
+Service-account compromise can expose database contents, permit database administration, or support OS execution according to the actual permissions. Domain-controller administration remains unproven in this account. Service-scoped authentication must not be described as universal domain elevation.
 
----
+Use managed service accounts where supported, rotate compromised keys, reduce database and OS privileges, and remove unnecessary SPNs and command-execution permissions. Verify SPN ownership and approved encryption settings against the actual deployment; avoid treating one protocol setting as a complete fix.
 
-## Appendix: Timeline summary
-1. Recon -> Spray passwords, gain MSSQL access.
-2. Foothold -> Execute shell via database service.
-3. Privilege Escalation -> Extract service hash and forge Kerberos Silver Ticket for DC.
-
----
+After remediation, verify that the old credential no longer authenticates, application operations still work, and the service cannot perform administrative operations outside its remit. Collect service-side authentication and access logs. A forged service ticket may be used without a corresponding KDC issuance request, so KDC logs alone cannot demonstrate its absence.

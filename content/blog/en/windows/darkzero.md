@@ -1,8 +1,9 @@
 ---
 id: HTB-2026-DARKZERO
 title: DarkZero
-excerpt: A cross-forest Active Directory trust and linked MSSQL server lead to remote execution, SYSTEM elevation, and forest compromise.
+excerpt: "Following a linked MSSQL login into Windows execution and local SYSTEM elevation, with explicit limits on the cross-forest compromise claim."
 date: '2025-10-04'
+updated: "2026-10-13"
 tags:
   - WRITEUP
   - HACKTHEBOX
@@ -20,82 +21,48 @@ icon: Terminal
 author: '0x7CC'
 ---
 
-## TL;DR
-On **DarkZero**, we perform an assume-breach Active Directory attack starting with low-privileged credentials. We connect to the primary forest's database server, discover a linked server mapping to the remote forest with sysadmin rights, and exploit it to achieve code execution. Privilege escalation to SYSTEM is achieved via CVE-2024-30088, and domain compromise is reached by exploiting cross-forest TGT delegation.
+## Chain and starting conditions
 
----
+DarkZero is an assume-breach lab: valid credentials for `john.w` are supplied at the start. The existing account describes a link named `SQL07` from the first forest to `DC02` in the second, SQL administration through that link, execution as `svc_sql`, and local elevation to SYSTEM.
 
-## Target
-- Host: `darkzero.htb` / `darkzero-ext`
-- IP: `10.129.4.91`
+It also claims cross-forest TGT delegation and forest compromise without documenting the required trust settings, delegated ticket, or final authentication. Those outcomes are not established here. The supported subject is the database trust boundary followed by local Windows elevation.
 
----
+## Enumerate the remote login, not just the link
 
-## Recon: Assume-breach credentials and SQL Link discovery
-
-We start with valid domain user credentials:
-- Username: `john.w`
-- Password: `provided_password`
-
-We run an active scan and connect to the local MSSQL database instance on `DC01`. Checking for linked servers reveals a database link:
-- Link name: `SQL07`
-- Target server: `DC02` (in the `darkzero.ext` domain)
-- Mapped context: `sysadmin`
-
----
-
-## Initial Foothold: Linked Server Command Execution
-
-Because the mapped linked server account has sysadmin rights on `DC02`, we can execute administrative store procedures on the remote database. We enable `xp_cmdshell` via the linked context:
+In an authenticated SQL session, these illustrative read-only queries identify the link and the remote SQL context:
 
 ```sql
-EXEC ('sp_configure ''show advanced options'', 1; reconfigure;') AT [SQL07];
-EXEC ('sp_configure ''xp_cmdshell'', 1; reconfigure;') AT [SQL07];
+SELECT name, data_source, is_rpc_out_enabled FROM sys.servers;
+EXEC ('SELECT SYSTEM_USER AS login_name,
+       IS_SRVROLEMEMBER(''sysadmin'') AS is_sysadmin;') AT [SQL07];
 ```
 
-We execute arbitrary PowerShell commands to run a Metasploit stager. This spawns a reverse shell session as `darkzero-ext\svc_sql` on the remote database server `DC02`.
+`SQL07` is the link name recorded in the lab. The second query requires RPC OUT and a usable login mapping; failure does not prove the remote database is inaccessible through every linked-query mechanism. Record the local login, mapping, remote login, and remote role result.
 
----
+A cross-forest connection need not use delegated Windows credentials: it can use a fixed remote login. The [Microsoft login-mapping documentation](https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-addlinkedsrvlogin-transact-sql) is the relevant reference. A link's existence alone does not establish administrative rights.
 
-## Privilege Escalation: Windows Kernel LPE (CVE-2024-30088)
+## From SQL rights to Windows execution
 
-Once on the target, local enumeration reveals the OS version is Windows Server 2022. It is vulnerable to CVE-2024-30088, a local privilege escalation flaw in the Windows Authz component.
+The account describes enabling `xp_cmdshell` remotely and receiving execution as `darkzero-ext\svc_sql`. This crosses from database permissions into the OS service context. SQL `sysadmin` and Windows SYSTEM are distinct privileges.
 
-We run the Metasploit exploit module:
+Where command execution is already enabled and authorized, an illustrative identity check is:
 
-```text
-msf > use exploit/windows/local/cve_2024_30088_authz_basep
-msf exploit(windows/local/cve_2024_30088_authz_basep) > set SESSION 6
-msf exploit(windows/local/cve_2024_30088_authz_basep) > run
+```sql
+EXEC ('EXEC master..xp_cmdshell ''whoami'';') AT [SQL07];
 ```
 
-The exploit successfully steals a Winlogon system token and opens a shell as `NT AUTHORITY\SYSTEM`. We dump the local SAM database and obtain the administrator's NTLM hash.
+This checks the Windows identity rather than inferring it from the SQL login. Microsoft documents the [service-account and proxy contexts of xp_cmdshell](https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/xp-cmdshell-transact-sql). The original account does not include the full stager invocation; this article does not supply an invented transcript.
 
----
+## Local elevation and the domain boundary
 
-## Defensive notes / remediation
+The lab reports elevation through CVE-2024-30088. Verify the exact Windows build, installed cumulative updates, architecture, and exploit prerequisites; “Windows Server 2022” alone is not a vulnerability determination. The patch reference is the [Microsoft security update entry](https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-30088).
 
-### Fix
-- Audit linked server configurations and avoid mapping links to remote systems with elevated security privileges.
-- Restrict execution of `xp_cmdshell` and disable advanced server features.
-- Install security patches for CVE-2024-30088 to prevent local privilege escalation.
+The account reports `NT AUTHORITY\SYSTEM`. It does not establish a subsequent forest-wide operation. Its mention of a local SAM dump on a host called `DC02` also requires clarification: domain account secrets and an ordinary member server's local SAM are different evidence sources.
 
-### Monitoring / detection ideas
-- Alert on execution of `xp_cmdshell` commands, especially through linked server queries.
-- Monitor execution of unexpected processes originating from database services.
+## Remediation and closure checks
 
----
+Remove broad linked-login mappings and permit only the remote operations the application requires. Restrict RPC OUT where unnecessary. Run SQL under a dedicated least-privileged account, disable unnecessary OS execution, and patch the actual Windows build.
 
-## Lessons learned
-- Cross-forest trusts and linked database servers are common avenues for lateral movement.
-- Keeping systems updated against critical local privilege escalation flaws (CVE-2024-30088) is vital.
+Verify that the original low-privileged login cannot reach remote administrative context, while legitimate linked queries still work. Test local and remote SQL contexts separately. Confirm the installed update after reboot. Review forest trust and delegation configuration as a separate assessment rather than treating patching as proof of trust isolation.
 
----
-
-## Appendix: Timeline summary
-1. Recon -> Log in with provided user, scan linked databases.
-2. Foothold -> Execute remote queries on linked server to enable `xp_cmdshell` and get shell as `svc_sql`.
-3. Privilege Escalation -> Exploit CVE-2024-30088 to elevate to `SYSTEM`.
-4. Compromise -> Recover NTLM hashes and exploit cross-forest trust.
-
----
+Monitor remote login mappings, configuration changes enabling command execution, and unexpected children of SQL Server. Correlating the SQL session with the remote Windows process explains the path more reliably than a shell screenshot alone.

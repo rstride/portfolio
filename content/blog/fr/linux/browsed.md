@@ -1,8 +1,9 @@
 ---
 id: "HTB-2026-BROWSED"
 title: "Browsed"
-excerpt: "Sur Browsed, une extension Chrome malveillante crée un SSRF vers Gitea, puis une injection Bash et un empoisonnement de cache Python conduisent à root."
+excerpt: "Requêtes du navigateur backend, calcul Bash et caches d’import Python : expliquer les conditions de la chaîne d’attaque rapportée."
 date: "2026-01-10"
+updated: "2026-10-13"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "SSRF", "COMMAND-INJECTION", "CACHE-POISONING"]
 category: "WRITEUP"
 platform: "HACKTHEBOX"
@@ -13,83 +14,48 @@ author: "0x7CC"
 published: true
 ---
 
-## TL;DR
-Sur **Browsed**, l'accès initial est obtenu en exploitant un mécanisme d'upload d'extension Chrome headless pour obtenir un SSRF. Cela permet d'accéder à une instance Gitea interne hébergeant une application Flask. L'analyse du code source révèle une injection arithmétique Bash menant à une RCE en tant que `larry`. L'élévation de privilèges s'effectue en empoisonnant le cache Python dans un dossier `__pycache__` accessible en écriture utilisé par un script exécutable via sudo.
+## Chaîne et prérequis
 
----
+Le récit de Browsed rapporte un service de vérification d’extensions Chrome, l’accès au code dans Gitea, une exécution `larry` via un helper Bash et une exécution root via un cache Python modifiable. Il fournit des extraits et une règle sudo, sans package d’extension, échange HTTP complet ni artefact bytecode.
 
-## Cible
-- Host : `browsed.htb`
-- IP : `10.10.11.186`
+La reproduction nécessite les permissions et la connectivité de l’extension, une entrée contrôlée atteignant le helper, puis l’acceptation du cache par un interpréteur privilégié.
 
----
+## Le navigateur automatisé comme frontière réseau
 
-## Recon : Scan de ports et vhosts
+La cible `browsed.htb` expose HTTP sur 80 et 8080 ainsi que SSH. L’application lance les extensions uploadées dans un navigateur backend. Le récit indique un accès à `browsedinternals.htb`, où Gitea fournit le code de l’application.
 
-### Scan Nmap TCP
-Le scan initial révèle trois ports ouverts :
-- **Port 22/tcp** : SSH
-- **Port 80/tcp** : HTTP
-- **Port 8080/tcp** : HTTP Proxy
+Il s’agit d’une capacité de requête backend, pas d’une preuve que toute extension contourne les restrictions du navigateur. Relever les permissions du manifest, l’origine des requêtes, le mécanisme de lecture ou d’exfiltration et le service interne joignable. Lire un dépôt ne prouve pas le droit d’invoquer l’application décrite.
 
-**Analyse :** Le port 80 propose un validateur d'extensions Chrome via un navigateur headless.
+## Le calcul franchit une frontière d’interprétation
 
----
-
-## Accès Initial : SSRF via extension Chrome
-
-En téléchargeant une extension Chrome personnalisée contenant du JavaScript malveillant, on peut exécuter du code dans le navigateur headless du serveur. Cela permet de scanner le réseau interne (SSRF) et de découvrir un dépôt Gitea sur `http://browsedinternals.htb`.
-
----
-
-## RCE : Injection arithmétique Bash
-
-Le dépôt Gitea expose une application Flask. L'analyse de son code source révèle une injection arithmétique dans un script Bash :
+L’extrait conservé est :
 
 ```bash
 val=$(( $1 + 10 ))
 ```
 
-En envoyant une requête exploitant le SSRF vers cette application avec une valeur injectée, on obtient l'exécution de commandes et un reverse shell en tant que `larry`.
+L’opération accepte une expression, pas nécessairement un entier décimal. Bash peut évaluer récursivement variables et indices de tableaux ; les conséquences en exécution dépendent du chemin d’expansion. Voir la [documentation arithmétique Bash](https://www.gnu.org/software/bash/manual/html_node/Shell-Arithmetic.html). L’extrait ne révèle ni paramètre HTTP complet ni payload universel.
 
----
+Le lab rapporte une connexion inverse comme `larry`. Pour étayer la chaîne, conserver l’entrée, l’invocation exacte, le chemin réseau depuis le navigateur et l’identité du processus. Un résultat numérique correct fournit un contrôle positif, pas une preuve d’exécution de commandes.
 
-## Élévation de privilèges : Poisoning pycache Python
+## Le cache Python doit être accepté
 
-En listant les privilèges sudo de `larry` :
+Le récit rapporte cette invocation privilégiée :
 
 ```bash
-larry@browsed:~$ sudo -l
-(root) NOPASSWD: /usr/bin/python3 /opt/tools/extension_tool.py
+sudo /usr/bin/python3 /opt/tools/extension_tool.py
 ```
 
-Le dossier `__pycache__` associé aux imports de ce script est modifiable par tous. Nous remplaçons le fichier `.pyc` compilé par notre propre payload compilé exécutant une commande système pour obtenir root.
+Elle nécessite l’autorisation sudo décrite. Un `__pycache__` modifiable est identifié dans le répertoire d’un helper, sans nom du module ni en-tête. CPython vérifie compatibilité et règles d’invalidation par date/taille ou hash. Des octets `.pyc` quelconques dans un répertoire modifiable ne suffisent pas. Voir la [documentation Python de l’invalidation](https://docs.python.org/3/reference/import.html#cached-bytecode-invalidation).
 
----
+Une reproduction relève version, chemin d’import réel, présence du source, nom et en-tête du cache, permissions des parents et module importé. L’accès root reste rapporté ; aucun payload bytecode n’est reconstruit.
 
-## Notes défensives / remédiation
+## Remédiation et vérification
 
-### Correctif
-- Isoler les processus de navigateur headless et bloquer l'accès aux adresses IP locales.
-- Assainir les entrées passées aux expressions arithmétiques de Bash.
-- Rendre les répertoires de cache Python non-modifiables par les utilisateurs non-root.
+Isoler la vérification d’extensions dans un worker avec filtrage des sorties, sans accès aux dépôts internes ni aux secrets hôtes. Tester destinations interdites et requêtes externes approuvées ; le sandbox système du navigateur ne définit pas seul la politique réseau.
 
-### Idées de monitoring / détection
-- Surveiller l'activité réseau sortante du processus Chrome headless.
-- Détecter les écritures suspectes dans les dossiers `__pycache__`.
+Parser l’entrée comme entier et contrôler sa plage avant calcul, en rejetant la syntaxe d’expression. Vérifier les valeurs ordinaires. Une liste noire de quelques caractères shell ne suffit pas.
 
----
+Supprimer la délégation privilégiée inutile ou réserver aux administrateurs tous les sources, caches, chemins de recherche et répertoires parents. Désactiver l’écriture de bytecode n’empêche pas la lecture d’un cache empoisonné.
 
-## Leçons retenues
-- Les navigateurs headless doivent être strictement isolés du réseau local.
-- Les fichiers compilés Python (`.pyc`) peuvent servir de vecteurs d'élévation si les permissions sont trop permissives.
-
----
-
-## Annexe : Résumé de la timeline
-1. Scan Nmap -> Identification de l'upload d'extension.
-2. SSRF -> Accès à Gitea et à l'application Flask interne.
-3. RCE -> Exploitation de l'injection arithmétique Bash en tant que `larry`.
-4. Élévation -> Poisoning du cache Python pour obtenir root.
-
----
+Surveiller les requêtes internes du worker et les écritures dans les modules ou caches suivies d’une exécution Python privilégiée. Vérifier l’import de code fiable après redémarrage, pas seulement la suppression d’un fichier. Le défaut commun est la confiance dans une donnée utilisateur à une frontière d’exécution.

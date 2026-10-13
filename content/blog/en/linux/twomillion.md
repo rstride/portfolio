@@ -1,8 +1,9 @@
 ---
 id: HTB-2026-TWOMILLION
 title: TwoMillion
-excerpt: An invite API bypass leads to fraudulent admin promotion, VPN command injection, and an OverlayFS vulnerability for root access.
+excerpt: "TwoMillion connects invite discovery, unauthorized role changes, VPN command injection, credential reuse, and an OverlayFS privilege boundary."
 date: '2025-09-20'
+updated: "2026-10-13"
 tags:
   - WRITEUP
   - HACKTHEBOX
@@ -20,94 +21,58 @@ icon: Terminal
 author: '0x7CC'
 ---
 
-## TL;DR
-On **TwoMillion**, initial access involves bypassing client-side validation in the HTB invite API to register an account, then abusing a broken authorization parameter to promote the account to admin. As admin, we exploit a command injection in the VPN generator to get a shell as `www-data`. Post-exploitation database credentials grant SSH access, and privilege escalation leverages an OverlayFS kernel exploit (CVE-2023-0386) to obtain root.
+## Chain and evidence
 
----
+The TwoMillion account describes registration through a discoverable invite workflow, an unauthorized administrator setting update, OS execution through VPN generation, SSH credential reuse, and CVE-2023-0386 elevation.
 
-## Target
-- Host: `2million.htb`
-- IP: `10.129.229.66`
+The administrator request supports an authorization discussion; the complete registration session, command-injection request, and exploit build are absent. The examples identify boundaries without inventing an end-to-end transcript.
 
----
+## Invite discovery is not automatically a bypass
 
-## Recon: Open ports and invite portal
+The host is `2million.htb`. Frontend code points to `POST /api/v1/invite/how/to/generate` and `POST /api/v1/invite/generate`. ROT13 instructions and a base64 value are encodings, not access controls.
 
-### Nmap Scan
-- **Port 22/tcp**: SSH
-- **Port 80/tcp**: HTTP (Nginx)
+Calling a generation workflow does not alone prove an invitation policy was bypassed. Establish who may generate invites and what the server checks. Registration supplies an ordinary session, not administration.
 
-The application redirects to `2million.htb`. We inspect the invite code page and locate the script `/js/inviteapi.min.js`.
+## Settings cross a role boundary
 
----
+This normalized illustration retains the administrator flag update described in the account; it is not a captured exchange:
 
-## Initial Foothold: API bypass & command injection
+```http
+PUT /api/v1/admin/settings/update HTTP/1.1
+Host: 2million.htb
+Cookie: <LAB_SESSION_COOKIE>
+Content-Type: application/json
 
-We intercept the invite code generation endpoint:
-- `POST /api/v1/invite/how/to/generate` (returns ROT13 instructions)
-- `POST /api/v1/invite/generate` (returns base64-encoded invite code)
-
-After registering and logging in, we find the API documentation. We abuse a broken authorization flaw in `PUT /api/v1/admin/settings/update` to elevate our account:
-
-```bash
-curl -sS -b cookies.txt -X PUT http://2million.htb/api/v1/admin/settings/update   -H 'Content-Type: application/json'   --data '{"email":"test@2million.htb","is_admin":1}'
+{"email":"test@2million.htb","is_admin":1}
 ```
 
-As admin, we inject a shell payload into the `username` parameter of the VPN profile generator (`POST /api/v1/admin/vpn/generate`) to execute commands and get a shell as `www-data`.
+`<LAB_SESSION_COOKIE>` means the complete cookie header value from an ordinary authorized lab account. Confirm persistence and a subsequent admin-only operation; `200` alone does not prove elevation.
 
----
+Examine permission to call the function and permission to change `is_admin` on the selected account. OWASP distinguishes [function-level](https://api-security.owasp.org/editions/2023/en/0xa5-broken-function-level-authorization/) and [property-level authorization](https://api-security.owasp.org/editions/2023/en/0xa3-broken-object-property-level-authorization/).
 
-## User Access: Database credentials reuse
+## VPN generation and another OS identity
 
-We inspect the application `.env` file and retrieve the database credentials:
-- Username: `admin`
-- Password: `SuperDuperPass123`
+The account reports injection through `username` at `POST /api/v1/admin/vpn/generate`, yielding `www-data`. Without the invocation and payload, the exact shell boundary is not reproducible. Inspect string interpolation versus argument passing, including the utility's own option handling.
 
-We reuse these credentials to log in via SSH as `admin` and read the user flag.
+Reading `.env` supplies credentials reportedly reused for SSH as `admin`. Database permission, file readability, and SSH acceptance are separate facts. The application administrator and the OS account `admin` are also different identities.
 
----
+## OverlayFS: verify more than the version
 
-## Privilege Escalation: OverlayFS / FUSE Exploitation (CVE-2023-0386)
+The account records Ubuntu 22.04 and `5.15.70-051570-generic`, then reports a FUSE/OverlayFS exploit. CVE-2023-0386 concerns copy-up and UID mapping that can incorrectly preserve privileged file properties. See the [Ubuntu advisory and package status](https://ubuntu.com/security/CVE-2023-0386).
 
-Checking local system details:
-- OS: Ubuntu 22.04 LTS
-- Kernel: `5.15.70-051570-generic`
+Illustrative local inventory:
 
-The local admin mail highlights a kernel vulnerability. This kernel version is vulnerable to CVE-2023-0386, a local privilege escalation in OverlayFS/FUSE.
-
-We compile the xkaneiki exploit on the target:
 ```bash
-./fuse ./ovlcap/lower ./gc
-./exp
+uname -r
+findmnt -t overlay,fuse,fuseblk
 ```
 
-The exploit triggers, mounting a custom FUSE system to copy a privileged binary into OverlayFS. We execute the SUID root wrapper to obtain root access.
+These identify the running kernel and visible mounts, not all prerequisites. Verify provenance, backports, namespace/mount policy, filesystem behavior, and exploit source. The two executable names in the original account are insufficient build/run instructions and are removed.
 
----
+## Remediation and regression checks
 
-## Defensive notes / remediation
+Authorize administrative functions and privileged fields server-side. Derive identity from the session, allowlist mutable fields, and check the target account. Invoke the VPN utility without a shell, with validated arguments and minimal service privileges.
 
-### Fix
-- Implement proper server-side authentication checks on admin setting update endpoints.
-- Sanitize parameters passed to OS commands (such as the VPN generator).
-- Apply security updates to the Linux kernel to patch the OverlayFS vulnerability (CVE-2023-0386).
+Verify that ordinary accounts cannot change their own or another account's role, valid admin operations work, and metacharacters cannot launch a second command. Rotate leaked credentials and remove reuse. Install the distribution's fixed kernel, reboot, and confirm the running version against vendor status.
 
-### Monitoring / detection ideas
-- Alert on execution of system commands by the `www-data` user.
-- Audit the creation and execution of SUID files in FUSE-mounted directories.
-
----
-
-## Lessons learned
-- Client-side invite validation is easily bypassed by reading raw API scripts.
-- Kernel exploitation is a common escalation route when systems are left unpatched.
-
----
-
-## Appendix: Timeline summary
-1. Recon -> Bypass invite API, register account.
-2. Foothold -> Promote user to admin via API parameters, inject shell command, get shell as `www-data`.
-3. User -> Reuse DB credentials to log in via SSH as `admin`.
-4. Privilege Escalation -> Exploit OverlayFS (CVE-2023-0386) to get root.
-
----
+Monitor role changes, unexpected web-service children, and privileged-file creation associated with mounts. The risk is the composition of weaknesses, not that invite encoding or an old-looking kernel alone grants root.

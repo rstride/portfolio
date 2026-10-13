@@ -1,8 +1,9 @@
 ---
 id: GUIDE-2026-001
 title: "From finding to retest: making pentest reports actionable"
-excerpt: "How to structure evidence, impact, root cause, and retest criteria so findings become verifiable remediation work."
+excerpt: "A fictional cross-tenant export finding shows how evidence, root cause, impact, remediation, and retest criteria become verifiable engineering work."
 date: "2026-09-15"
+updated: "2026-10-13"
 tags: ["GUIDE", "REPORTING", "REMEDIATION", "RETEST", "PENTEST"]
 category: "GUIDE"
 icon: "Database"
@@ -11,52 +12,68 @@ featured: true
 published: true
 ---
 
-A pentest report is not the end of an engagement. It is the interface between offensive assessment and the people who must decide, fix, and verify.
+A finding should let another engineer understand the failure, reproduce it with authorized test data, and determine whether the correction covers its variants. Page count and tool output are poor substitutes for that chain.
 
-## Separate observation from impact
+The finding below is entirely fictional. Domains, identities, report IDs, build labels, and responses are illustrative, not observations from a client engagement. It uses the policy developed in the [multi-tenant authorization article](/en/blog/autorisation-api-multitenant).
 
-The observation describes the behavior precisely. Impact explains what an attacker can achieve in the business context. Mixing them produces either alarmist language or technical detail with no priority.
+## A finding title that describes the consequence
 
-Evidence should be minimal, reproducible, and stripped of unnecessary secrets. It shows the preconditions, request or action, and the relevant result.
+**An organization administrator can export another organization's report.**
 
-## Explain the root cause
+Affected component: the report-export endpoint and background worker in the fictional build `assessment-demo-1`. Preconditions: a valid administrator account in A and a known report identifier in B. No anonymous access, modification, deletion, or domain compromise is established by this example.
 
-Fixing one parameter or blocking one route is insufficient when the same rule is missing elsewhere. Connect the symptom to the design decision: client-side enforcement, scattered authorization, an overlong secret lifetime, or an implicit trust boundary.
+The policy permits administrators to export only their own organization's reports. The observation is that the sample implementation checks the role but fails to bind the loaded report to the caller's organization.
 
-This helps the team search for variants instead of closing a single ticket.
+## Keep the evidence minimal and complete
 
-## Make priority defensible
+Create A and B using synthetic data. Capture a legitimate export of A1 as `admin_A` first, then submit B1 with the same identity. `<TOKEN_ADMIN_A>` represents a valid token for that fixture:
 
-Technical severity is one signal. Priority should include exposure, required privileges, exploit reliability, data sensitivity, and compensating controls.
+```http
+POST /api/organizations/A/reports/report_B1/exports HTTP/1.1
+Host: api.example.test
+Authorization: Bearer <TOKEN_ADMIN_A>
+Content-Type: application/json
 
-Document assumptions. If impact depends on an unknown configuration or volume, state that explicitly.
+{"format":"csv"}
+```
 
-## Offer a remediation path
+The fictional vulnerable behavior returns `202` and an export job. That response alone is insufficient: follow the job and the authorized download flow, and show that the resulting artifact contains B1's seeded marker `tenant-b-demo`. Retain request/job/artifact correlation with timestamps, redacting tokens and download secrets.
 
-A useful recommendation distinguishes:
+The evidence bundle also records ownership of B1 before the request, the acting account's memberships, and a positive control showing ordinary A export works. There is no need to export a real customer's dataset to prove the boundary failure.
 
-1. The immediate measure that reduces exposure.
-2. The durable correction for the root cause.
-3. The tests or controls that prevent regression.
+## Separate observation, impact, and uncertainty
 
-It describes the security objective without forcing an implementation that conflicts with the team’s architecture.
+Observation: the A identity obtains B1's export artifact. Demonstrated impact in the fictional scenario: cross-tenant disclosure of report contents available through that export path.
 
-## Define the retest before closure
+Potential breadth depends on object discovery, exportable data, deployment policy, and other route variants. Do not turn one report into a claim that every tenant's entire dataset was accessed. Similarly, a job response without a retrievable artifact supports a different, narrower observation.
 
-A retest checks the original scenario, likely variants, and obvious functional regressions. “Fixed” requires evidence; “accepted risk” requires an owner and rationale.
+Prioritize using exposure, required privileges, data sensitivity, exploit reliability, and existing controls. This example does not assign a numeric severity without a real deployment context. OWASP's [BOLA description](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/) provides the relevant vulnerability category.
 
-Preserve the timeline: tested version, date, reproduced behavior, observed fix, and retest limitations. This turns the report into a decision history.
+## Root cause and a remediation path
 
-## Minimum finding structure
+The fictional handler validates that the caller is an administrator in path organization A, then loads a report globally by ID. The worker later trusts that queued ID. A role check exists; the identity–organization–object relationship is missing.
 
-- Risk-oriented title
-- Affected asset and component
-- Preconditions and attack scenario
-- Reproducible, sanitized evidence
-- Technical and business impact
-- Root cause
-- Severity and assumptions
-- Immediate and durable recommendations
-- Retest criteria
+An immediate containment could disable affected exports until the check is deployed. The durable correction must authorize the selected object in the current membership context before enqueueing, revalidate relevant rights before worker output, and protect artifact download. Pending jobs and previously issued links need review; fixing only the HTTP handler leaves earlier work in flight.
 
-The report’s value is measured less by page count than by whether teams can decide and demonstrate that risk was reduced.
+Centralize the policy where appropriate and examine duplicate, bulk, search, and download paths for the same lookup pattern. A random identifier is defense in depth, not a replacement for authorization.
+
+## Define closure before implementing the fix
+
+Use a fresh build identifier and fresh fixtures for retest:
+
+| Case | Required result |
+| --- | --- |
+| `admin_A` exports A1 | job completes; artifact contains only A1 |
+| `admin_A` requests B1 under path A or B | denied; no job or artifact |
+| `member_A` requests A1 export | denied by the role policy |
+| bulk request mixes A1 and B1 | entire operation denied; no partial jobs |
+| admin membership revoked after enqueue | worker refuses to produce the artifact |
+| A identity downloads B artifact | denied; no content or metadata leakage |
+
+In this sample contract, foreign objects return `404` and a same-tenant role denial returns `403`. The exact status convention may differ in another product, but side-effect and disclosure checks remain essential.
+
+## Record the decision and its limits
+
+Attach tested build, time, fixture identities, original and variant results, and any untested worker/cache paths. Close as fixed only when the agreed tests pass. Use “partially fixed” when one boundary still fails and “not verified” when access or deployment prevents retest; unavailable access is not proof of remediation.
+
+Accepted risk is a separate decision with an owner, rationale, and review date. Preserve that distinction in the ticket. The report becomes useful engineering work when its claims, corrective actions, and closure evidence refer to the same security objective. The [SaaS preparation guide](/en/blog/preparer-saas-pentest) explains how to arrange the necessary access before testing.
