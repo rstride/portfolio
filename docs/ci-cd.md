@@ -19,7 +19,7 @@ Configure `DELIVERY_APP_ID` and `DELIVERY_APP_PRIVATE_KEY` after installing the 
 private delivery App on all three repositories. The key belongs in Actions Secrets,
 never chat or Git. GHCR publication uses this repository's native `GITHUB_TOKEN`.
 Legacy token/SSH deployment checkout and generated CI skip markers are removed.
-Retire their old secrets only after the migration's real production cycle succeeds.
+The divergent promotion credentials were retired after healthy baseline delivery.
 
 PrismaPlatform keeps a durable per-component queue, verifies source runs/signatures
 and current state, creates an image-only GitOps PR, tests its exact commit and
@@ -35,4 +35,9 @@ portfolio has no dependency on private reusable workflows.
 
 Central App/runner/package setup, activation, release and rollback instructions:
 [PrismaPlatform CI/CD contract](https://github.com/rstride/PrismaPlatform/blob/main/docs/ci-cd.md).
-Automatic promotion is staged until production recovery and observer setup complete.
+Automatic promotion was enabled on October 13, 2026 after healthy platform/CTEM
+recovery observations, monitoring preservation and worker registry-credential
+validation. The platform browser gate is enforced after five complete green runs.
+Successful browser and deployment observations wake the central durable queue;
+a scheduled heartbeat is a fallback. Documentation pushes run lightweight
+verification and do not rebuild or promote an image.
