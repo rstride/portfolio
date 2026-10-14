@@ -1,13 +1,14 @@
 # Romain Stride Portfolio
 
-Personal portfolio and service site for Romain Stride, a freelance cybersecurity consultant. The app is built with Next.js and serves a bilingual French/English experience with service pages, technical write-ups, SEO metadata, RSS, sitemap generation, and a validated contact form.
+Personal portfolio and service site for Romain Stride, connecting software development and cybersecurity. The app is built with Next.js and serves a bilingual French/English experience with service pages, technical write-ups, SEO metadata, RSS, sitemap generation, and a validated contact form.
 
 ## Features
 
 - Bilingual routing: French at `/` and English under `/en`
-- Client-focused homepage and service pages giving security audits and training equal visibility
+- Recruiter-focused homepage with profile, PrismaSec, skills, background, and technical writing
+- Service pages giving security audits and training equal visibility
 - Contact, privacy, guides, research, and offensive security write-ups
-- Retired project URLs permanently redirect to the localized blog; project content and assets are preserved
+- Bilingual project index and Markdown case studies at `/projects` and `/en/projects` with localized metadata
 - Markdown blog content with frontmatter, GitHub-flavored Markdown, heading slugs, and syntax highlighting
 - SEO helpers for canonical URLs, hreflang alternates, Open Graph, Twitter cards, robots, sitemap, and RSS feed
 - Contact API with locale-aware validation, honeypot spam handling, and SMTP delivery through Nodemailer
@@ -35,7 +36,7 @@ features/contact/       Contact form, validation, and mail delivery
 lib/                    Markdown, SEO, and utility helpers
 content/blog/fr/        French guides, research, and write-ups
 content/blog/en/        English guides, research, and write-ups
-content/projects/       Archived localized project case studies
+content/projects/       Published localized project case studies
 public/                 Static assets and Open Graph image
 tests/                  Node test suite
 ```
@@ -132,7 +133,7 @@ ESLint stays on 9.39.5 because the current Next.js React, accessibility, and imp
 
 The `sharp` and `postcss` overrides keep Next.js on their patched releases. npm 12 install-script approvals are recorded in `package.json` for the native tooling used by the build and tests.
 
-The current tests cover contact validation and source normalization, service slug mapping, blog and project content loading, security headers, security.txt, the web manifest, and SEO output for sitemap, robots, project retirement redirects, privacy metadata, and fallback metadata.
+The current tests cover contact validation and source normalization, service slug mapping, blog and project content loading, security headers, security.txt, the web manifest, and SEO output for sitemap, robots, project routes and metadata, privacy metadata, and fallback metadata.
 
 ## Docker
 

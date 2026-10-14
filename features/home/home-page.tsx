@@ -1,31 +1,100 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Check } from 'lucide-react';
-import * as motion from 'motion/react-client';
+import { ArrowRight, ArrowUpRight, Code2, ExternalLink, ShieldCheck, Workflow } from 'lucide-react';
 
 import { StructuredData } from '@/components/structured-data';
 import { homeContent } from '@/features/home/home-content';
-import { servicesContent } from '@/features/services/services-content';
-import { ServiceCategories } from '@/features/services/service-categories';
+import { ProjectCard } from '@/features/projects/project-card';
 import { getBlogPosts } from '@/lib/markdown';
-import { personJsonLd, professionalServiceJsonLd, type Locale } from '@/lib/seo';
+import { getProjectCaseStudies } from '@/lib/projects';
+import { localizedPath, personJsonLd, type Locale } from '@/lib/seo';
+
+const skillIcons = [Code2, ShieldCheck, Workflow];
 
 export function HomePage({ locale }: { locale: Locale }) {
-  const t = homeContent[locale]; const services = servicesContent[locale]; const prefix = locale === 'en' ? '/en' : '';
-  const posts = getBlogPosts(locale); const featured = posts.filter((post) => post.featured).slice(0, 3);
-  const selectedPosts = [...featured, ...posts.filter((post) => !post.featured)].slice(0, 3);
+  const t = homeContent[locale];
+  const posts = getBlogPosts(locale);
+  const selectedPosts = [...posts.filter((post) => post.featured), ...posts.filter((post) => !post.featured)].slice(0, 3);
+  const projects = getProjectCaseStudies(locale);
+  const project = projects.find((item) => item.featured) ?? projects[0];
 
-  return <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-    <StructuredData data={personJsonLd()} /><StructuredData data={professionalServiceJsonLd(locale)} />
-    <section className="home-hero"><div className="hero-frame"><span className="home-kicker">{t.kicker}</span><div className="home-hero-grid"><div><h1>{t.titleLead}<br /><span>{t.titleAccent}</span></h1><p>{t.intro}</p><div className="home-actions"><Link href={`${prefix}/contact?source=home_hero`} className="cta-primary inline-flex">{t.primaryCta}<ArrowRight className="size-4" /></Link><Link href={`${prefix}/services`} className="cta-secondary inline-flex">{t.secondaryCta}</Link></div></div><div className="home-hero-signal"><span>{locale === 'fr' ? 'Audits & formations' : 'Audits & training'}</span><strong>{locale === 'fr' ? 'Comprendre les risques. Renforcer les compétences.' : 'Understand the risks. Build stronger skills.'}</strong><small>{locale === 'fr' ? 'Des objectifs adaptés à votre entreprise' : 'Objectives shaped around your business'}</small></div></div></div></section>
-    <section className="home-section home-services-section"><div className="page-frame"><SectionIntro kicker={t.servicesKicker as string} title={t.servicesTitle as string} text={t.servicesText as string} /><ServiceCategories locale={locale} hrefPrefix={`${prefix}/services`} headingLevel="h3" /><Link href={`${prefix}/services`} className="cta-text inline-flex mt-8">{t.allServices}<ArrowRight className="size-4" /></Link></div></section>
-    <section className="home-section home-process-section"><div className="page-frame"><SectionIntro kicker={t.processKicker as string} title={t.processTitle as string} /><ol className="home-process-grid">{services.process.map((step, index) => <li key={step.title}><span>{String(index + 1).padStart(2, '0')}</span><h3>{step.title}</h3><p>{step.description}</p></li>)}</ol></div></section>
-    <section className="home-section home-articles-section"><div className="page-frame"><SectionIntro kicker={t.articlesKicker as string} title={t.articlesTitle as string} text={t.articlesText as string} /><div className="home-article-grid">{selectedPosts.map((post) => <article key={post.slug}><span>{post.category || 'WRITEUP'}{' // '}{post.date}</span><h3>{post.title}</h3><p>{post.excerpt}</p><Link href={`${prefix}/blog/${post.slug}`}>{t.readArticle}<ArrowRight className="size-4" /></Link></article>)}</div><Link href={`${prefix}/blog`} className="cta-text inline-flex mt-8">{t.allArticles}<ArrowRight className="size-4" /></Link></div></section>
-    <section className="home-section home-about-section"><div className="page-frame home-about-grid"><div className="home-about-portrait"><Image src="/rstride.webp" alt={locale === 'fr' ? 'Portrait de Romain Stride, consultant cybersécurité' : 'Portrait of Romain Stride, cybersecurity consultant'} fill sizes="(max-width: 1024px) min(70vw, 24rem), 24rem" className="object-cover" /></div><div><span className="home-kicker">{t.aboutKicker}</span><h2>{t.aboutTitle}</h2>{(t.aboutParagraphs as readonly string[]).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}<h3>{t.foundations}</h3><ul>{(t.foundationItems as readonly string[]).map((item) => <li key={item}><Check className="size-4" />{item}</li>)}</ul></div></div></section>
-    <section className="home-final-cta"><div className="hero-frame"><h2>{t.finalTitle}</h2><p>{t.finalText}</p><Link href={`${prefix}/contact?source=home_final_cta`} className="cta-primary inline-flex">{t.finalCta}<ArrowRight className="size-4" /></Link></div></section>
-  </motion.div>;
+  return (
+    <div className="portfolio-home">
+      <StructuredData data={personJsonLd()} />
+      <section className="home-hero hero-frame" aria-labelledby="home-title">
+        <div className="home-hero-copy">
+          <span className="home-kicker">{t.kicker}</span>
+          <h1 id="home-title">{t.title}<span>{t.specialty}</span></h1>
+          <p className="home-intro">{t.intro}</p>
+          <div className="home-actions">
+            <Link href="#projects" className="cta-primary inline-flex">{t.primaryCta}<ArrowRight className="size-4" aria-hidden="true" /></Link>
+          </div>
+          <div className="home-socials">
+            <a href="https://github.com/rstride" target="_blank" rel="noopener noreferrer"><Code2 className="size-4" aria-hidden="true" />GitHub<ArrowUpRight className="size-3" aria-hidden="true" /></a>
+            <a href="https://linkedin.com/in/romainstride" target="_blank" rel="noopener noreferrer"><ExternalLink className="size-4" aria-hidden="true" />LinkedIn<ArrowUpRight className="size-3" aria-hidden="true" /></a>
+          </div>
+          <div className="home-hero-foundations">{t.foundations.map((item) => <span key={item}>{item}</span>)}</div>
+        </div>
+        <div className="home-hero-visual">
+          <div className="home-portrait">
+            <Image src="/rstride.webp" alt={t.portraitAlt} fill sizes="(max-width: 767px) 100px, (max-width: 1023px) 280px, 400px" loading="eager" className="object-cover" />
+            <span className="home-portrait-caption" aria-hidden="true">ROMAIN_STRIDE // 42</span>
+          </div>
+          {project && <Link href={localizedPath(locale, `/projects/${project.slug}`)} className="home-project-preview">
+            <div className="home-preview-image"><Image src={project.coverImage} alt="" fill sizes="140px" className="object-cover" /></div>
+            <div><span className="home-kicker">{t.previewLabel}</span><strong>{project.title}<ArrowUpRight className="size-4" aria-hidden="true" /></strong><p>{t.previewText}</p></div>
+          </Link>}
+        </div>
+      </section>
+
+      <section id="projects" className="home-section home-projects-section" aria-labelledby="projects-title">
+        <div className="page-frame">
+          <SectionIntro id="projects-title" kicker={t.projectKicker} title={t.projectTitle} />
+          {project && <ProjectCard project={project} locale={locale} />}
+          <Link href={localizedPath(locale, '/projects')} className="cta-text inline-flex mt-6">{t.allProjects}<ArrowRight className="size-4" aria-hidden="true" /></Link>
+        </div>
+      </section>
+
+      <section id="skills" className="home-section" aria-labelledby="skills-title">
+        <div className="page-frame">
+          <SectionIntro id="skills-title" kicker={t.skillsKicker} title={t.skillsTitle} />
+          <div className="home-skills-grid">{t.skills.map((skill, index) => {
+            const Icon = skillIcons[index];
+            return <article key={skill.title} className="home-skill-card">
+              <div className="home-skill-marker"><Icon className="size-6" aria-hidden="true" /><span>0{index + 1}</span></div>
+              <h3>{skill.title}</h3><p>{skill.description}</p>
+              <ul className="project-tags" aria-label={locale === 'fr' ? 'Compétences' : 'Skills'}>{skill.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
+              <Link href={localizedPath(locale, skill.path)} className="portfolio-evidence">{skill.evidence}<ArrowUpRight className="size-4" aria-hidden="true" /></Link>
+            </article>;
+          })}</div>
+        </div>
+      </section>
+
+      <section id="background" className="home-section home-background-section" aria-labelledby="background-title">
+        <div className="page-frame home-background-grid">
+          <SectionIntro id="background-title" kicker={t.aboutKicker} title={t.aboutTitle} />
+          <ol className="home-journey">{t.journey.map((step) => <li key={step.title}><span className="home-kicker">{step.label}</span><h3>{step.title}</h3><p>{step.text}</p></li>)}</ol>
+        </div>
+      </section>
+
+      <section className="home-section home-articles-section" aria-labelledby="articles-title">
+        <div className="page-frame">
+          <SectionIntro id="articles-title" kicker={t.articlesKicker} title={t.articlesTitle} text={t.articlesText} />
+          <div className="home-article-grid">{selectedPosts.map((post) => <article key={post.slug}>
+            <span>{post.category || 'WRITEUP'} / <time dateTime={post.date}>{new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(post.date))}</time></span>
+            <h3>{post.title}</h3><p>{post.excerpt}</p><Link href={localizedPath(locale, `/blog/${post.slug}`)} className="portfolio-evidence">{t.readArticle}<ArrowRight className="size-4" aria-hidden="true" /></Link>
+          </article>)}</div>
+          <Link href={localizedPath(locale, '/blog')} className="cta-text inline-flex mt-6">{t.allArticles}<ArrowRight className="size-4" aria-hidden="true" /></Link>
+        </div>
+      </section>
+
+      <section className="home-final-cta">
+        <div className="page-frame"><div><span className="home-kicker">{t.finalKicker}</span><h2>{t.finalTitle}</h2><p>{t.finalText}</p></div><Link href={`${localizedPath(locale, '/contact')}?source=home_final_cta`} className="cta-primary inline-flex">{t.finalCta}<ArrowUpRight className="size-4" aria-hidden="true" /></Link></div>
+      </section>
+    </div>
+  );
 }
 
-function SectionIntro({ kicker, title, text }: { kicker: string; title: string; text?: string }) {
-  return <div className="home-section-intro"><span className="home-kicker">{kicker}</span><h2>{title}</h2>{text ? <p>{text}</p> : null}</div>;
+function SectionIntro({ id, kicker, title, text }: { id: string; kicker: string; title: string; text?: string }) {
+  return <div className="home-section-intro"><span className="home-kicker">{kicker}</span><h2 id={id}>{title}</h2>{text && <p>{text}</p>}</div>;
 }

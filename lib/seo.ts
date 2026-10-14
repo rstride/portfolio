@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import type { BlogPostMeta } from '@/lib/markdown';
+import type { ProjectCaseStudyMeta } from '@/lib/projects';
 
 export type Locale = 'fr' | 'en';
 
 export const siteUrl = 'https://rstride.fr';
 export const siteName = 'Romain Stride';
 export const defaultOgImage = `${siteUrl}/og-default.png`;
-export const defaultOgImageAlt = 'Romain Stride cybersecurity consultant portfolio';
+export const defaultOgImageAlt = 'Romain Stride development and cybersecurity portfolio';
 
 export const locales: Locale[] = ['fr', 'en'];
 
@@ -28,16 +29,32 @@ const ogLocales: Record<Locale, string> = {
 export const pageSeo = {
   home: {
     fr: {
-      title: 'Consultant cybersécurité freelance | Romain Stride',
+      title: 'Romain Stride — Développement & cybersécurité',
       description:
-        'Audits de sécurité web, API, cloud et réseaux, sensibilisation et formations techniques pour identifier vos risques et renforcer les compétences de vos équipes.',
+        'Développement logiciel, sécurité offensive et ingénierie des systèmes. Découvrez PrismaSec, mon parcours à l’École 42 et mes recherches web/API.',
       path: '/',
     },
     en: {
-      title: 'Freelance Cybersecurity Consultant | Romain Stride',
+      title: 'Romain Stride — Development & Cybersecurity',
       description:
-        'Web, API, cloud, and network security audits, awareness sessions, and technical training to understand your risks and build your team’s skills.',
+        'Software development, offensive security, and systems engineering. Explore PrismaSec, my École 42 background, and my web/API research.',
       path: '/',
+    },
+  },
+  projects: {
+    fr: {
+      title: 'Projets développement & sécurité | Romain Stride',
+      description: 'Explorez PrismaSec : mon rôle, l’architecture et les décisions techniques d’une plateforme de cybersécurité conçue et mise en production.',
+      path: '/projects',
+      image: '/projects/prismasec-og.png',
+      imageAlt: 'PrismaSec : développement et ingénierie sécurité',
+    },
+    en: {
+      title: 'Development & Security Projects | Romain Stride',
+      description: 'Explore PrismaSec: my role, the architecture, and the technical decisions behind a cybersecurity platform designed and shipped to production.',
+      path: '/projects',
+      image: '/projects/prismasec-og.png',
+      imageAlt: 'PrismaSec: development and security engineering',
     },
   },
   services: {
@@ -189,6 +206,17 @@ export function getPostSeo(post: BlogPostMeta) {
   };
 }
 
+export function buildProjectMetadata(locale: Locale, project: ProjectCaseStudyMeta): Metadata {
+  return buildPageMetadata({
+    locale,
+    path: `/projects/${project.slug}`,
+    title: project.seoTitle || `${project.title} | ${siteName}`,
+    description: project.seoDescription || project.summary,
+    image: project.ogImage || defaultOgImage,
+    imageAlt: project.coverAlt,
+  });
+}
+
 export function buildArticleMetadata({
   locale,
   post,
@@ -257,9 +285,12 @@ export function personJsonLd() {
     '@id': `${siteUrl}/#person`,
     name: siteName,
     url: siteUrl,
-    jobTitle: ['Cybersecurity Consultant', 'Pentester', 'Security Researcher'],
+    jobTitle: ['Software Developer', 'Cybersecurity Consultant', 'Pentester', 'PrismaSec Founder'],
     sameAs: ['https://github.com/rstride', 'https://linkedin.com/in/romainstride', 'https://prismasec.fr'],
     knowsAbout: [
+      'Software development',
+      'Security engineering',
+      'Systems programming',
       'Web application penetration testing',
       'API security',
       'Cloud security',

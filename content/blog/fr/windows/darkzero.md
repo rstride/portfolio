@@ -20,7 +20,7 @@ DarkZero est un lab assume-breach : des identifiants `john.w` sont fournis au d�
 
 Il affirme aussi une délégation de TGT inter-forêts et une compromission de forêt sans documenter les paramètres de confiance nécessaires, le ticket délégué ni l’authentification finale. Ces résultats ne sont pas établis ici. Le sujet étayé est la frontière de confiance SQL, suivie d’une élévation Windows locale.
 
-## Énumérer le login distant, pas seulement le lien
+## Énumérer le login distant , pas seulement le lien
 
 Dans une session SQL authentifiée, ces requêtes illustratives en lecture seule identifient le lien et le contexte SQL distant :
 

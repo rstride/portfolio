@@ -1,10 +1,20 @@
 import { MetadataRoute } from 'next';
 import { getBlogPosts } from '@/lib/markdown';
+import { getProjectCaseStudies } from '@/lib/projects';
 import { absoluteUrl, Locale, sitemapLanguagesFor } from '@/lib/seo';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const frPosts = getBlogPosts('fr');
   const enPosts = getBlogPosts('en');
+  const projectUrls = (['fr', 'en'] as const).flatMap((locale) =>
+    getProjectCaseStudies(locale).map((project) => ({
+      url: absoluteUrl(locale, `/projects/${project.slug}`),
+      lastModified: new Date(project.updated),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+      alternates: { languages: sitemapLanguagesFor(`/projects/${project.slug}`) },
+    })),
+  );
 
   const frBlogUrls = frPosts.map((post) => ({
     url: absoluteUrl('fr', `/blog/${post.slug}`),
@@ -31,10 +41,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { locale: 'fr', path: '/services', priority: 0.8 },
     { locale: 'fr', path: '/contact', priority: 0.8 },
     { locale: 'fr', path: '/blog', priority: 0.8 },
+    { locale: 'fr', path: '/projects', priority: 0.9 },
     { locale: 'en', path: '/', priority: 1 },
     { locale: 'en', path: '/services', priority: 0.8 },
     { locale: 'en', path: '/contact', priority: 0.8 },
     { locale: 'en', path: '/blog', priority: 0.8 },
+    { locale: 'en', path: '/projects', priority: 0.9 },
   ];
 
   const staticRoutes = staticRouteEntries.map((route) => ({
@@ -47,5 +59,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   }));
 
-  return [...staticRoutes, ...frBlogUrls, ...enBlogUrls];
+  return [...staticRoutes, ...projectUrls, ...frBlogUrls, ...enBlogUrls];
 }

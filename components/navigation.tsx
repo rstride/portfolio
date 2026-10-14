@@ -17,18 +17,18 @@ export function Navigation() {
 
   const navItems = isEnglish ? [
     { name: 'HOME', path: '/en' },
-    { name: 'SERVICES', path: '/en/services' },
+    { name: 'PROJECTS', path: '/en/projects' },
     { name: 'ARTICLES', path: '/en/blog' },
     { name: 'CONTACT', path: '/en/contact' },
   ] : [
     { name: 'ACCUEIL', path: '/' },
-    { name: 'SERVICES', path: '/services' },
+    { name: 'PROJETS', path: '/projects' },
     { name: 'ARTICLES', path: '/blog' },
     { name: 'CONTACT', path: '/contact' },
   ];
   const primaryCta = isEnglish
-    ? { label: 'Discuss your needs', path: '/en/contact?source=nav_cta' }
-    : { label: 'Parlons de vos besoins', path: '/contact?source=nav_cta' };
+    ? { label: 'Get in touch', path: '/en/contact?source=nav_cta' }
+    : { label: 'Me contacter', path: '/contact?source=nav_cta' };
   const languageToggleLabel = isEnglish ? 'Passer en français' : 'Switch to English';
   const openMenuLabel = isEnglish ? 'Open navigation menu' : 'Ouvrir le menu de navigation';
   const closeMenuLabel = isEnglish ? 'Close navigation menu' : 'Fermer le menu de navigation';
@@ -173,6 +173,9 @@ export function Navigation() {
         <div
           ref={mobileOverlayRef}
           id="mobile-navigation-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation"
           className="mobile-nav-overlay xl:hidden"
         >
           <div className="mobile-nav-grid"></div>
