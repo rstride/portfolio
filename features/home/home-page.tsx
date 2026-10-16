@@ -4,9 +4,8 @@ import { ArrowRight, ArrowUpRight, Code2, ExternalLink, ShieldCheck, Workflow } 
 
 import { StructuredData } from '@/components/structured-data';
 import { homeContent } from '@/features/home/home-content';
-import { ProjectCard } from '@/features/projects/project-card';
+import { ServiceCategories } from '@/features/services/service-categories';
 import { getBlogPosts } from '@/lib/markdown';
-import { getProjectCaseStudies } from '@/lib/projects';
 import { localizedPath, personJsonLd, type Locale } from '@/lib/seo';
 
 const skillIcons = [Code2, ShieldCheck, Workflow];
@@ -15,8 +14,6 @@ export function HomePage({ locale }: { locale: Locale }) {
   const t = homeContent[locale];
   const posts = getBlogPosts(locale);
   const selectedPosts = [...posts.filter((post) => post.featured), ...posts.filter((post) => !post.featured)].slice(0, 3);
-  const projects = getProjectCaseStudies(locale);
-  const project = projects.find((item) => item.featured) ?? projects[0];
 
   return (
     <div className="portfolio-home">
@@ -27,7 +24,7 @@ export function HomePage({ locale }: { locale: Locale }) {
           <h1 id="home-title">{t.title}<span>{t.specialty}</span></h1>
           <p className="home-intro">{t.intro}</p>
           <div className="home-actions">
-            <Link href="#projects" className="cta-primary inline-flex">{t.primaryCta}<ArrowRight className="size-4" aria-hidden="true" /></Link>
+            <Link href={localizedPath(locale, '/projects')} className="cta-primary inline-flex">{t.primaryCta}<ArrowRight className="size-4" aria-hidden="true" /></Link>
           </div>
           <div className="home-socials">
             <a href="https://github.com/rstride" target="_blank" rel="noopener noreferrer"><Code2 className="size-4" aria-hidden="true" />GitHub<ArrowUpRight className="size-3" aria-hidden="true" /></a>
@@ -40,22 +37,18 @@ export function HomePage({ locale }: { locale: Locale }) {
             <Image src="/rstride.webp" alt={t.portraitAlt} fill sizes="(max-width: 767px) 100px, (max-width: 1023px) 280px, 400px" loading="eager" className="object-cover" />
             <span className="home-portrait-caption" aria-hidden="true">ROMAIN_STRIDE // 42</span>
           </div>
-          {project && <Link href={localizedPath(locale, `/projects/${project.slug}`)} className="home-project-preview">
-            <div className="home-preview-image"><Image src={project.coverImage} alt="" fill sizes="140px" className="object-cover" /></div>
-            <div><span className="home-kicker">{t.previewLabel}</span><strong>{project.title}<ArrowUpRight className="size-4" aria-hidden="true" /></strong><p>{t.previewText}</p></div>
-          </Link>}
         </div>
       </section>
 
-      <section id="projects" className="home-section home-projects-section" aria-labelledby="projects-title">
+      <section id="services" className="home-section home-services-section" aria-labelledby="services-title">
         <div className="page-frame">
-          <SectionIntro id="projects-title" kicker={t.projectKicker} title={t.projectTitle} />
-          {project && <ProjectCard project={project} locale={locale} />}
-          <Link href={localizedPath(locale, '/projects')} className="cta-text inline-flex mt-6">{t.allProjects}<ArrowRight className="size-4" aria-hidden="true" /></Link>
+          <SectionIntro id="services-title" kicker={t.servicesKicker} title={t.servicesTitle} text={t.servicesText} />
+          <ServiceCategories locale={locale} hrefPrefix={localizedPath(locale, '/services')} headingLevel="h3" />
+          <Link href={localizedPath(locale, '/services')} className="cta-text inline-flex mt-6">{t.allServices}<ArrowRight className="size-4" aria-hidden="true" /></Link>
         </div>
       </section>
 
-      <section id="skills" className="home-section" aria-labelledby="skills-title">
+      <section id="skills" className="home-section home-skills-section" aria-labelledby="skills-title">
         <div className="page-frame">
           <SectionIntro id="skills-title" kicker={t.skillsKicker} title={t.skillsTitle} />
           <div className="home-skills-grid">{t.skills.map((skill, index) => {

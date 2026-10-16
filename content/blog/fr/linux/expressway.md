@@ -1,9 +1,9 @@
 ---
 id: "HTB-2025-002"
 title: "Expressway"
-excerpt: "IKE Aggressive Mode permet des essais hors ligne ; la réutilisation du secret mène à SSH puis à un binaire sudo vulnérable indépendant."
+excerpt: "Expressway illustre trois faiblesses distinctes : une clé IKEv1 facile à deviner, sa réutilisation pour SSH et des comportements sudo permettant une élévation locale sous certaines conditions."
 date: "2025-09-20"
-updated: "2026-10-13"
+updated: "2026-10-15"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "EASY", "VPN", "IPSEC", "IKE", "PRIVESC"]
 category: "WRITEUP"
 platform: "HACKTHEBOX"
@@ -13,50 +13,53 @@ icon: "Terminal"
 author: "0x7CC"
 ---
 
-## Chaîne et preuves
+## Commencer par les bons protocoles
 
-Le récit d’Expressway rapporte un échange IKE Aggressive Mode, la récupération d’une clé prépartagée (PSK), sa réutilisation comme mot de passe SSH d’`ike` et une élévation locale via CVE-2025-32463. Il montre trois problèmes distincts : exposition du protocole, secret devinable et réutilisation d’identifiants.
+La chaîne est **IKE Aggressive Mode → récupération hors ligne de la PSK → SSH comme `ike` → contournement de la politique d’hôte sudo ou voie chroot vulnérable → root**. Le secret VPN n’est pas automatiquement un identifiant SSH : sa réutilisation constitue une faiblesse supplémentaire. De même, la version sudo seule ne détermine pas le chemin local disponible. Deux CVE apparaissent dans les solutions publiques, avec des prérequis différents.
 
-Le transcript ne conserve ni handshake complet ni commande de récupération. Le secret retrouvé et le flag sont retirés ; les explications suivantes ne remplacent pas les captures manquantes.
+`expressway.htb` est l’hôte du laboratoire. `<LAB_IP>` représente son adresse et `<LAB_PSK>` le secret retrouvé. Les commandes sont des diagnostics sur la machine autorisée ; aucun secret ni flag n’est reproduit.
 
-## Suivre la surface UDP
+## Confirmer le service UDP
 
-Le nom rapporté est `expressway.htb` ; le récit liste UDP 500, 4500 et 69. Comme le décrit le [guide UDP de Nmap](https://nmap.org/book/scan-methods-udp-scan.html), un scan UDP peut produire des états ambigus : `open|filtered` nécessite une réponse de protocole avant d’identifier un service. La présence de TFTP ne prouve pas une fuite de configuration.
+Un scan TCP montre SSH. Le service intéressant écoute sur UDP 500 ; UDP 4500 intervient aussi dans la traversée NAT d’IPsec. UDP 69 peut apparaître lors d’une reconnaissance ciblée, mais sa présence ne fournit pas à elle seule un fichier de configuration. Contrairement à TCP, l’absence de réponse à une sonde UDP produit souvent `open|filtered`, état ambigu. Une sonde propre à IKE permet de confirmer le VPN. Le [guide Nmap sur UDP](https://nmap.org/book/scan-methods-udp-scan.html) explique cette limite.
 
-Pour un diagnostic autorisé, cette commande illustrative limite la découverte aux ports rapportés :
+Depuis le poste de travail :
 
 ```bash
 sudo nmap -sU -sV -p 500,4500,69 expressway.htb
+ike-scan -A expressway.htb
 ```
 
-Elle demande l’identification des services UDP ; elle ne s’authentifie pas au VPN et ne retrouve aucun secret. Relever le protocole ayant répondu et les conditions du scan au lieu de prendre le silence pour une confirmation.
+`-sU` sélectionne UDP et `-sV` cherche à identifier le service. `ike-scan -A` demande IKEv1 Aggressive Mode. Relever la proposition du serveur, l’identité et le type d’authentification. Une identité comme `ike@expressway.htb` est une identité IKE ; elle ne prouve pas l’existence d’un compte Unix, même si elle oriente les vérifications suivantes.
 
-## Aggressive Mode et essais hors ligne
+## Comprendre les essais hors ligne
 
-Le récit rapporte l’identité `ike@expressway.htb` et une authentification PSK. Les échanges IKEv1 Aggressive Mode permettent de capturer des valeurs contre lesquelles tester des mots de passe hors ligne. Le protocole est décrit dans la [RFC 2409](https://www.rfc-editor.org/rfc/rfc2409.html). Une identité peut orienter la découverte de comptes ; elle n’est pas un identifiant SSH.
+En mode agressif IKEv1, des éléments de l’échange de clés et une valeur d’authentification sont disponibles dans la négociation. Avec une PSK, un testeur peut comparer des mots de passe candidats à cet échange capturé, sans se reconnecter au VPN à chaque essai. La construction figure dans la [RFC 2409](https://www.rfc-editor.org/rfc/rfc2409.html). Il faut encore une capture complète et bien formatée et un secret assez faible pour être deviné. La seule possession d’une empreinte ne révèle pas la PSK.
 
-La récupération dépend de la résistance de la PSK aux essais et d’une capture correcte. Le récit rapporte que cette PSK authentifie aussi le compte SSH `ike`. Cette réutilisation constitue une faiblesse supplémentaire : retrouver une PSK VPN ne donne pas intrinsèquement un accès SSH.
+Pour un rejeu rigoureux, sauvegarder l’échange au format attendu par l’outil choisi, vérifier identité et proposition, puis tester les candidats localement. Noter la version de l’outil et le format, au lieu de recopier un mode de cracking supposé. Sans réponse IKE, rechercher filtrage UDP, erreur d’adresse, version et propositions IKE ou mode agressif désactivé. Un échec de recherche ne prouve pas l’absence du service ; la PSK peut simplement être forte.
 
-## Identifier le sudo réellement exécuté
+Dans le laboratoire, la PSK retrouvée fonctionne aussi comme mot de passe SSH de `ike`. Tester séparément cette réutilisation. La connexion SSH suivie de `id` établit le compte OS ; l’échange IKE ne donne aucun shell. Changer seulement la PSK VPN laisserait un risque si l’ancien mot de passe était encore accepté en SSH.
 
-Après l’accès SSH, le récit relève sudo 1.9.17 et un binaire SUID dans `/usr/local/bin`. Ces vérifications locales illustratives distinguent cette copie du binaire géré par les paquets :
+## Distinguer les deux chemins sudo
+
+Après SSH, inventorier les binaires sudo et les droits :
 
 ```bash
 command -v sudo
+/usr/bin/sudo --version
 /usr/local/bin/sudo --version
-ls -l /usr/local/bin/sudo
+ls -l /usr/bin/sudo /usr/local/bin/sudo
+sudo -l
 ```
 
-Elles relèvent la résolution, la version déclarée et les permissions, sans prouver l’absence d’un backport ni le succès d’un exploit.
+Tous ces chemins ne sont pas nécessairement présents dans chaque image. `command -v` identifie le binaire choisi par le shell ; les appels explicites distinguent deux copies et leurs permissions. Mettre à jour le paquet de `/usr/bin/sudo` ne corrige pas une copie SUID installée sous `/usr/local/bin`.
 
-CVE-2025-32463 implique la lecture d’une configuration NSS contrôlée lors du traitement chroot. La recherche initiale identifie les versions amont 1.9.14–1.9.17 et la correction 1.9.17p1. Aucune règle sudoers autorisant une commande n’est nécessaire pour ce chemin. Voir la [publication Stratascale](https://www.stratascale.com/resource/cve-2025-32463-sudo-chroot-elevation-of-privilege/).
+La voie directe du laboratoire concerne CVE-2025-32462 : le nom d’hôte fourni à sudo avec `-h` peut influencer incorrectement l’évaluation d’une politique sudoers liée à l’hôte. Un nom tel que `offramp.expressway.htb` est repérable dans un journal Squid de la machine. Un utilisateur autorisé doit comparer `sudo -l` sur le véritable hôte et sur ce nom avant d’essayer une commande. Il faut une règle sudoers dont la partie hôte autorise la commande sous ce nom alternatif. Un nom inventé ou une version touchée sans règle applicable ne suffit pas. La démonstration doit identifier le binaire, le nom ayant correspondu et l’identité effective obtenue. L’[avis du projet sudo](https://www.sudo.ws/security/advisories/host_any/) détaille le défaut.
 
-Le récit rapporte une exécution root, mais le script copié ne sélectionne pas explicitement le binaire personnalisé. Cette version retire ce script ambigu et demande d’établir l’exécutable réellement concerné, l’architecture et l’environnement.
+Une autre voie utilise CVE-2025-32463. Dans certaines versions amont, l’option chroot peut faire charger à sudo une configuration NSS et du code contrôlés par l’utilisateur avant l’application de la politique. Elle ne dépend pas d’une commande accordée dans sudoers, mais exige un binaire vulnérable avec SUID, une préparation du système de fichiers et un outil adapté au build. La [divulgation initiale](https://www.stratascale.com/resource/cve-2025-32463-sudo-chroot-elevation-of-privilege/) présente les versions et le correctif. Une bannière de version n’exclut pas un correctif rétroporté. Il faut consigner quelle voie a réellement produit root plutôt que fusionner les deux CVE.
 
-## Remédiation et clôture
+## Diagnostiquer et corriger
 
-Remplacer IKEv1 Aggressive Mode si possible, utiliser des identifiants forts et distincts, et renouveler la PSK et le mot de passe réutilisé. Vérifier l’indisponibilité de l’échange ancien et le refus des secrets précédents, tout en conservant les accès VPN et SSH approuvés.
+Si le nom alternatif ne fonctionne pas, examiner les alias d’hôte sudoers, vérifier la pertinence du nom trouvé dans les journaux et l’interprétation de `-h` par le binaire appelé. Une erreur de résolution DNS n’indique pas forcément un refus de la politique. Si la voie chroot échoue, contrôler provenance exacte du binaire, niveau de correction, architecture et prérequis de l’outil. Si SSH refuse la PSK, vérifier la récupération du secret et la présence réelle de la réutilisation.
 
-Installer la mise à jour sudo supportée et inventorier toutes les copies privilégiées, y compris dans `/usr/local/bin`. Pour un build personnalisé, utiliser une version amont corrigée ou retirer la copie. Vérifier résolution et provenance après mise à jour ; corriger `/usr/bin/sudo` ne répare pas un autre binaire SUID.
-
-Surveiller les négociations IKE répétées, les connexions SSH associées aux identités VPN et les exécutions privilégiées avec des chemins chroot inhabituels. Les essais hors ligne ne génèrent pas une série d’échecs de login : ces journaux ne mesurent pas la récupération d’une PSK capturée.
+Désactiver IKEv1 Aggressive Mode si possible, employer des secrets VPN longs et indépendants ou des certificats, puis renouveler PSK et mot de passe SSH exposés. Corriger toutes les copies privilégiées de sudo ou retirer les builds locaux non maintenus. Auditer les règles sudoers spécifiques aux hôtes et les autorisations `ALL` inutiles. Le retest doit refuser l’ancien secret VPN et SSH, maintenir le VPN approuvé, rejeter l’autorisation sudo sur le faux hôte et constater un binaire corrigé sur chaque chemin SUID. Surveiller négociations IKE inattendues, accès SSH par les identités VPN et appels sudo avec hôte ou chroot inhabituels. Les essais hors ligne de PSK ne produisent pas une série d’échecs de connexion en ligne.

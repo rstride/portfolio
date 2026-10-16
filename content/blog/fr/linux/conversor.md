@@ -1,10 +1,10 @@
 ---
 id: "HTB-2026-CONVERSOR"
 title: "Conversor"
-excerpt: "Traversée de chemins, exécution planifiée, réutilisation de mot de passe et needrestart : suivre les identités à chaque frontière de confiance."
+excerpt: "Conversor transforme une feuille XSLT fournie par l’utilisateur en écriture de fichier, puis en exécution planifiée ; un choix de configuration sudo permet ensuite de devenir root."
 date: "2025-10-25"
-updated: "2026-10-13"
-tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "EASY", "PATH-TRAVERSAL", "CRON-HIJACK", "NEEDRESTART"]
+updated: "2026-10-15"
+tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "EASY", "XSLT-INJECTION", "CRON-HIJACK", "NEEDRESTART"]
 category: "WRITEUP"
 platform: "HACKTHEBOX"
 target_os: "LINUX"
@@ -14,51 +14,68 @@ author: "0x7CC"
 published: true
 ---
 
-## Chaîne d’attaque et preuves disponibles
+## Comprendre la chaîne
 
-Conversor relie une destination d’upload mal contrôlée à l’exécution planifiée de Python, puis à la réutilisation d’identifiants et à une règle sudo permissive. Le récit de lab existant rapporte des accès comme `www-data`, puis `fismathack`, puis root. Il ne contient ni requête d’upload complète ni configuration du planificateur ; les exemples expliquent le mécanisme sans constituer une capture de session.
+Conversor propose de convertir un document XML avec une feuille XSLT envoyée par l’utilisateur. Après inscription, un compte peut transmettre les deux fichiers au serveur. Une feuille XSLT est un programme interprété côté serveur : la question de sécurité est donc de savoir quelles lectures et écritures le moteur autorise.
 
-Un fichier cron appartenant à root ne prouve pas que sa commande s’exécute comme root. Il faut regarder le champ utilisateur, une éventuelle réduction de privilèges et l’identité du processus obtenu. Le shell `www-data` rapporté établit un accès sous ce compte, pas un accès root immédiat.
+La progression du laboratoire est **compte web → écriture par XSLT → script Python exécuté comme `www-data` → hash local → SSH comme `fismathack` → exécution root via `needrestart`**. Chaque identité possède des droits distincts. Un fichier placé dans un répertoire ne s’exécute pas tout seul ; une tâche planifiée doit le charger. Le compte web et le shell applicatif ne donnent pas automatiquement accès à SSH.
 
-## Énumération : relier le code au système de fichiers
+Les commandes concernent uniquement la machine autorisée. `conversor.htb` représente le nom de la cible ; les chemins locaux des exemples désignent le poste de travail sauf indication contraire. Le mot de passe et l’adresse de rappel sont omis.
 
-La cible décrite est `conversor.htb`, avec HTTP et SSH. L’archive exposée `source_code.tar.gz` permet de lire `app.py`. Le code relie une entrée à une opération d’écriture :
+## Repérer la frontière de transformation
 
-```python
-file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+Une reconnaissance TCP montre SSH et HTTP. Le service web redirige vers `conversor.htb` : il faut résoudre ce nom vers l’adresse du laboratoire avant d’ouvrir le site. Le nom compte, car l’hôte virtuel peut répondre différemment de l’adresse IP nue. Le site permet de s’inscrire et de télécharger une feuille XSLT d’exemple. Commencer avec un XML ordinaire et cette feuille fournit un témoin positif : on découvre les champs du formulaire, le cookie de session et le résultat normal.
+
+La page About fournit `source_code.tar.gz`. Lire le gestionnaire `/convert` apporte davantage que chercher un exploit à partir de la bannière Apache. Le code sauvegarde les deux fichiers, analyse le XML avec les entités et le réseau désactivés, puis analyse la feuille et construit un objet `etree.XSLT`. Il s’agit de deux traitements et de deux ensembles de permissions. La protection contre les entités XML ne limite pas nécessairement les extensions utilisées par la feuille. La [documentation XSLT de lxml](https://lxml.de/xpathxslt.html) et son [contrôle des accès](https://lxml.de/api/lxml.etree.XSLTAccessControl-class.html) décrivent cette distinction.
+
+Les notes de déploiement de l’archive indiquent qu’une tâche exécute les fichiers Python de `/var/www/conversor.htb/scripts/` sous `www-data`. Voilà une destination précise pour tester une écriture. Il faut lire la colonne utilisateur de la tâche : un fichier `/etc/crontab` appartenant à root peut lancer ses commandes sous un autre compte.
+
+## Vérifier l’écriture, puis l’exécution
+
+Une feuille XSLT peut utiliser `exsl:document` afin de créer un second fichier. Dans ce laboratoire, aucune restriction efficace n’empêche la feuille fournie par l’utilisateur d’écrire dans le répertoire des scripts. Ce diagnostic minimal crée un marqueur sans ouvrir de connexion distante :
+
+```xml
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:exsl="http://exslt.org/common"
+  extension-element-prefixes="exsl">
+  <xsl:template match="/">
+    <exsl:document href="/var/www/conversor.htb/scripts/probe.py" method="text">
+      <xsl:text>from pathlib import Path&#10;Path('/tmp/conversor-probe').write_text('executed')&#10;</xsl:text>
+    </exsl:document>
+    <ok>converted</ok>
+  </xsl:template>
+</xsl:stylesheet>
 ```
 
-Joindre des chemins ne les confine pas. Si `filename` est contrôlé par le client, `../scripts/pwn.py` peut atteindre un répertoire voisin ; un chemin absolu peut remplacer le chemin de base. Pour établir l’exploitation, relever le répertoire d’upload, la destination normalisée, les droits d’écriture et le processus consommateur. Cet extrait ne démontre pas toutes ces conditions.
+Cet exemple est **illustratif**, pas la copie d’une requête capturée. Envoyer la feuille avec un XML simple depuis une session authentifiée. Un message de conversion réussie confirme seulement la transformation. La présence de `probe.py`, puis du fichier `/tmp/conversor-probe` après l’intervalle planifié, établit deux observations différentes : écriture puis exécution. Pour confirmer l’identité, une sonde dans le laboratoire peut enregistrer l’UID effectif ; la configuration de la tâche indique `www-data`.
 
-## Exécution planifiée et changement d’utilisateur
+Si le fichier n’apparaît pas, vérifier l’espace de noms XSLT, l’activation de l’extension, le chemin résolu et les droits du processus web. S’il apparaît mais ne s’exécute pas, vérifier le motif de nom de fichier, la syntaxe Python et l’état du planificateur. Une erreur de lecture avec `document()` ne prouve pas que l’écriture par `exsl:document` soit interdite : la première fonction lit une entrée, la seconde crée une sortie.
 
-Le récit identifie `/var/www/conversor.htb/scripts/` comme un répertoire traité périodiquement. Un fichier Python uploadé ne devient une exécution de code que si l’application peut l’y écrire et si le planificateur l’exécute. Lors d’une reproduction autorisée, un marqueur inoffensif contenant l’identité du processus apporte une preuve plus utile que la seule présence du fichier.
+Le chemin publié exploite cette écriture pour déposer un script donnant un shell applicatif. Une connexion de rappel exige un écouteur, une adresse atteignable depuis la cible et l’attente de l’exécution planifiée. Un marqueur inoffensif permet de comprendre les deux frontières sans mêler les problèmes de réseau et de quoting.
 
-Après l’accès applicatif, le récit décrit la lecture de `users.db`, la récupération du mot de passe de `fismathack` depuis un hash MD5 et sa réutilisation en SSH. Trois contrôles distincts interviennent : accès à la base, résistance du mot de passe aux essais et réutilisation entre services. Retrouver un mot de passe ne prouve pas automatiquement son acceptation en SSH.
+## Passer de `www-data` à `fismathack`
 
-## Élévation : une configuration exécutable
+La configuration de l’application désigne `/var/www/conversor.htb/instance/users.db`, une base SQLite. L’archive téléchargeable peut contenir une base de développement vide : c’est le fichier vivant qu’il faut examiner depuis le contexte applicatif. Une fois l’exécution `www-data` obtenue, regarder le schéma SQLite et l’enregistrement du compte concerné. Conserver le format du hash et l’identité associée, sans publier le secret. Un hash n’est pas un mot de passe utilisable tel quel.
 
-La règle sudo rapportée autorise `/usr/sbin/needrestart` sans mot de passe. Son option `-c` sélectionne une configuration utilisant la syntaxe Perl. Le problème démontré concerne la délégation d’une configuration contrôlée par l’utilisateur, pas l’exploitation d’une CVE liée à une version. Voir le [manuel needrestart](https://manpages.debian.org/bookworm/needrestart/needrestart.1.en.html).
+Le laboratoire utilise un hash de mot de passe fondé sur MD5 pour `fismathack`. Une attaque hors ligne peut retrouver un mot de passe faible malgré ce hachage. Il reste ensuite à vérifier séparément que SSH accepte le candidat. Dans la nouvelle session, `id` matérialise le changement d’identité. La lecture de la base ne modifie aucun droit, et un hash trouvé dans une archive publique ne prouve pas qu’il représente l’état de la base active.
 
-Pour une validation contrôlée, `/home/fismathack/probe.conf` est un fichier d’exemple contenant uniquement :
+## Comprendre l’élévation par `needrestart`
 
-```perl
-system('/usr/bin/id');
-```
+Dans la session `fismathack`, `sudo -l` indique que `/usr/sbin/needrestart` peut s’exécuter sans mot de passe. Son option `-c` sélectionne un fichier de configuration, interprété comme du Perl. La règle permet au compte de choisir un fichier qu’il contrôle et de le faire lire par un processus privilégié. Le défaut porte sur la confiance accordée au chemin de configuration. Le [manuel de needrestart](https://manpages.debian.org/bookworm/needrestart/needrestart.1.en.html) documente `-c`.
 
-Avec la règle décrite, l’invocation illustrative est :
+Pour un test contrôlé, créer un fichier Perl qui affiche uniquement l’identité effective, puis lancer exactement le binaire autorisé par sudo :
 
 ```bash
+printf '%s\n' 'print "effective UID: $>\n";' > /home/fismathack/probe.conf
 sudo /usr/sbin/needrestart -c /home/fismathack/probe.conf
 ```
 
-L’identité affichée par la configuration établit son contexte d’exécution. Le seul succès de l’utilitaire ne le prouve pas.
+Les apostrophes du shell écrivent `$>` littéralement ; Perl l’évalue lorsqu’il charge la configuration. Une valeur 0 démontre une exécution avec les droits root. Cette sonde est illustrative ; elle suffit à établir la frontière franchie. En cas d’échec, vérifier la règle sudo exacte, les restrictions d’arguments et la version du programme avant de conclure.
 
-## Corriger les frontières et vérifier
+## Corriger et retester
 
-- Générer les noms côté serveur et stocker les uploads hors des répertoires exécutables. Si les noms sont conservés, assainir leur composant final et contrôler le confinement, y compris les liens symboliques. Werkzeug précise les [limites de secure_filename](https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.utils.secure_filename).
-- Réserver l’écriture du code planifié et de ses répertoires parents aux administrateurs de déploiement. Vérifier le compte d’exécution et tester une traversée avec un fichier inoffensif dans un environnement de test.
-- Remplacer la délégation sudo ouverte par une opération revue avec une configuration fixe et fiable. Vérifier que l’utilisateur ne peut choisir une autre configuration ni modifier ses dépendances.
-- Renouveler les identifiants réutilisés et employer un mécanisme adapté de hachage des mots de passe.
+Configurer `XSLTAccessControl` pour refuser les accès aux fichiers et au réseau, ou isoler les conversions dans un service sans accès aux chemins sensibles. Placer les téléversements hors des répertoires exécutables et contrôler les noms de fichiers avant de composer un chemin. Réserver l’écriture du dossier de scripts aux administrateurs du déploiement ; remplacer l’exécution de tous les fichiers correspondants par un programme fixe et revu. Le retest doit accepter une conversion légitime tout en rejetant l’écriture d’un fichier secondaire.
 
-Surveiller les écritures inattendues dans le répertoire planifié et les invocations sudo choisissant une configuration inhabituelle. L’enchaînement écriture puis exécution sous une autre identité est plus significatif qu’un nom de fichier.
+Protéger la base applicative, employer un hachage moderne et renouveler les mots de passe exposés ou réutilisés entre le site et SSH. Supprimer la délégation sudo trop large, ou imposer une configuration `needrestart` détenue par les administrateurs. Après correction, une configuration contrôlée par `fismathack` doit être refusée tandis que la maintenance approuvée reste possible. Ces refus à chaque frontière constituent une meilleure preuve qu’une simple bannière de version.

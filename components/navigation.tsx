@@ -18,11 +18,13 @@ export function Navigation() {
   const navItems = isEnglish ? [
     { name: 'HOME', path: '/en' },
     { name: 'PROJECTS', path: '/en/projects' },
+    { name: 'SERVICES', path: '/en/services' },
     { name: 'ARTICLES', path: '/en/blog' },
     { name: 'CONTACT', path: '/en/contact' },
   ] : [
     { name: 'ACCUEIL', path: '/' },
     { name: 'PROJETS', path: '/projects' },
+    { name: 'SERVICES', path: '/services' },
     { name: 'ARTICLES', path: '/blog' },
     { name: 'CONTACT', path: '/contact' },
   ];

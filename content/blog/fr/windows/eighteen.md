@@ -1,9 +1,9 @@
 ---
 id: "HTB-2026-EIGHTEEN"
 title: "Eighteen"
-excerpt: "BadSuccessor sur Windows Server 2025 : distinguer accès au compte, création dMSA, héritage des droits et comportement du KDC corrigé."
+excerpt: "Eighteen utilise un droit d’usurpation dans SQL pour atteindre un hash web, puis un compte de service géré délégué pour franchir une frontière de privilèges Active Directory."
 date: "2025-11-15"
-updated: "2026-10-13"
+updated: "2026-10-15"
 tags: ["WRITEUP", "HACKTHEBOX", "WINDOWS", "EASY", "DMSA", "BADSUCCESSOR", "KERBEROS-PAC"]
 category: "WRITEUP"
 platform: "HACKTHEBOX"
@@ -14,43 +14,59 @@ author: "0x7CC"
 published: true
 ---
 
-## Chaîne et preuves
+## Suivre les identités
 
-Le récit d’Eighteen rapporte des identifiants `adam.scott`, un accès WinRM, des droits de création dans une OU staff et une extraction de clés du prédécesseur via un delegated Managed Service Account (dMSA) contrôlé.
+Le laboratoire fournit les identifiants du login SQL local `kevin`. La chaîne est **login SQL → usurpation de `appdev` → lecture de `financial_planner` → mot de passe web retrouvé → réutilisation pour `adam.scott` → WinRM → création d’un dMSA dans l’OU Staff → BadSuccessor → ticket Kerberos privilégié**. `EXECUTE AS` dans SQL ne transforme pas `kevin` en compte Windows. La réutilisation du mot de passe et la connexion WinRM représentent d’autres transitions. L’étape dMSA dépend du système des contrôleurs de domaine, de leurs correctifs et des droits sur les objets.
 
-Les transcripts d’authentification et d’ACL sont incomplets. Un succès SMB ne démontre pas l’autorisation WinRM ; la liste des ports HTTP et SQL omet aussi la découverte nécessaire à cette session. Cet article prend la session ultérieure comme un résultat rapporté et se concentre sur la frontière dMSA.
+Les mots de passe, hashes, tickets et flags sont omis. `eighteen.htb` désigne le laboratoire autorisé ; la version de tout outil utilisé doit être connue et son code examiné.
 
-## Énumérer les droits effectifs et les correctifs
+## Atteindre les données par l’usurpation SQL
 
-La [recherche initiale BadSuccessor](https://www.akamai.com/blog/security-research/abusing-dmsa-for-privilege-escalation-in-active-directory) décrit l’abus d’un dMSA contrôlé pour hériter des droits d’un prédécesseur. Des permissions spécifiques ou générales de création d’enfants sur une OU peuvent permettre de créer ce dMSA. Le support par un DC Windows Server 2025 est nécessaire ; SQL Server 2022 ne détermine pas la version du DC.
+L’énumération réseau montre MSSQL sur 1433, le site web et WinRM. Le compte `kevin` utilise l’authentification SQL. Un essai d’authentification intégrée au domaine peut échouer alors que le login SQL est valide. Dans une session SQL, lister les bases et les permissions :
 
-Cet inventaire PowerShell illustratif nécessite le module ActiveDirectory et une connexion autorisée au domaine :
-
-```powershell
-Get-ADDomainController -Filter * |
-    Select-Object HostName, OperatingSystem, OperatingSystemVersion
+```sql
+SELECT SYSTEM_USER AS current_login, ORIGINAL_LOGIN() AS original_login;
+SELECT name FROM sys.databases;
+SELECT * FROM fn_my_permissions(NULL, 'SERVER');
 ```
 
-Il relève les versions déclarées des DC, sans établir leurs correctifs ni les droits de l’appelant. Examiner séparément les ACL effectives de l’OU et des objets, puis les mises à jour du DC traitant l’authentification.
+La base `financial_planner` est visible mais inaccessible sous `kevin`. Voir son nom ne confère pas le droit de lire ses tables. Une vérification des grants révèle le droit d’usurper `appdev`, login de l’application. Changer de contexte puis refaire les tests :
 
-## Distinguer changements LDAP, tickets et clés
+```sql
+EXECUTE AS LOGIN = 'appdev';
+SELECT SYSTEM_USER AS effective_login, ORIGINAL_LOGIN() AS original_login;
+USE financial_planner;
+SELECT name FROM sys.tables;
+REVERT;
+```
 
-Le chemin initial nécessite le contrôle d’un dMSA, la définition du prédécesseur et de l’état de migration, puis les conditions permettant de s’authentifier comme ce dMSA. Créer l’objet ne suffit pas.
+`SYSTEM_USER` change, tandis que `ORIGINAL_LOGIN()` garde trace du compte qui a ouvert la connexion. `REVERT` restaure le contexte précédent. L’accès à `financial_planner` comme `appdev` démontre l’effet du grant d’usurpation. Microsoft documente [EXECUTE AS](https://learn.microsoft.com/en-us/sql/t-sql/statements/execute-as-transact-sql) et sa portée.
 
-Le texte initial confondait les privilèges présents dans le Privilege Attribute Certificate (PAC) et les clés du prédécesseur retournées dans le package de clés dMSA. Hériter des droits et obtenir des clés sont deux résultats distincts. Une clé RC4 peut correspondre à un hash NT ; cela ne signifie pas que toute entrée est un hash NTLM.
+La table `users` contient un hash Werkzeug `pbkdf2:sha256` du compte administrateur web. Relever algorithme, nombre d’itérations, sel et format du digest avant de choisir un mode de recherche hors ligne. La représentation stockée ne correspond pas nécessairement directement à l’entrée du mode Hashcat 10900 ; une conversion doit préserver les octets et l’encodage. Les essais hors ligne ne lancent aucune connexion vers la cible. Une valeur retrouvée doit ensuite être vérifiée sur le compte de domaine réel. Dans ce laboratoire, le candidat fonctionne aussi pour `adam.scott`, autorisé à utiliser WinRM. `whoami` et les groupes de la session confirment l’identité Windows ; administrateur web et utilisateur de domaine restent deux principaux différents ayant le même secret.
 
-Le lab rapporte une sortie de clés sans expliquer l’identité machine demandeuse ni la préparation du script. L’invocation incomplète de `getST.py` et la valeur de clé sont retirées. Une reproduction exige la version de l’outil, le principal demandeur, ses droits d’accès au dMSA, le DC choisi et la preuve d’acceptation, secrets masqués.
+Si le changement de contexte SQL échoue, vérifier la portée du grant, login ou utilisateur de base, et l’existence de `appdev` sur l’instance. Si le mot de passe fonctionne sur le site mais pas sur WinRM, regarder le domaine, le verrouillage, le groupe d’accès distant et l’éventuelle absence de réutilisation dans l’état actuel.
 
-## Le correctif change les prérequis
+## Comprendre l’occasion créée par les dMSA
 
-[L’analyse du correctif CVE-2025-53779 par Akamai](https://www.akamai.com/blog/security-research/badsuccessor-is-dead-analyzing-badsuccessor-patch) rapporte le rejet, par le KDC corrigé, du lien unilatéral initial. Le chemin post-correctif testé nécessite une relation réciproque et le contrôle du compte prédécesseur. « Windows Server 2025 » ne suffit donc pas pour conclure que l’élévation initiale fonctionne.
+`adam.scott` a le droit de créer certains objets dans l’unité organisationnelle Staff. Le compte de service géré délégué, ou dMSA, est une fonction de Windows Server 2025 destinée à la migration des comptes de service. BadSuccessor apparaît lorsqu’un utilisateur peu privilégié peut créer ou modifier un dMSA et renseigner ses attributs de migration afin de désigner un prédécesseur puissant. Le KDC peut ensuite délivrer des tickets portant l’autorisation associée à ce prédécesseur. La [recherche technique initiale](https://www.akamai.com/blog/security-research/abusing-dmsa-for-privilege-escalation-in-active-directory) décrit le mécanisme.
 
-Désactiver RC4 ne constitue pas une correction complète : supprimer une représentation de clé ne résout pas l’héritage de privilèges non autorisé. De même, un DCSync nécessite des droits de réplication dans le contexte obtenu et une preuve propre ; afficher des clés du prédécesseur ne le démontre pas.
+Avant toute modification, inventorier les contrôleurs et les ACL effectives de `OU=Staff,DC=eighteen,DC=htb`. Un droit général de créer des enfants compte seulement s’il permet le type d’objet voulu ; un refus spécifique ou un KDC corrigé peut changer le résultat. Identifier le contrôleur qui répond à la demande de ticket. Ces commandes en lecture sont possibles dans une session de domaine dotée du module ActiveDirectory :
 
-## Remédiation, détection et retest
+```powershell
+Get-ADDomainController -Filter * | Select-Object HostName,OperatingSystem,OperatingSystemVersion
+Get-Acl 'AD:OU=Staff,DC=eighteen,DC=htb' | Select-Object -ExpandProperty Access
+```
 
-Installer les mises à jour applicables aux DC et limiter les droits d’écriture sur les OU, dMSA et comptes prédécesseurs. Examiner qui peut créer des comptes gérés et qui peut obtenir ou utiliser leurs identifiants.
+La seconde exige un lecteur AD PowerShell et la lecture de son descripteur de sécurité. Elle affiche des ACE, pas le calcul complet des droits effectifs du compte. Windows Server 2025 est un prérequis ; la présence de SQL Server 2022 n’informe pas sur les fonctions du KDC.
 
-Dans un annuaire de test isolé, vérifier qu’un créateur non privilégié ne peut plus s’authentifier via l’ancien lien unilatéral et que les modifications réciproques non autorisées échouent. Garder une migration légitime comme contrôle positif.
+Un test dMSA contrôlé doit enregistrer les droits du créateur, l’objet créé, le prédécesseur choisi, l’état de migration et l’acceptation par le KDC. La voie du laboratoire désigne Administrator comme prédécesseur et demande un ticket pour le dMSA contrôlé. Création d’objet, demande de ticket et réplication d’annuaire sont trois opérations distinctes. Un outil qui annonce la création ne prouve pas l’obtention d’appartenances privilégiées. Contrôler les données d’autorisation du ticket et une opération de service effectivement acceptée. La réplication exige en outre des droits réels ; seule une réponse de réplication réussie établit cet impact.
 
-Avec une stratégie d’audit et des SACL adaptées, examiner la création des dMSA et les modifications des liens des deux côtés, en corrélant acteur, objet et authentification. Identifier l’objet réellement modifié plutôt que rechercher uniquement les changements d’Administrator. Un nouvel objet peut influencer les droits d’un principal existant ; l’état des correctifs détermine les conditions de cette attaque.
+## Tenir compte des correctifs
+
+La relation de prédécesseur unilatérale de l’attaque d’origine fonctionne uniquement dans l’état vulnérable. L’[analyse du correctif CVE-2025-53779](https://www.akamai.com/blog/security-research/badsuccessor-is-dead-analyzing-badsuccessor-patch) rapporte que les KDC mis à jour la refusent. Une voie ultérieure exige le contrôle d’une relation réciproque, y compris de l’objet prédécesseur, donc d’autres permissions. Une demande unilatérale refusée sur un DC corrigé est une défense attendue, pas nécessairement un défaut de l’outil. Vérifier mises à jour cumulatives, DC sélectionné, réplication AD, ACL, horloge Kerberos, realm et SPN. Désactiver RC4 seul ne corrige pas un problème d’autorisation sur les attributs dMSA.
+
+## Correction et test de régression
+
+Mettre à jour tous les contrôleurs concernés et restreindre la création et la modification des OU, dMSA et objets prédécesseurs. Auditer les migrations légitimes, dont les attributs ressemblent aux modifications tentées par un attaquant. Renouveler les secrets issus de SQL et supprimer la réutilisation entre compte web et domaine. Réexaminer le grant d’usurpation de `kevin` et l’étendue des données de mot de passe accessibles à `appdev`.
+
+Au retest, `kevin` ne doit pas lire `financial_planner` sous un contexte non autorisé, l’ancien secret ne doit plus ouvrir WinRM, un créateur peu privilégié ne doit pas recevoir les droits du prédécesseur dans un ticket, et une migration légitime doit rester possible. Conserver les changements d’objets et l’identité du KDC répondant. La surveillance doit corréler créations de dMSA, modifications des attributs de migration, tickets et demandes de réplication.

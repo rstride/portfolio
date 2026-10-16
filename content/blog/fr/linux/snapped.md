@@ -1,9 +1,9 @@
 ---
 id: "HTB-2026-SNAPPED"
 title: "Snapped"
-excerpt: "Fuite de sauvegarde Nginx UI et nettoyage des namespaces snapd : prérequis, limites des preuves et vérification des correctifs par distribution."
+excerpt: "Snapped expose une sauvegarde Nginx UI accompagnée des éléments permettant de la déchiffrer, puis utilise une course locale dans snapd après l’accès SSH."
 date: "2026-03-23"
-updated: "2026-10-13"
+updated: "2026-10-15"
 tags: ["WRITEUP", "HACKTHEBOX", "LINUX", "MEDIUM", "BACKUP-DISCLOSURE", "NGINX-UI", "CVE-2026-3888"]
 category: "WRITEUP"
 platform: "HACKTHEBOX"
@@ -14,51 +14,47 @@ author: "0x7CC"
 published: true
 ---
 
-## Chaîne d’attaque et prérequis
+## Deux faiblesses indépendantes
 
-Le récit de Snapped rapporte la découverte de `admin.snapped.htb`, le téléchargement d’une sauvegarde Nginx UI, la récupération du mot de passe de `jonathan`, un accès SSH et une élévation snapd. Deux frontières distinctes sont franchies : l’accès web non authentifié aux secrets d’une sauvegarde, puis l’accès local à une gestion privilégiée des namespaces.
+La chaîne est **découverte d’un hôte virtuel → `/api/backup` sans authentification → fichiers chiffrés et clé/IV → hash dans la base → SSH comme `jonathan` → interaction snapd et `systemd-tmpfiles` → root**. Le défaut de sauvegarde franchit l’authentification web. Celui de snapd franchit une frontière locale de propriété de fichiers. Les versions de l’application et du paquet orientent les recherches, mais ne prouvent pas seules une exploitation.
 
-Le récit ne conserve ni requête complète, ni format de hash, ni transcript de récupération, ni source de l’exploit local. Les connexions réussies et l’accès root sont des résultats rapportés du lab, pas une reproduction établie indépendamment par cet article.
+`snapped.htb` et `admin.snapped.htb` sont des noms du laboratoire. Conserver les archives et secrets extraits dans un dossier de travail temporaire, puis les retirer après les tests. Les commandes concernent uniquement le laboratoire autorisé ; aucun mot de passe, clé, hash ou payload n’est recopié.
 
-## Sauvegarde : la clé accompagne le contenu chiffré
+## Trouver l’hôte d’administration
 
-Le récit identifie `/api/backup` et l’en-tête `X-Backup-Security`. [L’avis Nginx UI pour CVE-2026-27944](https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-g9w5-qffc-6762) décrit l’absence d’authentification et l’envoi d’une clé AES et d’un IV encodés en base64 avec l’archive. Il indique 2.3.3 comme version corrigée ; son tableau de versions affectées et la version 2.3.2 rapportée dans le lab ne permettent pas une conclusion fiable fondée sur la version seule. Vérifier la route déployée et son middleware.
+Un scan TCP montre SSH et HTTP. Le site principal est essentiellement statique. L’énumération des hôtes virtuels révèle `admin.snapped.htb`, qui héberge Nginx UI. Résoudre ce nom vers l’adresse de la machine avant les tests ; une requête adressée à l’IP nue peut sélectionner un autre hôte virtuel. Identifier l’application par son interface et ses propres fichiers plutôt que par la bannière du serveur nginx frontal. Le laboratoire présente Nginx UI 2.3.2.
 
-Cette requête est illustrative, sans réponse capturée :
+CVE-2026-27944 concerne un endpoint de sauvegarde sans contrôle d’accès dans des installations Nginx UI touchées. L’[avis du projet](https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-g9w5-qffc-6762) décrit l’absence d’authentification et la divulgation de clé. Tester sans cookie de session et conserver le corps et les en-têtes de **la même réponse** :
 
-```http
-GET /api/backup HTTP/1.1
-Host: admin.snapped.htb
+```bash
+curl -sS -D backup.headers -o backup.zip 'http://admin.snapped.htb/api/backup'
+file backup.zip
+unzip -l backup.zip
 ```
 
-Lors d’une reproduction contrôlée, relever si une requête non authentifiée obtient l’archive, si les clés l’accompagnent et quelles données contiennent les membres déchiffrés. Le chiffrement ne protège pas contre un destinataire recevant aussi la clé. Distinguer l’archive extérieure de ses membres chiffrés ; déchiffrer directement tout le téléchargement peut échouer.
+La première commande évite d’afficher le ZIP binaire dans le terminal. L’en-tête `X-Backup-Security` contient deux chaînes Base64 séparées par deux-points : une clé AES et un vecteur d’initialisation. Dans le laboratoire, elles produisent respectivement 32 et 16 octets, adaptés à AES-256-CBC. Les valeurs peuvent changer à chaque téléchargement : l’en-tête d’une ancienne réponse peut échouer sur une nouvelle archive. Un HTTP 200 sans le ZIP et l’en-tête correspondant ne démontre pas toute la fuite.
 
-Le récit rapporte ensuite la récupération des identifiants `jonathan` dans la base et leur réutilisation SSH. Confirmer le format stocké avant de choisir le mode de cracking. Récupération du mot de passe et acceptation SSH sont deux observations distinctes.
+Le corps téléchargé est une **archive ZIP externe**. Elle contient `hash_info.txt`, `nginx-ui.zip` et `nginx.zip` ; ces membres sont chiffrés malgré leur nom. Extraire d’abord l’archive externe. Décoder les deux chaînes Base64 en octets, les convertir en hexadécimal pour `-K` et `-iv` d’OpenSSL et déchiffrer un membre avec `openssl enc -aes-256-cbc -d`. Vérifier le type du fichier obtenu avant d’essayer de le décompresser. Déchiffrer directement le ZIP externe revient à travailler sur la mauvaise couche. Si OpenSSL signale un remplissage invalide, vérifier d’abord que la clé et l’IV viennent de la même réponse et que le fichier en entrée est bien un membre chiffré.
 
-## Élévation locale : le nettoyage est un prérequis
+L’archive Nginx UI déchiffrée contient `database.db`, une base SQLite. Examiner son schéma et les lignes `users` utiles. Dans le laboratoire, l’enregistrement de `jonathan` utilise bcrypt. Identifier le préfixe et choisir le mode hors ligne adéquat plutôt que faire confiance à la détection automatique. Bcrypt ralentit les essais sans rendre un mot de passe faible impossible à trouver. Tester le candidat sur SSH et lancer `id` dans la session. Le hash présent dans la sauvegarde est une divulgation ; la connexion SSH réussie représente une autre faiblesse de choix ou de réutilisation du secret.
 
-CVE-2026-3888 concerne la recréation d’un répertoire temporaire privé de snap après son nettoyage par `systemd-tmpfiles`. La configuration de nettoyage concernée est nécessaire ; la présence de snapd ne suffit pas. Le lab rapporte `2.63.1+24.04` et un exploit dépendant du timing, sans détails de compilation et d’exécution permettant un rejeu. Voir [l’avis Ubuntu](https://ubuntu.com/security/CVE-2026-3888).
+## Vérifier les prérequis de snapd
 
-Ces commandes illustratives s’exécutent dans la session SSH déjà établie :
+Depuis la session `jonathan`, inventorier paquet, binaire privilégié et nettoyage :
 
 ```bash
 dpkg-query -W -f='${Version}\n' snapd
-systemctl status systemd-tmpfiles-clean.timer --no-pager
+ls -l /usr/lib/snapd/snap-confine
+systemctl list-timers systemd-tmpfiles-clean --all
+cat /usr/lib/tmpfiles.d/tmp.conf
 ```
 
-La première relève la révision du paquet. La seconde renseigne l’état du timer, à rapprocher des règles de nettoyage effectives et de l’état des répertoires ; un timer actif ne démontre pas l’exploitabilité.
+Le laboratoire utilise un `snap-confine` SUID provenant de snapd 2.63.1+24.04. La règle de nettoyage de `/tmp` a un délai court, et le timer se déclenche fréquemment. Une autre configuration peut surcharger la règle du fournisseur : contrôler la configuration effective. CVE-2026-3888 exploite une course : `systemd-tmpfiles` peut supprimer un répertoire temporaire privé de snap, tandis que `snap-confine` le recrée et lui fait confiance pendant la construction d’un espace de montage. Un utilisateur local capable de placer des données au bon moment peut influencer une opération privilégiée. L’[avis Ubuntu](https://ubuntu.com/security/CVE-2026-3888) donne les branches affectées et leurs correctifs.
 
-## Corriger selon la distribution et valider
+Cette voie dépend du timing. Ni la bannière du paquet ni un timer actif ne suffisent. Vérifier la distribution, la révision installée, la forme SUID ou capabilities du programme, la règle effective de `/tmp` et l’emploi du chemin vulnérable. Un outil de démonstration doit correspondre à cet environnement. Relever les prérequis et l’UID effectif obtenu ; un fichier créé sous root après la course vaut mieux qu’un message de réussite de script. Pour valider un correctif, préférer l’état du paquet éditeur et un test contrôlé sur un instantané jetable à une répétition de payload invasif.
 
-À la date de cette révision, Ubuntu indique ces paquets snapd corrigés :
+## Diagnostic et correction
 
-| Version Ubuntu | Paquet corrigé |
-| --- | --- |
-| 24.04 LTS | `2.73+ubuntu24.04.2` |
-| 22.04 LTS | `2.73+ubuntu22.04.1` |
+Si `/api/backup` redirige vers une connexion, vérifier l’hôte virtuel, l’URL, les cookies et le middleware. Si l’extraction réussit mais pas le déchiffrement, revoir la superposition ZIP/chiffrement et l’association clé/IV. Si le candidat est refusé par SSH, contrôler type de hash, compte et fraîcheur du secret. Si l’outil snapd échoue par intermittence, distinguer échec normal d’une course, paquet corrigé et prérequis de nettoyage absent ; la seule installation de snapd ne suffit pas.
 
-Pour Ubuntu 20.04 LTS avec Ubuntu Pro, le paquet corrigé indiqué est `2.67.1+20.04ubuntu1~esm1`. Consulter l’avis pour les autres versions et mises à jour ultérieures. La recommandation générale `2.63.2+` était insuffisante. Vérifier le paquet réellement installé et redémarrer les services concernés si nécessaire.
-
-Mettre Nginx UI à une version maintenue contenant le contrôle d’authentification et renouveler les secrets exposés. Vérifier qu’une requête anonyme n’obtient ni archive ni clé et qu’une sauvegarde autorisée fonctionne. Corriger ne révoque pas les secrets déjà téléchargés.
-
-Surveiller les téléchargements de sauvegardes hors du workflow approuvé et les créations SUID inhabituelles dans les répertoires snap. Conserver le timing et l’origine des processus : une invocation de snap-confine ne prouve pas une course réussie.
+Mettre Nginx UI à une version maintenue corrigée et imposer l’authentification pour les sauvegardes. Ne jamais envoyer la clé dans la même réponse non authentifiée que les données chiffrées. Renouveler les secrets provenant de téléchargements passés. Mettre snapd à jour par les paquets de sécurité de la distribution, confirmer la révision corrigée pour cette version et redémarrer les composants recommandés. Au retest, l’accès non authentifié à la sauvegarde doit échouer tandis que sauvegarde et restauration autorisées restent possibles, l’ancien secret SSH doit être refusé et le paquet snapd doit être corrigé. Surveiller les téléchargements anormaux et les créations de fichiers privilégiés liées aux espaces de noms snap en conservant le contexte des requêtes et processus.

@@ -5,7 +5,7 @@ Personal portfolio and service site for Romain Stride, connecting software devel
 ## Features
 
 - Bilingual routing: French at `/` and English under `/en`
-- Recruiter-focused homepage with profile, PrismaSec, skills, background, and technical writing
+- Recruiter-focused homepage with profile, services, skills, background, and technical writing; sections numbered from 00 and project case studies on dedicated pages
 - Service pages giving security audits and training equal visibility
 - Contact, privacy, guides, research, and offensive security write-ups
 - Bilingual project index and Markdown case studies at `/projects` and `/en/projects` with localized metadata

@@ -1,9 +1,9 @@
 ---
 id: HTB-2026-EIGHTEEN
 title: Eighteen
-excerpt: "BadSuccessor on Windows Server 2025: separating account access, dMSA creation rights, inherited authorization, and patched KDC behavior."
+excerpt: "Eighteen uses a SQL impersonation permission to reach a web password hash, then a delegated managed service account to cross an Active Directory privilege boundary."
 date: '2025-11-15'
-updated: "2026-10-13"
+updated: "2026-10-15"
 tags:
   - WRITEUP
   - HACKTHEBOX
@@ -21,43 +21,59 @@ icon: Terminal
 author: '0x7CC'
 ---
 
-## Chain and evidence
+## Follow the identities
 
-The Eighteen account reports credentials for `adam.scott`, access through WinRM, rights to create objects in a staff OU, and extraction of predecessor key material through a controlled delegated Managed Service Account (dMSA).
+The lab supplies credentials for the local SQL login `kevin`. The path is **SQL login → impersonate `appdev` → read `financial_planner` → recover a web password → reuse it for domain user `adam.scott` → WinRM → create a dMSA in the Staff OU → BadSuccessor → privileged Kerberos ticket**. A SQL `EXECUTE AS` operation does not turn `kevin` into a Windows account. The later password reuse and WinRM login are separate transitions. The dMSA step depends on the domain controller's operating system, patch state, and object permissions.
 
-The authentication and ACL transcripts are incomplete. Its SMB login check does not itself prove WinRM authorization; its list of HTTP and SQL ports also omits the discovery needed to support that session. This article takes the later authenticated session as reported and focuses on the dMSA boundary.
+The provided and recovered passwords, hashes, tickets, and flags are omitted. `eighteen.htb` denotes the authorized lab, and any tool named here must be reviewed at a recorded version before use.
 
-## Enumerate effective rights and the servicing state
+## Use SQL impersonation to reach the data
 
-The [original BadSuccessor research](https://www.akamai.com/blog/security-research/abusing-dmsa-for-privilege-escalation-in-active-directory) describes abuse of a controlled dMSA to inherit a predecessor's privileges. Creating a suitable dMSA can be possible through object-specific or broad child-creation rights on an OU. Windows Server 2025 domain-controller support is a prerequisite; the presence of SQL Server 2022 does not determine the DC version.
+Network enumeration shows MSSQL on 1433 along with the web service and WinRM. The supplied `kevin` credential is for SQL authentication; a domain-integrated attempt may fail even though the SQL login is valid. In an authenticated SQL session, enumerate databases and effective permissions:
 
-An illustrative read-only PowerShell inventory, with the ActiveDirectory module installed and an authorized domain connection, is:
-
-```powershell
-Get-ADDomainController -Filter * |
-    Select-Object HostName, OperatingSystem, OperatingSystemVersion
+```sql
+SELECT SYSTEM_USER AS current_login, ORIGINAL_LOGIN() AS original_login;
+SELECT name FROM sys.databases;
+SELECT * FROM fn_my_permissions(NULL, 'SERVER');
 ```
 
-It inventories reported DC versions. It does not establish their installed security updates or the caller's rights. Inspect effective OU/object ACLs and the servicing state of the DC that processes authentication separately.
+The `financial_planner` database is visible but not accessible as `kevin`. Visibility is not authorization. A permission check shows `kevin` may impersonate `appdev`, the login used by the application. Switch context and repeat the identity and access tests:
 
-## Separate directory changes, tickets, and keys
+```sql
+EXECUTE AS LOGIN = 'appdev';
+SELECT SYSTEM_USER AS effective_login, ORIGINAL_LOGIN() AS original_login;
+USE financial_planner;
+SELECT name FROM sys.tables;
+REVERT;
+```
 
-The original path depends on controlling a dMSA, setting its predecessor relationship and migration state, and meeting the requirements to request authentication as that dMSA. Creating an object alone does not complete all those steps.
+`SYSTEM_USER` changes, while `ORIGINAL_LOGIN()` records the original connection. `REVERT` restores the previous SQL context. The ability to enter `financial_planner` as `appdev` shows the effect of impersonation, not a database bug in the web app. Microsoft documents [EXECUTE AS](https://learn.microsoft.com/en-us/sql/t-sql/statements/execute-as-transact-sql) and its scope.
 
-The original article conflated privilege data in the Privilege Attribute Certificate (PAC) with predecessor keys returned through the dMSA key package. Privilege inheritance and key acquisition are different results. An RC4 key may correspond to an NT hash; that is not evidence that every key entry is an NTLM hash.
+The `users` table contains a Werkzeug `pbkdf2:sha256` password hash for the web administrator. Record the algorithm, iteration count, salt, and digest format before selecting an offline tool mode. The stored representation is not automatically identical to Hashcat's mode 10900 input; conversion must preserve bytes and encoding. Offline guessing tests candidate passwords without logging into the target. A recovered password must then be checked against the actual domain account. In the lab, the candidate also works for `adam.scott`, who can use WinRM. Confirm `whoami` and group membership in that host session; the web administrator and domain user are distinct principals sharing a secret.
 
-The lab reports predecessor key output but leaves the requesting machine identity and script setup unexplained. Its incomplete `getST.py` invocation and key value are removed. A reproducible account needs the tool version, requesting principal, dMSA access rights, DC selection, and evidence of acceptance, with secrets redacted.
+If the SQL switch fails, inspect whether the grant is at login or database-user scope and whether `appdev` exists on the current instance. If the password guess works on the web site but not WinRM, check the domain name, account lockout, group authorization, and whether password reuse actually exists on the current snapshot.
 
-## The patch changes the prerequisites
+## Understand the dMSA opportunity
 
-Akamai's [patch analysis for CVE-2025-53779](https://www.akamai.com/blog/security-research/badsuccessor-is-dead-analyzing-badsuccessor-patch) reports that a patched KDC rejects the original one-sided predecessor relationship. Its tested post-patch path requires a mutual relationship and control over the predecessor object as well. “Windows Server 2025” therefore does not imply that the original escalation works.
+`adam.scott` has rights to create suitable objects in the Staff organizational unit. A delegated Managed Service Account, or dMSA, is a Windows Server 2025 feature intended to support service-account migration. The BadSuccessor issue arises when a lower-privileged user can create or modify a dMSA and set migration-related attributes so it claims a high-privilege predecessor. The KDC may then issue tickets carrying authorization associated with that predecessor. The [original technical research](https://www.akamai.com/blog/security-research/abusing-dmsa-for-privilege-escalation-in-active-directory) explains the mechanism.
 
-Do not present disabling RC4 as a complete fix: preventing one key representation does not address unauthorized inheritance of privileges. Likewise, a reported DCSync step requires replication permissions in the resulting context and its own evidence; it is not demonstrated by displaying predecessor keys.
+Before any change, inventory the domain controllers and inspect the effective ACL on `OU=Staff,DC=eighteen,DC=htb`. A generic right to create a child is relevant only if it permits creating the required service-account object; an object-specific deny or a patched KDC can change the outcome. Confirm which controller processes the ticket request. These read-only checks are useful from a domain session with the ActiveDirectory module:
 
-## Remediation, detection, and retest
+```powershell
+Get-ADDomainController -Filter * | Select-Object HostName,OperatingSystem,OperatingSystemVersion
+Get-Acl 'AD:OU=Staff,DC=eighteen,DC=htb' | Select-Object -ExpandProperty Access
+```
 
-Install the applicable DC security updates and narrow OU, dMSA, and predecessor-object write permissions. Review who can create managed service accounts and who can retrieve or use their credentials.
+The second command depends on an AD PowerShell drive and sufficient rights to read the security descriptor. It prints ACL entries, not the caller's computed effective access. Windows Server 2025 support is a prerequisite; SQL Server 2022 on the same host says nothing about the KDC feature.
 
-In an isolated directory test, verify that an unprivileged creator cannot authenticate through the old one-sided relationship; also check that unauthorized mutual-link changes fail. Preserve legitimate service migrations as a positive control.
+A controlled dMSA test must record the creator's rights, newly created object, chosen predecessor, migration state, and whether the KDC accepts the relationship. The public lab route targets Administrator as predecessor and requests a ticket for the controlled dMSA. A ticket request, service-ticket request, and later directory replication are three distinct operations. A tool reporting successful object creation does not prove that the KDC granted privileged group membership. Verify the returned ticket's authorization in a controlled environment and an actual accepted service operation. Directory replication further requires effective replication rights; only a successful replication response establishes that impact.
 
-With appropriate audit policy and object SACLs, inspect dMSA creation and migration-link modifications on both sides, correlating actor, object, and authentication. Confirm the actual changed object rather than searching only for edits to Administrator. The central lesson is that a new object can influence authorization for an existing principal, and that the patch state determines the attack's starting conditions.
+## Patch-aware troubleshooting
+
+The original one-sided predecessor relationship works only under the vulnerable servicing state. The [patch analysis for CVE-2025-53779](https://www.akamai.com/blog/security-research/badsuccessor-is-dead-analyzing-badsuccessor-patch) reports that updated KDCs reject it. A later path requires control over a mutual relationship, including the predecessor object, and is a different permission problem. Therefore, a failed one-sided ticket request on a patched DC is an expected defense, not necessarily a broken tool. Check exact cumulative updates, selected DC, AD replication state, object ACLs, Kerberos clock skew, realm, and SPN before drawing conclusions. Disabling RC4 alone does not remove an authorization flaw involving dMSA attributes.
+
+## Repair and regression test
+
+Patch every relevant domain controller and restrict creation and write permissions on OUs, dMSAs, and predecessor objects. Audit legitimate service migrations, because their attributes resemble the objects an attacker would try to manipulate. Rotate credentials recovered from the SQL database and eliminate reuse between web and domain accounts. Revisit `kevin`'s SQL impersonation permission and whether the application database exposes password material to `appdev` beyond its need.
+
+A meaningful retest checks that `kevin` cannot read `financial_planner` through an unauthorized identity, the old reused password no longer opens WinRM, an unprivileged creator cannot obtain a ticket with predecessor privileges, and a legitimate migration still works. Record the object changes and the KDC that answered. Monitoring should correlate dMSA creation, migration-attribute writes, service tickets, and replication requests rather than treating every new service account as compromise.

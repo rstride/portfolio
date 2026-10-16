@@ -300,6 +300,7 @@ button:disabled,
 .mobile-nav-overlay {
   position: fixed;
   inset: 0;
+  overflow-y: auto;
   z-index: 60;
   background:
     linear-gradient(180deg, #0c0e12 0%, #0b0f15 100%);
@@ -1669,17 +1670,12 @@ button:disabled,
 .home-portrait { position: relative; aspect-ratio: 6 / 5; border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent); overflow: hidden; }
 .home-portrait img { object-position: 50% 42%; }
 .home-portrait-caption { position: absolute; inset: auto 0 0; padding: 1rem; background: linear-gradient(transparent, #0c0e12dd); color: var(--color-on-surface); font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.18em; }
-.home-project-preview { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 1rem; border: 1px solid var(--color-outline-variant); background: var(--color-surface-container-low); padding: 0.75rem; transition: border-color 180ms ease; }
-.home-project-preview:hover { border-color: var(--color-secondary); }
-.home-preview-image { position: relative; min-height: 90px; }
-.home-project-preview .home-kicker { font-size: 0.58rem; }
-.home-project-preview strong { display: flex; align-items: center; justify-content: space-between; margin-top: 0.4rem; font-family: var(--font-headline); font-size: 1.25rem; }
-.home-project-preview p { margin-top: 0.35rem; color: var(--color-on-surface-variant); font-size: 0.8rem; line-height: 1.5; }
 .home-section { padding-block: clamp(3.5rem, 6vw, 5rem); scroll-margin-top: 6.5rem; }
 .home-section-intro { max-width: 45rem; margin-bottom: 2rem; }
 .home-section-intro h2, .home-final-cta h2, .project-closing h2 { margin-top: 0.85rem; font-family: var(--font-headline); font-size: clamp(1.9rem, 3.3vw, 2.7rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1.15; text-wrap: balance; }
 .home-section-intro > p { max-width: 42rem; margin-top: 1rem; color: var(--color-on-surface-variant); line-height: 1.75; }
-.home-projects-section, .home-background-section, .home-final-cta { border-top: 1px solid color-mix(in srgb, var(--color-outline-variant) 50%, transparent); }
+.home-services-section, .home-skills-section, .home-background-section, .home-final-cta { border-top: 1px solid color-mix(in srgb, var(--color-outline-variant) 50%, transparent); }
+.home-services-section { background: var(--color-surface-container-low); }
 .home-skills-grid, .home-article-grid { display: grid; gap: 1rem; }
 .home-skill-card, .home-article-grid article { display: flex; flex-direction: column; padding: 1.5rem; border: 1px solid color-mix(in srgb, var(--color-outline-variant) 60%, transparent); background: var(--color-surface-container-low); }
 .home-skill-marker { display: flex; align-items: center; justify-content: space-between; color: var(--color-primary); }
@@ -1744,6 +1740,7 @@ button:disabled,
 .project-closing { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-outline-variant); }
 
 @media (max-width: 767px) {
+  .home-hero-visual { display: contents; }
   .home-hero-copy > .home-kicker { max-width: calc(100% - 110px); min-height: 96px; }
   .home-portrait { position: absolute; top: 2rem; right: 0; width: 88px; height: 106px; }
   .home-portrait-caption { display: none; }

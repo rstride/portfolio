@@ -1,9 +1,9 @@
 ---
 id: HTB-2026-GAVEL
 title: Gavel
-excerpt: "Exposed source, SQL injection, dynamic PHP rules, and a privileged rule runner: tracking the distinct controls that fail on Gavel."
+excerpt: "Gavel is an auction application whose exposed source reveals a subtle SQL parser mismatch, executable bidding rules, and a privileged rule-processing daemon."
 date: '2025-11-29'
-updated: "2026-10-13"
+updated: "2026-10-15"
 tags:
   - WRITEUP
   - HACKTHEBOX
@@ -11,7 +11,7 @@ tags:
   - MEDIUM
   - SQLI
   - RUNKIT
-  - SUID-EXECUTION
+  - PRIVILEGED-DAEMON
 category: WRITEUP
 platform: HACKTHEBOX
 target_os: LINUX
@@ -21,43 +21,48 @@ icon: Terminal
 author: '0x7CC'
 ---
 
-## Chain and evidence
+## Attack route and identities
 
-The Gavel account describes source recovery from an exposed `.git`, SQL injection in `inventory.php`, password recovery for `auctioneer`, web execution through auction rules, and root execution through `/usr/local/bin/gavel-util`.
+The chain is **readable `.git` → PHP source → inventory SQL injection → `auctioneer` password hash → admin login → PHP rule execution as `www-data` → credential reuse as `auctioneer` → rule submission to `gaveld` → root execution**. The database leak, web code execution, Unix login, and root daemon are separate transitions. The program `gavel-util` is a client for a privileged daemon; describing it simply as a SUID YAML runner misses where the final authority lives.
 
-It lacks the complete injection request, query, executable analysis, and runner transcript. Its excerpts support a mechanism discussion, not an independently reproduced chain. Keep source disclosure, database extraction, and credential reuse as separate observations.
+`gavel.htb` is the lab host. Commands and snippets are illustrative diagnostics. No credential, complete injection URL, flag, or shell payload from another account is copied into this article.
 
-## Source disclosure guides database testing
+## Let the source lead the investigation
 
-The target is `gavel.htb`, with SSH and a PHP application. A readable Git directory can reveal routes and query construction. It does not itself return database rows: injection still requires a reachable vulnerable query and sufficient database permissions.
+Network enumeration shows SSH and an HTTP auction site. Check whether the deployed web root exposes `.git`, then retrieve only the source needed to inspect routes and database code. A readable repository discloses implementation and perhaps configuration, but it does not by itself return database rows. The inventory handler accepts `sort` and `user_id` parameters. Its PHP builds a column expression from user-controlled text, strips backticks from the `sort` value, wraps it in backticks, and inserts that result into a string passed to `PDO::prepare()`. A separate value is bound for the user ID.
 
-The account reports recovery of a bcrypt password for `auctioneer`. This is offline guessing, not reversal of bcrypt. A minimal unauthorized query result distinguishes SQL injection from a secret simply committed to a repository.
-
-An illustrative PDO replacement for a value-based inventory lookup is:
+The essential pattern is:
 
 ```php
-$stmt = $pdo->prepare('SELECT name FROM inventory WHERE id = :id');
-$stmt->execute(['id' => $validatedId]);
+$col = '`' . str_replace('`', '', $sortItem) . '`';
+$stmt = $pdo->prepare("SELECT $col FROM inventory WHERE user_id = ?");
+$stmt->execute([$userId]);
 ```
 
-`$pdo` is an existing connection and `$validatedId` a validated identifier. [PDO::prepare](https://www.php.net/manual/en/pdo.prepare.php) separates values from syntax; dynamic table names and sorting expressions need separate allowlists.
+This shortened example is **illustrative**; inspect the lab's full query and branch behavior before testing. The problem is not that binding an ordinary value fails. Identifiers such as column names cannot be supplied by a value placeholder, so `$col` is assembled as SQL syntax. In this case, PDO may emulate prepared statements and parse placeholder characters differently from MySQL when a backslash interacts with a quoted identifier. A crafted `sort` value can shift PDO's view of where a `?` placeholder is; the attacker-controlled `user_id` value then lands in a SQL syntax position after substitution. The [original PDO parser research](https://www.slcyber.io/research/a-novel-technique-for-sql-injection-in-pdos-prepared-statements) describes the mismatch; [PDO::prepare documentation](https://www.php.net/manual/en/pdo.prepare.php) explains emulated preparation and the limits of binding.
 
-## Auction rules are executable code
+For a controlled test, compare a normal `sort` request with an input designed to alter the placeholder count or resulting column expression, then inspect the final SQL or a harmless database value returned. A raw 500 error is not enough to establish data extraction. Record both parameters, the PDO emulation setting, and the query branch; missing any of these makes the result hard to interpret. Disabling emulation can change the failure mode, but the durable fix is to choose column identifiers from a server-side allowlist and bind only values.
 
-The account describes an administrator modifying a rule and a bid triggering `runkit_function_add`. The [runkit7 API documentation](https://www.php.net/manual/en/function.runkit7-function-add.php) documents function creation from supplied code. Confirm the lab's actual extension/version rather than silently substituting this API into its source.
+The lab uses this route to read a bcrypt hash for `auctioneer`. Hash recovery is an offline password-guessing step, not a reversal of bcrypt. Verify a candidate on the admin login before claiming control of the auction rules. A weak password can be recovered even when bcrypt itself works as designed.
 
-An administrator authorized to adjust bidding criteria need not be authorized to write executable PHP. Exploitation requires rule evaluation, suitable write permissions, and reachability of the resulting file. The account reports `www-data` execution and credential reuse as `auctioneer`; saving a rule alone does not demonstrate either transition.
+## Follow the rule into PHP execution
 
-## The privileged runner amplifies the same design
+An administrator can edit auction rules. The application later treats the rule field as the body of a PHP function using `runkit_function_add`, then evaluates it when a bid is processed. The trust boundary is between business configuration and executable code. Saving a rule is only a state change; a bid must trigger it, and the resulting process identity must be checked. The [runkit function documentation](https://www.php.net/manual/en/function.runkit7-function-add.php) describes dynamically creating a function from supplied code, though the lab's installed extension and API version should be confirmed.
 
-The account identifies `gavel-util` as a SUID YAML rule runner and reports modifying `/opt/gavel/.config/php/php.ini` before a later privileged rule. The ordering matters: a changed file affects only a process that loads it at the relevant time.
+Use a harmless rule that returns a predictable boolean while writing a test marker, then submit a bid that reaches it. The marker and `id` result demonstrate execution as the web process, `www-data`. If the rule is saved but no marker appears, verify publication state, selected auction, bid constraints, and whether the configured rule engine actually ran. An admin role alone does not equal OS execution until the rule is evaluated.
 
-A SUID bit alone does not establish that child PHP retains root. Verify ownership, effective UID, privilege handling, loaded configuration and directory writability. Root access is reported without those traces. The shell-creation payloads are omitted rather than presented as a complete recipe.
+The recovered password also works for Unix user `auctioneer` on the lab host. That reuse needs its own SSH check and `id`. The user's group membership grants access to the local daemon's Unix socket. Root execution does not flow from the password alone; it flows from what the socket service accepts.
 
-## Remediation and retest
+## Understand the privileged daemon
 
-Exclude `.git` from deployment and web serving; rotate leaked secrets. Parameterize database values and narrow database permissions. Replace executable bidding rules with constrained data and explicitly supported operators.
+`gavel-util submit <file.yaml>` sends a YAML submission to `/var/run/gaveld.sock`. The socket is owned for a seller group, and `gaveld` handles requests as a privileged process. The submitted YAML contains fields such as item metadata and a `rule` containing PHP. The daemon tests the rule with a PHP interpreter and a restrictive configuration under `/opt/gavel/.config/php/php.ini`. That file sets constraints such as `disable_functions` and `open_basedir`. A YAML file reaching the socket proves only submission; the daemon's parser, sandbox invocation, and execution result must be observed separately.
 
-Retire SUID rule execution or separate privileged operations from untrusted evaluation. Protect interpreter configuration and all parent directories; PHP restrictions do not replace an execution boundary.
+The lab offers two related weaknesses. In one path, an allowed file-write function can change the PHP configuration, so a **later** request launches an interpreter with weaker restrictions. In another, the client supplies a `RULE_PATH` environment variable that the daemon accepts as a different configuration path. Either way, the privileged daemon trusts configuration influenced by a lower-privilege caller. Check the loaded configuration path, whether the daemon restarts or starts a fresh interpreter for each submission, and the effective UID of any side effect. A modified `php.ini` affects only processes that load it after the change. `/tmp` may also differ between the Apache session and daemon because of systemd `PrivateTmp`; a file seemingly missing from a web shell may be present in another mount namespace. Compare actual mounts and process namespaces before assuming the write failed.
 
-Verify that repository paths are inaccessible, injection-shaped input remains data, legitimate auctions work, and rule authors cannot write executable files or interpreter configuration. Monitor Git requests, unexpected PHP writes, runner executions, and configuration changes followed by interpreter startup. This correlation distinguishes the initial leak from escalation.
+A controlled proof should write a harmless root-owned marker to a permitted location and inspect ownership. The presence of a YAML response or a file created as `auctioneer` does not establish root. Do not substitute a SUID-bit claim for the daemon's real execution context.
+
+## Fix and verify
+
+Remove `.git` from the deployed web root. Allowlist inventory sort keys and derive user identity from the session rather than a caller-supplied `user_id`; use database permissions that limit what a failed query can expose. Rotate the recovered account password and stop sharing it between the site and SSH. Replace PHP bidding rules with a constrained expression format that cannot call filesystem or process APIs.
+
+For the daemon, authenticate and authorize socket clients, validate YAML fields, remove arbitrary PHP evaluation, and make interpreter configuration and all parent directories administrator-owned. A sandbox setting should never be writable or selectable by the user whose code it is meant to constrain. Retest repository access, normal inventory sorting, unauthorized sort and user IDs, legitimate bidding, rule submission, and attempted config changes. Monitor `.git` requests, unusual database reads, rule edits followed by PHP file writes, and privileged daemon launches with a changed configuration.
