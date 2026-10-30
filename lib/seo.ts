@@ -87,15 +87,15 @@ export const pageSeo = {
   },
   contact: {
     fr: {
-      title: 'Contact pentest et audit cybersécurité | Romain Stride',
+      title: 'Contact — Pentest & développement | Romain Stride',
       description:
-        'Contactez Romain Stride pour cadrer un pentest applicatif, un audit API ou cloud, une formation sécurité ou une collaboration technique.',
+        'Contactez Romain Stride pour un poste en pentest ou en développement full-stack, une collaboration technique, un audit de sécurité ou une formation.',
       path: '/contact',
     },
     en: {
-      title: 'Contact for Pentest and Cybersecurity Audit | Romain Stride',
+      title: 'Contact — Pentesting & Development | Romain Stride',
       description:
-        'Contact Romain Stride to scope a web application pentest, API or cloud audit, security training, or technical collaboration.',
+        'Contact Romain Stride about a pentesting or full-stack development role, technical collaboration, security audit, or training.',
       path: '/contact',
     },
   },
@@ -293,6 +293,10 @@ export function personJsonLd() {
       'Systems programming',
       'Web application penetration testing',
       'API security',
+      'Full-stack development',
+      'TypeScript',
+      'Next.js',
+      'Rust',
       'Cloud security',
       'Offensive security',
       'Security training',

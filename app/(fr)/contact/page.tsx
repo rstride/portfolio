@@ -20,34 +20,34 @@ export default function ContactPage() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-16 xl:gap-20 items-center frame-stack">
         <div className="xl:col-span-5 2xl:pr-12">
           <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
-            Secure Channel // Establish Connection
+            Recrutement & prestations freelance
           </span>
           <h1 className="text-5xl md:text-7xl font-headline font-bold text-on-surface tracking-tighter leading-none mb-8">
             PRENONS <br />
             <span className="text-primary">CONTACT.</span>
           </h1>
           <p className="text-on-surface-variant text-lg xl:text-xl leading-relaxed font-light mb-12 max-w-lg">
-            Pour une demande d&apos;audit, de formation ou de collaboration technique. Décrivez le contexte sans partager de secrets, mots de passe, jetons d&apos;accès ou données sensibles.
+            Pour un poste en pentest ou en développement full-stack, une collaboration technique, un audit ou une formation. Présentez votre équipe et le contexte de votre demande.
           </p>
 
           <div className="space-y-5">
             <InfoPanel
               icon={<Orbit className="w-5 h-5 text-primary" />}
-              title="ENGAGEMENT_TYPES"
+              title="Motifs de contact"
               tone="primary"
-              items={['Pentest applicatif', 'Audit infrastructure', 'Formation sécurité', 'Architecture / advisory']}
+              items={['Opportunité professionnelle', 'Collaboration technique', 'Audit de sécurité', 'Formation cybersécurité']}
             />
             <InfoPanel
               icon={<Waypoints className="w-5 h-5 text-secondary" />}
-              title="SCOPE_VECTOR"
+              title="Domaines techniques"
               tone="secondary"
-              items={['Application web / SaaS', 'API / backend', 'Cloud / infrastructure', 'Équipe / atelier']}
+              items={['Pentest web et API', 'Développement full-stack', 'TypeScript, Next.js et Rust', 'Sécurité applicative']}
             />
             <InfoPanel
               icon={<Layers3 className="w-5 h-5 text-primary" />}
-              title="PROCESS_CHAIN"
+              title="Pour préparer l’échange"
               tone="primary"
-              items={['Qualification du besoin', 'Cadrage du périmètre', 'Exécution technique', 'Livrables & restitution']}
+              items={['Votre équipe ou organisation', 'Le poste ou l’objectif de la prestation', 'Les enjeux techniques', 'Vos modalités et votre calendrier']}
             />
           </div>
         </div>

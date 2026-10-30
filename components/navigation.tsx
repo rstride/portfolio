@@ -29,7 +29,7 @@ export function Navigation() {
     { name: 'CONTACT', path: '/contact' },
   ];
   const primaryCta = isEnglish
-    ? { label: 'Get in touch', path: '/en/contact?source=nav_cta' }
+    ? { label: 'Contact me', path: '/en/contact?source=nav_cta' }
     : { label: 'Me contacter', path: '/contact?source=nav_cta' };
   const languageToggleLabel = isEnglish ? 'Passer en français' : 'Switch to English';
   const openMenuLabel = isEnglish ? 'Open navigation menu' : 'Ouvrir le menu de navigation';

@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Romain Stride — Cybersecurity Consultant',
+    name: 'Romain Stride — Pentester & Full-stack Developer',
     short_name: 'Romain Stride',
-    description: 'Web and API pentests for SaaS teams, with actionable remediation guidance.',
+    description: 'Romain Stride’s portfolio: web and API pentesting, full-stack development, and technical articles.',
     start_url: '/',
     display: 'standalone',
     background_color: '#0c0e12',

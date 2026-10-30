@@ -12,7 +12,7 @@ export function Footer() {
     <footer className="bg-[#0c0e12] w-full py-6 border-t border-outline-variant/20 relative z-10 mt-auto">
       <div className="chrome-frame flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="font-mono text-xs tracking-widest text-on-surface-variant uppercase">
-          © 2026 ROMAIN_STRIDE //
+          © 2026 Romain Stride. {isEnglish ? 'All rights reserved.' : 'Tous droits réservés.'}
         </div>
         <div className="flex flex-wrap justify-center gap-5 md:gap-6 text-xs items-center text-on-surface-variant [&_a]:inline-flex [&_a]:min-h-11 [&_a]:items-center">
           <a href="https://github.com/rstride" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">GitHub</a>

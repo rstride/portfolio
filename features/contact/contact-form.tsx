@@ -44,8 +44,8 @@ function isRequiredContactField(field: ContactField): field is RequiredContactFi
 
 const copy = {
   fr: {
-    panelTitle: 'SECURE_MESSAGE_PROTOCOL',
-    intro: 'Décrivez votre besoin avec suffisamment de contexte pour orienter le cadrage technique.',
+    panelTitle: 'Votre message',
+    intro: 'Présentez le poste, votre équipe ou votre demande de prestation pour commencer l’échange.',
     labels: {
       name: 'Nom ou équipe',
       email: 'Adresse e-mail',
@@ -55,28 +55,28 @@ const copy = {
       message: 'Message',
     },
     systemLabels: {
-      name: 'IDENTIFIER',
-      email: 'RETURN_ADDRESS',
-      service: 'ENGAGEMENT_TYPE',
-      company: 'ORGANIZATION_OPTIONAL',
-      phone: 'VOICE_CHANNEL',
-      message: 'PAYLOAD',
+      name: 'Votre identité',
+      email: 'Pour vous répondre',
+      service: 'Objet du message',
+      company: 'Facultatif',
+      phone: 'Facultatif',
+      message: 'Contexte de votre demande',
     },
     placeholders: {
       name: 'Nom, équipe ou organisation',
       email: 'vous@entreprise.com',
-      message: 'Contexte, périmètre, échéance, environnement concerné…',
+      message: 'Poste et équipe, enjeux techniques, ou objectif d’un audit ou d’une formation…',
     },
     options: {
       emptyService: 'Sélectionner un type de demande',
     },
     preselectedService: (service: string) =>
-      `Demande préselectionnée : ${service}. Vous pouvez modifier ce choix.`,
-    submit: 'TRANSMIT_DATA',
-    pending: 'TRANSMISSION...',
+      `Demande présélectionnée : ${service}. Vous pouvez modifier ce choix.`,
+    submit: 'Envoyer le message',
+    pending: 'Envoi en cours…',
     pendingLabel: 'Envoi du message en cours',
-    success: 'Message transmis. Le canal est ouvert.',
-    failure: 'Transmission impossible pour le moment. Réessayez plus tard.',
+    success: 'Votre message a bien été envoyé. Je vous répondrai par e-mail.',
+    failure: 'Le message n’a pas pu être envoyé. Réessayez plus tard.',
     networkFailure:
       'Connexion interrompue. Réessayez ou écrivez directement à contact@rstride.fr.',
     trustNote: 'Réponse directe par e-mail. N’envoyez pas de secrets via ce formulaire.',
@@ -85,8 +85,8 @@ const copy = {
     required: 'requis',
   },
   en: {
-    panelTitle: 'SECURE_MESSAGE_PROTOCOL',
-    intro: 'Describe the request with enough context to guide the technical scoping stage.',
+    panelTitle: 'Your message',
+    intro: 'Introduce the role, your team, or your freelance request to start the conversation.',
     labels: {
       name: 'Name or team',
       email: 'Email address',
@@ -96,28 +96,28 @@ const copy = {
       message: 'Message',
     },
     systemLabels: {
-      name: 'IDENTIFIER',
-      email: 'RETURN_ADDRESS',
-      service: 'ENGAGEMENT_TYPE',
-      company: 'ORGANIZATION_OPTIONAL',
-      phone: 'VOICE_CHANNEL',
-      message: 'PAYLOAD',
+      name: 'About you',
+      email: 'So I can reply',
+      service: 'What you’re contacting me about',
+      company: 'Optional',
+      phone: 'Optional',
+      message: 'Context for your request',
     },
     placeholders: {
       name: 'Name, team, or organization',
       email: 'you@company.com',
-      message: 'Context, scope, timeline, affected environment…',
+      message: 'Role and team, technical challenges, or the goal of an audit or training session…',
     },
     options: {
       emptyService: 'Select a request type',
     },
     preselectedService: (service: string) =>
       `Preselected request: ${service}. You can change this.`,
-    submit: 'TRANSMIT_DATA',
-    pending: 'TRANSMITTING...',
+    submit: 'Send message',
+    pending: 'Sending…',
     pendingLabel: 'Sending message',
-    success: 'Message transmitted. Channel established.',
-    failure: 'Transmission failed for now. Please try again later.',
+    success: 'Your message has been sent. I’ll reply by email.',
+    failure: 'Your message could not be sent. Please try again later.',
     networkFailure:
       'Connection interrupted. Try again or email contact@rstride.fr directly.',
     trustNote: 'Direct reply by email. Do not send secrets through this form.',

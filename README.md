@@ -12,6 +12,7 @@ Personal portfolio and service site for Romain Stride, connecting software devel
 - Markdown blog content with frontmatter, GitHub-flavored Markdown, heading slugs, and syntax highlighting
 - SEO helpers for canonical URLs, hreflang alternates, Open Graph, Twitter cards, robots, sitemap, and RSS feed
 - Contact API with locale-aware validation, honeypot spam handling, and SMTP delivery through Nodemailer
+- Localized career opportunity contact option, preselected by homepage contact buttons through `service=recruitment`
 - Privacy-preserving CTA source attribution included only in contact emails
 - Report-only Content Security Policy, security headers, and RFC 9116 security.txt
 - Responsive navigation with mobile focus handling and language switching
@@ -45,7 +46,7 @@ tests/                  Node test suite
 
 Prerequisites:
 
-- Node.js 26.10.0 (shared by `.nvmrc`, `.node-version`, CI, and Docker)
+- Node.js 26.12.1 (shared by `.nvmrc`, `.node-version`, CI, and Docker)
 - npm 12.2.0 (recorded in `package.json` and installed by CI and Docker)
 
 If you use nvm, run `nvm install` and `nvm use` in this directory. Then align npm:
@@ -163,3 +164,16 @@ The Dockerfile builds a standalone Next.js output and runs `server.js` as the no
 ## License
 
 See [LICENSE](./LICENSE).
+
+## Dependency maintenance (2026-10-21)
+
+Use npm 12.2.0 with the Node version in `.nvmrc` (Node 26.12.1 when no file
+is present). Next.js is 16.4.2 and React is 19.3.1. ESLint stays on 9.39.5
+until all Next.js plugins support ESLint 10. TypeScript stays on the supported
+6.x API because typescript-eslint does not support TypeScript 7.
+
+Run `npm ci`, `npm run lint`, `npm test` and `npm run build` before publishing.
+Container bases and CI actions use verified immutable digests/commit SHAs.
+
+The npm audit findings in gray-matter's legacy YAML parser remain unresolved
+upstream. Treat repository Markdown/front matter as trusted author content.
