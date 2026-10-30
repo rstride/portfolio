@@ -12,6 +12,7 @@ export type ContactPayload = {
 export type ContactLocale = "fr" | "en";
 export type ContactFieldErrors = Partial<Record<"name" | "email" | "service" | "message", string>>;
 export type ContactServiceSlug =
+  | "recruitment"
   | "web-application-pentest"
   | "api-security-assessment"
   | "cloud-devsecops"
@@ -39,11 +40,15 @@ export type ContactSource = (typeof contactSources)[number];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const contactServiceOptions = {
-  fr: ["Pentest applicatif", "Audit de sécurité API", "Audit Cloud & DevSecOps", "Audit d'infrastructure interne", "Formation sécurité", "Conseil / Architecture"],
-  en: ["Web Application Pentest", "API Security Assessment", "Cloud & DevSecOps Assessment", "Internal Infrastructure Audit", "Security Training", "Advisory / Architecture"],
+  fr: ["Opportunité professionnelle", "Pentest applicatif", "Audit de sécurité API", "Audit Cloud & DevSecOps", "Audit d'infrastructure interne", "Formation sécurité", "Conseil / Architecture"],
+  en: ["Career opportunity", "Web Application Pentest", "API Security Assessment", "Cloud & DevSecOps Assessment", "Internal Infrastructure Audit", "Security Training", "Advisory / Architecture"],
 } satisfies Record<ContactLocale, string[]>;
 
 const contactServiceSlugMap = {
+  "recruitment": {
+    fr: "Opportunité professionnelle",
+    en: "Career opportunity",
+  },
   "web-application-pentest": {
     fr: "Pentest applicatif",
     en: "Web Application Pentest",

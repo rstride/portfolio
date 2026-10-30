@@ -27,8 +27,8 @@ export function Navigation() {
     { name: 'CONTACT', path: '/contact' },
   ];
   const primaryCta = isEnglish
-    ? { label: 'Discuss your needs', path: '/en/contact?source=nav_cta' }
-    : { label: 'Parlons de vos besoins', path: '/contact?source=nav_cta' };
+    ? { label: 'Contact me', path: '/en/contact?source=nav_cta' }
+    : { label: 'Me contacter', path: '/contact?source=nav_cta' };
   const languageToggleLabel = isEnglish ? 'Passer en français' : 'Switch to English';
   const openMenuLabel = isEnglish ? 'Open navigation menu' : 'Ouvrir le menu de navigation';
   const closeMenuLabel = isEnglish ? 'Close navigation menu' : 'Fermer le menu de navigation';

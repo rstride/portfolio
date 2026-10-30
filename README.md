@@ -1,16 +1,18 @@
 # Romain Stride Portfolio
 
-Personal portfolio and service site for Romain Stride, a freelance cybersecurity consultant. The app is built with Next.js and serves a bilingual French/English experience with service pages, technical write-ups, SEO metadata, RSS, sitemap generation, and a validated contact form.
+Personal portfolio for Romain Stride, a pentester and full-stack developer. The French and English core pages introduce his offensive security and development skills for recruiters, with freelance security audits and training available as a secondary purpose. The Next.js app includes service pages, technical write-ups, SEO metadata, RSS, sitemap generation, and a validated contact form.
 
 ## Features
 
 - Bilingual routing: French at `/` and English under `/en`
-- Client-focused homepage and service pages giving security audits and training equal visibility
+- Recruiter-focused homepage presenting pentesting and full-stack development, with the existing section order and no project showcase
+- Freelance service pages retaining security audits and training
 - Contact, privacy, guides, research, and offensive security write-ups
 - Retired project URLs permanently redirect to the localized blog; project content and assets are preserved
 - Markdown blog content with frontmatter, GitHub-flavored Markdown, heading slugs, and syntax highlighting
 - SEO helpers for canonical URLs, hreflang alternates, Open Graph, Twitter cards, robots, sitemap, and RSS feed
 - Contact API with locale-aware validation, honeypot spam handling, and SMTP delivery through Nodemailer
+- Localized career opportunity contact option, preselected by homepage contact buttons through `service=recruitment`
 - Privacy-preserving CTA source attribution included only in contact emails
 - Report-only Content Security Policy, security headers, and RFC 9116 security.txt
 - Responsive navigation with mobile focus handling and language switching

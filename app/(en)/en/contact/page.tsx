@@ -20,34 +20,34 @@ export default function ContactPage() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-16 xl:gap-20 items-center frame-stack">
         <div className="xl:col-span-5 2xl:pr-12">
           <span className="font-mono text-primary uppercase tracking-[0.3em] text-xs mb-6 block">
-            Secure Channel // Establish Connection
+            Recruitment & freelance inquiries
           </span>
           <h1 className="text-5xl md:text-7xl font-headline font-bold text-on-surface tracking-tighter leading-none mb-8">
-            CONTACT <br />
-            <span className="text-primary">INITIATION.</span>
+            LET’S <br />
+            <span className="text-primary">TALK.</span>
           </h1>
           <p className="text-on-surface-variant text-lg xl:text-xl leading-relaxed font-light mb-12 max-w-lg">
-            For audit requests, training, or technical collaboration. Describe the context without sharing secrets, passwords, access tokens, or sensitive data.
+            For a pentesting or full-stack development role, technical collaboration, security audit, or training. Tell me about your team and the context of your request.
           </p>
 
           <div className="space-y-5">
             <InfoPanel
               icon={<Orbit className="w-5 h-5 text-primary" />}
-              title="ENGAGEMENT_TYPES"
+              title="Reasons to get in touch"
               tone="primary"
-              items={['Application pentest', 'Infrastructure audit', 'Security training', 'Architecture / advisory']}
+              items={['Career opportunity', 'Technical collaboration', 'Security audit', 'Cybersecurity training']}
             />
             <InfoPanel
               icon={<Waypoints className="w-5 h-5 text-secondary" />}
-              title="SCOPE_VECTOR"
+              title="Technical areas"
               tone="secondary"
-              items={['Web application / SaaS', 'API / backend', 'Cloud / infrastructure', 'Team / workshop']}
+              items={['Web and API pentesting', 'Full-stack development', 'TypeScript, Next.js, and Rust', 'Application security']}
             />
             <InfoPanel
               icon={<Layers3 className="w-5 h-5 text-primary" />}
-              title="PROCESS_CHAIN"
+              title="What to include"
               tone="primary"
-              items={['Request qualification', 'Scope framing', 'Technical execution', 'Deliverables & debrief']}
+              items={['Your team or organization', 'The role or engagement objective', 'Technical challenges', 'Working arrangements and timeline']}
             />
           </div>
         </div>

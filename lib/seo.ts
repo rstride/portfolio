@@ -6,7 +6,7 @@ export type Locale = 'fr' | 'en';
 export const siteUrl = 'https://rstride.fr';
 export const siteName = 'Romain Stride';
 export const defaultOgImage = `${siteUrl}/og-default.png`;
-export const defaultOgImageAlt = 'Romain Stride cybersecurity consultant portfolio';
+export const defaultOgImageAlt = 'Romain Stride pentester and full-stack developer portfolio';
 
 export const locales: Locale[] = ['fr', 'en'];
 
@@ -28,15 +28,15 @@ const ogLocales: Record<Locale, string> = {
 export const pageSeo = {
   home: {
     fr: {
-      title: 'Consultant cybersécurité freelance | Romain Stride',
+      title: 'Pentester & développeur full-stack | Romain Stride',
       description:
-        'Audits de sécurité web, API, cloud et réseaux, sensibilisation et formations techniques pour identifier vos risques et renforcer les compétences de vos équipes.',
+        'Portfolio de Romain Stride : pentest web et API, développement full-stack avec TypeScript, Next.js et Rust, guides et analyses techniques.',
       path: '/',
     },
     en: {
-      title: 'Freelance Cybersecurity Consultant | Romain Stride',
+      title: 'Pentester & Full-stack Developer | Romain Stride',
       description:
-        'Web, API, cloud, and network security audits, awareness sessions, and technical training to understand your risks and build your team’s skills.',
+        'Romain Stride’s portfolio: web and API pentesting, full-stack development with TypeScript, Next.js, and Rust, technical guides and analysis.',
       path: '/',
     },
   },
@@ -70,15 +70,15 @@ export const pageSeo = {
   },
   contact: {
     fr: {
-      title: 'Contact pentest et audit cybersécurité | Romain Stride',
+      title: 'Contact — Pentest & développement | Romain Stride',
       description:
-        'Contactez Romain Stride pour cadrer un pentest applicatif, un audit API ou cloud, une formation sécurité ou une collaboration technique.',
+        'Contactez Romain Stride pour un poste en pentest ou en développement full-stack, une collaboration technique, un audit de sécurité ou une formation.',
       path: '/contact',
     },
     en: {
-      title: 'Contact for Pentest and Cybersecurity Audit | Romain Stride',
+      title: 'Contact — Pentesting & Development | Romain Stride',
       description:
-        'Contact Romain Stride to scope a web application pentest, API or cloud audit, security training, or technical collaboration.',
+        'Contact Romain Stride about a pentesting or full-stack development role, technical collaboration, security audit, or training.',
       path: '/contact',
     },
   },
@@ -257,11 +257,15 @@ export function personJsonLd() {
     '@id': `${siteUrl}/#person`,
     name: siteName,
     url: siteUrl,
-    jobTitle: ['Cybersecurity Consultant', 'Pentester', 'Security Researcher'],
+    jobTitle: ['Pentester', 'Full-stack Developer'],
     sameAs: ['https://github.com/rstride', 'https://linkedin.com/in/romainstride', 'https://prismasec.fr'],
     knowsAbout: [
       'Web application penetration testing',
       'API security',
+      'Full-stack development',
+      'TypeScript',
+      'Next.js',
+      'Rust',
       'Cloud security',
       'Offensive security',
       'Security training',

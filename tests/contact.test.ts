@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  contactServiceOptions,
   getContactFieldErrors,
   getContactServiceOption,
   hasContactFieldErrors,
@@ -12,6 +13,7 @@ import { createTransportOptions, resolveContactMailConfig } from "@/features/con
 import { formatContactEmailText } from "@/features/contact/server/send-contact-email";
 
 const expectedFrenchServiceMappings = {
+  "recruitment": "Opportunité professionnelle",
   "web-application-pentest": "Pentest applicatif",
   "api-security-assessment": "Audit de sécurité API",
   "cloud-devsecops": "Audit Cloud & DevSecOps",
@@ -22,6 +24,7 @@ const expectedFrenchServiceMappings = {
 } as const;
 
 const expectedEnglishServiceMappings = {
+  "recruitment": "Career opportunity",
   "web-application-pentest": "Web Application Pentest",
   "api-security-assessment": "API Security Assessment",
   "cloud-devsecops": "Cloud & DevSecOps Assessment",
@@ -104,6 +107,30 @@ test("contact email includes the normalized CTA source without requiring SMTP", 
   });
 
   assert.match(formatContactEmailText(payload), /^Source: project_prismasec$/m);
+});
+
+test("recruitment links resolve to a valid localized request and retain the homepage source in email", () => {
+  for (const locale of ["fr", "en"] as const) {
+    for (const source of ["home_hero", "home_final_cta"] as const) {
+      const url = new URL(`${locale === "en" ? "/en" : ""}/contact?service=recruitment&source=${source}`, "https://rstride.fr");
+      const service = getContactServiceOption(url.searchParams.get("service"), locale);
+      assert.equal(service, locale === "fr" ? "Opportunité professionnelle" : "Career opportunity");
+      assert.ok(service && contactServiceOptions[locale].includes(service));
+
+      const payload = normalizeContactPayload({
+        name: "Recruiter",
+        email: "recruiter@example.test",
+        service,
+        message: "I would like to discuss a pentesting or full-stack role with our team.",
+        source: url.searchParams.get("source"),
+      });
+      assert.deepEqual(getContactFieldErrors(payload, locale), {});
+      const email = formatContactEmailText(payload);
+      assert.ok(email.includes(`Service: ${service}\n`));
+      assert.ok(email.includes(`Source: ${source}\n`));
+      assert.ok(email.includes(payload.message));
+    }
+  }
 });
 
 test("hasContactFieldErrors detects populated error maps", () => {
