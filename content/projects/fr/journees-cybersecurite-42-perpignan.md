@@ -1,5 +1,6 @@
 ---
 title: "Journées cybersécurité — 42 Perpignan"
+order: 2
 summary: "Organisation des journées cybersécurité de 42 Perpignan : conférences et CTF les 21 et 22 janvier 2026, puis préparation de la deuxième édition."
 role: "Coorganisateur & conférencier"
 period: "2026 — aujourd’hui"

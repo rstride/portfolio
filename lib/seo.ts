@@ -44,14 +44,14 @@ export const pageSeo = {
   projects: {
     fr: {
       title: 'Projets développement & sécurité | Romain Stride',
-      description: 'Explorez PrismaSec : mon rôle, l’architecture et les décisions techniques d’une plateforme de cybersécurité conçue et mise en production.',
+      description: 'Découvrez PrismaSec, les journées cybersécurité de 42 Perpignan et KFS, mon noyau x86 en Rust : développement, transmission et ingénierie sécurité.',
       path: '/projects',
       image: '/projects/prismasec-og.png',
       imageAlt: 'PrismaSec : développement et ingénierie sécurité',
     },
     en: {
       title: 'Development & Security Projects | Romain Stride',
-      description: 'Explore PrismaSec: my role, the architecture, and the technical decisions behind a cybersecurity platform designed and shipped to production.',
+      description: 'Explore PrismaSec, the 42 Perpignan Cybersecurity Days, and KFS, my Rust x86 kernel: software development, knowledge sharing, and security engineering.',
       path: '/projects',
       image: '/projects/prismasec-og.png',
       imageAlt: 'PrismaSec: development and security engineering',

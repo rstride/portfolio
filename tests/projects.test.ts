@@ -13,7 +13,7 @@ import { generateMetadata as englishMetadata, generateStaticParams as englishPar
 import { ProjectPage } from '@/features/projects/project-page';
 
 const isNotFound = (error: unknown) => error instanceof Error && 'digest' in error && error.digest === 'NEXT_HTTP_ERROR_FALLBACK;404';
-const publishedSlugs = ['journees-cybersecurite-42-perpignan', 'prismasec'];
+const publishedSlugs = ['prismasec', 'journees-cybersecurite-42-perpignan', 'kfs'];
 
 test('published projects have matching localized slugs and static pages', () => {
   const french = getProjectCaseStudies('fr');
@@ -65,7 +65,7 @@ test('sitemap includes project index and case study with bilingual alternates', 
   const entries = sitemap();
   for (const prefix of ['', '/en']) {
     assert.ok(entries.some((entry) => entry.url === `https://rstride.fr${prefix}/projects`));
-    for (const [slug, updated] of [['journees-cybersecurite-42-perpignan', '2026-10-30'], ['prismasec', '2026-09-29']]) {
+    for (const [slug, updated] of [['journees-cybersecurite-42-perpignan', '2026-10-30'], ['kfs', '2026-10-30'], ['prismasec', '2026-09-29']]) {
       const entry = entries.find((item) => item.url === `https://rstride.fr${prefix}/projects/${slug}`);
       assert.ok(entry);
       assert.equal(entry.alternates?.languages?.fr, `https://rstride.fr/projects/${slug}`);

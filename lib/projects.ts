@@ -13,14 +13,16 @@ export interface ProjectCaseStudyMeta {
   role: string;
   period: string;
   tags: string[];
-  externalUrl: string;
+  externalUrl?: string;
   externalLabel?: string;
   coverImage: string;
   coverAlt: string;
+  coverFit?: 'cover' | 'contain';
   ogImage?: string;
   seoTitle?: string;
   seoDescription?: string;
   updated: string;
+  order?: number;
   featured?: boolean;
   published?: boolean;
 }
@@ -61,7 +63,8 @@ export function getProjectCaseStudies(locale: Locale): ProjectCaseStudyMeta[] {
     })
     .filter((project): project is ProjectCaseStudy => project !== null)
     .map(({ content: _content, ...meta }) => meta)
-    .sort((a, b) => Date.parse(b.updated) - Date.parse(a.updated));
+    .sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER)
+      || Date.parse(b.updated) - Date.parse(a.updated));
 }
 
 export function getProjectCaseStudyBySlug(locale: Locale, slug: string): ProjectCaseStudy | null {

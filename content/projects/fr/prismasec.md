@@ -1,10 +1,12 @@
 ---
 title: "PrismaSec"
+order: 1
 summary: "Conception et mise en production d’une plateforme CTEM qui transforme des actifs publics vérifiés en risques priorisés, plans de remédiation et retests traçables."
 role: "Fondateur, CEO & Lead Engineer"
 period: "2025 — aujourd’hui"
 tags: ["CTEM", "NEXT.JS", "RUST", "KUBERNETES", "SECURITY ENGINEERING"]
 externalUrl: "https://prismasec.fr"
+externalLabel: "Voir PrismaSec"
 coverImage: "/projects/prismasec-product.webp"
 coverAlt: "Visualisation publique PrismaSec représentant une surface d’attaque et ses contrôles de sécurité"
 ogImage: "/projects/prismasec-og.png"

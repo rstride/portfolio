@@ -1,5 +1,6 @@
 ---
 title: "Cybersecurity Days — 42 Perpignan"
+order: 2
 summary: "Organising the Cybersecurity Days at 42 Perpignan: conferences and a CTF on 21–22 January 2026, followed by preparations for the second edition."
 role: "Co-organiser & speaker"
 period: "2026 — present"

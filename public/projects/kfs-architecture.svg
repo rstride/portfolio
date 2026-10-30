@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" fill="none">
+  <defs>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" stroke="#25313b" stroke-opacity=".45"/></pattern>
+    <linearGradient id="bg" x2="1600" y2="1000" gradientUnits="userSpaceOnUse"><stop stop-color="#101c25"/><stop offset="1" stop-color="#080e14"/></linearGradient>
+    <linearGradient id="core" x1="140" y1="420" x2="1460" y2="590" gradientUnits="userSpaceOnUse"><stop stop-color="#172c32"/><stop offset="1" stop-color="#10202d"/></linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <rect width="1600" height="1000" fill="url(#grid)"/>
+  <g font-family="monospace">
+    <text x="140" y="210" fill="#9cff93" font-size="18" letter-spacing="4">ÉCOLE 42 / SYSTEMS ENGINEERING</text>
+    <text x="136" y="305" fill="#e9f0f3" font-size="80" font-weight="700" letter-spacing="-4">Kernel From Scratch</text>
+    <text x="142" y="351" fill="#8cabbc" font-size="22" letter-spacing="2">RUST + ASSEMBLY / i386</text>
+    <rect x="140" y="410" width="1320" height="156" rx="4" fill="url(#core)" stroke="#4d9d9b"/>
+    <rect x="140" y="410" width="5" height="156" fill="#9cff93"/>
+    <text x="176" y="453" fill="#9cff93" font-size="17" letter-spacing="3">RING 0 / KERNEL</text>
+    <text x="176" y="503" fill="#edf6f7" font-size="27">Paging + heap</text>
+    <text x="176" y="538" fill="#91acba" font-size="18">Physical / virtual memory</text>
+    <path d="M590 470V539M1030 470V539" stroke="#35515d"/>
+    <text x="626" y="503" fill="#edf6f7" font-size="27">Interrupts + scheduling</text>
+    <text x="626" y="538" fill="#91acba" font-size="18">IDT / PIC / PIT</text>
+    <text x="1066" y="503" fill="#edf6f7" font-size="27">IDE + ext2</text>
+    <text x="1066" y="538" fill="#91acba" font-size="18">Persistent storage</text>
+    <path d="M350 566V610M800 566V610M1250 566V610" stroke="#3a6b7e" stroke-width="2" stroke-dasharray="5 6"/>
+    <g fill="#0d1923" stroke="#304958"><rect x="140" y="610" width="420" height="108" rx="4"/><rect x="590" y="610" width="420" height="108" rx="4"/><rect x="1040" y="610" width="420" height="108" rx="4"/></g>
+    <text x="174" y="649" fill="#00cffc" font-size="16" letter-spacing="2">BOOT</text>
+    <text x="174" y="688" fill="#d4e3ea" font-size="24">Multiboot / GRUB</text>
+    <text x="624" y="649" fill="#00cffc" font-size="16" letter-spacing="2">RING 3</text>
+    <text x="624" y="688" fill="#d4e3ea" font-size="24">Isolated processes</text>
+    <text x="1074" y="649" fill="#00cffc" font-size="16" letter-spacing="2">VALIDATION</text>
+    <text x="1074" y="688" fill="#d4e3ea" font-size="24">QEMU integration tests</text>
+    <text x="140" y="806" fill="#5e7c8e" font-size="17" letter-spacing="3">KFS 01—06</text>
+    <text x="1460" y="806" fill="#5e7c8e" font-size="17" text-anchor="end" letter-spacing="3">RSTRIDE / ARCHITECTURE</text>
+  </g>
+</svg>
