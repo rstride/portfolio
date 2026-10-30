@@ -26,7 +26,7 @@ export async function ProjectPage({ locale, slug }: { locale: Locale; slug: stri
         <span className="home-kicker">{t.kicker}{' // '}{project.period}</span><h1>{project.title}</h1><p>{project.summary}</p>
         <dl className="project-facts"><div><dt>{t.role}</dt><dd>{project.role}</dd></div><div><dt>{t.period}</dt><dd>{project.period}</dd></div></dl>
         <ul className="project-tags" aria-label={t.technologies}>{project.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
-        <a href={project.externalUrl} target="_blank" rel="noopener noreferrer" className="cta-primary inline-flex mt-6">{t.product}<ArrowUpRight className="size-4" aria-hidden="true" /></a>
+        <a href={project.externalUrl} target="_blank" rel="noopener noreferrer" className="cta-primary inline-flex mt-6">{project.externalLabel ?? t.product}<ArrowUpRight className="size-4" aria-hidden="true" /></a>
       </header>
       <div className="project-cover"><Image src={project.coverImage} alt={project.coverAlt} fill sizes="(max-width: 1439px) calc(100vw - 48px), 1280px" loading="eager" className="object-cover" /></div>
       <div className="project-reading-grid">

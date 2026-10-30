@@ -14,6 +14,7 @@ export interface ProjectCaseStudyMeta {
   period: string;
   tags: string[];
   externalUrl: string;
+  externalLabel?: string;
   coverImage: string;
   coverAlt: string;
   ogImage?: string;

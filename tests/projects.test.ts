@@ -13,16 +13,17 @@ import { generateMetadata as englishMetadata, generateStaticParams as englishPar
 import { ProjectPage } from '@/features/projects/project-page';
 
 const isNotFound = (error: unknown) => error instanceof Error && 'digest' in error && error.digest === 'NEXT_HTTP_ERROR_FALLBACK;404';
+const publishedSlugs = ['journees-cybersecurite-42-perpignan', 'prismasec'];
 
 test('published projects have matching localized slugs and static pages', () => {
   const french = getProjectCaseStudies('fr');
   const english = getProjectCaseStudies('en');
-  assert.deepEqual(french.map(({ slug }) => slug), ['prismasec']);
-  assert.deepEqual(english.map(({ slug }) => slug), ['prismasec']);
-  assert.equal(french[0]?.role, 'Fondateur, CEO & Lead Engineer');
-  assert.equal(english[0]?.role, 'Founder, CEO & Lead Engineer');
-  assert.deepEqual(frenchParams(), [{ slug: 'prismasec' }]);
-  assert.deepEqual(englishParams(), [{ slug: 'prismasec' }]);
+  assert.deepEqual(french.map(({ slug }) => slug), publishedSlugs);
+  assert.deepEqual(english.map(({ slug }) => slug), publishedSlugs);
+  assert.equal(french.find(({ slug }) => slug === 'prismasec')?.role, 'Fondateur, CEO & Lead Engineer');
+  assert.equal(english.find(({ slug }) => slug === 'prismasec')?.role, 'Founder, CEO & Lead Engineer');
+  assert.deepEqual(frenchParams(), publishedSlugs.map((slug) => ({ slug })));
+  assert.deepEqual(englishParams(), publishedSlugs.map((slug) => ({ slug })));
 });
 
 test('project lookup rejects missing and unsafe slugs', () => {
@@ -64,25 +65,30 @@ test('sitemap includes project index and case study with bilingual alternates', 
   const entries = sitemap();
   for (const prefix of ['', '/en']) {
     assert.ok(entries.some((entry) => entry.url === `https://rstride.fr${prefix}/projects`));
-    const entry = entries.find((item) => item.url === `https://rstride.fr${prefix}/projects/prismasec`);
-    assert.ok(entry);
-    assert.equal(entry.alternates?.languages?.fr, 'https://rstride.fr/projects/prismasec');
-    assert.equal(entry.alternates?.languages?.en, 'https://rstride.fr/en/projects/prismasec');
-    assert.equal(entry.alternates?.languages?.['x-default'], 'https://rstride.fr/projects/prismasec');
-    assert.equal(entry.lastModified instanceof Date && entry.lastModified.toISOString().slice(0, 10), '2026-09-29');
+    for (const [slug, updated] of [['journees-cybersecurite-42-perpignan', '2026-10-30'], ['prismasec', '2026-09-29']]) {
+      const entry = entries.find((item) => item.url === `https://rstride.fr${prefix}/projects/${slug}`);
+      assert.ok(entry);
+      assert.equal(entry.alternates?.languages?.fr, `https://rstride.fr/projects/${slug}`);
+      assert.equal(entry.alternates?.languages?.en, `https://rstride.fr/en/projects/${slug}`);
+      assert.equal(entry.alternates?.languages?.['x-default'], `https://rstride.fr/projects/${slug}`);
+      assert.equal(entry.lastModified instanceof Date && entry.lastModified.toISOString().slice(0, 10), updated);
+    }
   }
 });
 
 test('project metadata uses localized canonical URLs and the project share image', async () => {
   for (const [locale, generate] of [['fr', frenchMetadata], ['en', englishMetadata]] as const) {
-    const meta = await generate({ params: Promise.resolve({ slug: 'prismasec' }) });
-    assert.equal(meta.alternates?.canonical, `https://rstride.fr${locale === 'en' ? '/en' : ''}/projects/prismasec`);
-    assert.equal(meta.alternates?.languages?.en, 'https://rstride.fr/en/projects/prismasec');
-    assert.ok(Array.isArray(meta.openGraph?.images));
-    const image = meta.openGraph.images[0];
-    assert.ok(typeof image === 'object' && 'url' in image);
-    assert.equal(image.url, '/projects/prismasec-og.png');
-    assert.equal(meta.title, getProjectCaseStudyBySlug(locale, 'prismasec')?.seoTitle);
+    for (const slug of publishedSlugs) {
+      const project = getProjectCaseStudyBySlug(locale, slug)!;
+      const meta = await generate({ params: Promise.resolve({ slug }) });
+      assert.equal(meta.alternates?.canonical, `https://rstride.fr${locale === 'en' ? '/en' : ''}/projects/${slug}`);
+      assert.equal(meta.alternates?.languages?.en, `https://rstride.fr/en/projects/${slug}`);
+      assert.ok(Array.isArray(meta.openGraph?.images));
+      const image = meta.openGraph.images[0];
+      assert.ok(typeof image === 'object' && 'url' in image);
+      assert.equal(image.url, project.ogImage ?? defaultOgImage);
+      assert.equal(meta.title, project.seoTitle);
+    }
   }
 });
 

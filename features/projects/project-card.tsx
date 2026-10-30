@@ -13,7 +13,7 @@ export function ProjectCard({ project, locale, headingLevel = 'h3' }: { project:
     <article className="project-card">
       <Link href={href} className="project-card-image" aria-label={`${t.caseStudy} : ${project.title}`}>
         <Image src={project.coverImage} alt={project.coverAlt} fill sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1439px) 50vw, 680px" className="object-cover" />
-        <span className="project-image-label">{project.title}{' // CTEM'}</span>
+        <span className="project-image-label">{project.title}{project.tags[0] && ` // ${project.tags[0]}`}</span>
       </Link>
       <div className="project-card-body">
         <span className="home-kicker">{project.period}</span>
@@ -22,7 +22,7 @@ export function ProjectCard({ project, locale, headingLevel = 'h3' }: { project:
         <ul className="project-tags" aria-label={t.technologies}>{project.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
         <div className="project-card-actions">
           <Link href={href} className="portfolio-evidence">{t.caseStudy}<ArrowRight className="size-4" aria-hidden="true" /></Link>
-          <a href={project.externalUrl} target="_blank" rel="noopener noreferrer" className="portfolio-evidence project-product-link">{t.product}<ArrowUpRight className="size-4" aria-hidden="true" /></a>
+          <a href={project.externalUrl} target="_blank" rel="noopener noreferrer" className="portfolio-evidence project-product-link">{project.externalLabel ?? t.product}<ArrowUpRight className="size-4" aria-hidden="true" /></a>
         </div>
       </div>
     </article>
