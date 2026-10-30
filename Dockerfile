@@ -3,7 +3,7 @@
 # ───────────────────────────────────────────────────────────────────────────────
 ARG NPM_VERSION=12.2.0
 
-FROM node:26.12.1-alpine@sha256:eb37f58646a901dc7727cf448cae36daaefaba79de33b5058dab79aa4c04aefb AS builder
+FROM node:26.12.1-alpine@sha256:9bd229b644e391df00fb989efa732335aefc6170a05d8c163c5c8ca9870da401 AS builder
 
 ARG NPM_VERSION
 
@@ -23,7 +23,7 @@ RUN npm run build
 # ───────────────────────────────────────────────────────────────────────────────
 # 2) PRODUCTION STAGE: standalone output (minimal footprint)
 # ───────────────────────────────────────────────────────────────────────────────
-FROM node:26.12.1-alpine@sha256:eb37f58646a901dc7727cf448cae36daaefaba79de33b5058dab79aa4c04aefb AS production
+FROM node:26.12.1-alpine@sha256:9bd229b644e391df00fb989efa732335aefc6170a05d8c163c5c8ca9870da401 AS production
 
 ARG NPM_VERSION
 
@@ -38,7 +38,7 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
 # fix ownership so node user can read/write if needed
-RUN chown -R node:26.12.1-alpine@sha256:eb37f58646a901dc7727cf448cae36daaefaba79de33b5058dab79aa4c04aefb /app
+RUN chown -R node:node /app
 
 # switch to non-root
 USER node
